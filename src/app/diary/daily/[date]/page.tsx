@@ -1,11 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import { useState, useEffect, use } from "react";
 import styles from "./daily.module.css";
-import { ACTIVITY_CATEGORIES, GOOD_THINGS, BAD_THINGS } from "@/constants/activities";
+import { ACTIVITY_CATEGORIES } from "@/constants/activities";
 import { calculateScore, getPerformanceRating, DayData } from "@/utils/scoring";
 import Link from "next/link";
 import Header from "@/components/Navigation/Header";
+import {
+  Check,
+  GlassWater,
+  Moon,
+  Sparkles,
+  Heart
+} from "lucide-react";
 
 // Split categories into two for the checklist grid
 const half = Math.ceil(ACTIVITY_CATEGORIES.length / 2);
@@ -15,7 +22,7 @@ const rightCats = ACTIVITY_CATEGORIES.slice(half);
 export default function DailyDiary({ params: paramsPromise }: { params: Promise<{ date: string }> }) {
   const params = use(paramsPromise);
   const date = params.date;
-  
+
   const [data, setData] = useState<DayData & { water?: number, sleep?: number, mood?: string }>({
     activities: {},
     goodThings: {},
@@ -72,7 +79,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
         </div>
 
         <div className={styles.quoteBox}>
-          "Taking care of yourself is productive." 💖
+          "Taking care of yourself is productive." <Heart size={16} inline fill="#be123c" />
         </div>
 
         {/* Two Column Checklists */}
@@ -85,7 +92,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
                   <div key={act} className={styles.listItem} onClick={() => toggleItem('activities', act)}>
                     <span className={styles.itemLabel}>{act}</span>
                     <div className={styles.checkSquare}>
-                      {data.activities[act] && '✓'}
+                      {data.activities[act] && <Check size={14} />}
                     </div>
                   </div>
                 ))}
@@ -94,14 +101,14 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
           </div>
 
           <div className={styles.checklistCol}>
-             {rightCats.map(cat => (
+            {rightCats.map(cat => (
               <div key={cat.name} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
                 <h3 className={styles.checkTitle}>{cat.name}</h3>
                 {cat.activities.map(act => (
                   <div key={act} className={styles.listItem} onClick={() => toggleItem('activities', act)}>
                     <span className={styles.itemLabel}>{act}</span>
                     <div className={styles.checkSquare}>
-                      {data.activities[act] && '✓'}
+                      {data.activities[act] && <Check size={14} />}
                     </div>
                   </div>
                 ))}
@@ -115,13 +122,13 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
           <div className={styles.trackerCard}>
             <h3>Water Intake: (Glass) 💧</h3>
             <div className={styles.iconRow}>
-              {[1,2,3,4,5,6,7,8].map(i => (
-                <span 
-                  key={i} 
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                <span
+                  key={i}
                   className={`${styles.iconItem} ${(data.water || 0) >= i ? styles.iconActive : ''}`}
                   onClick={() => setLevel('water', i)}
                 >
-                  🥤
+                  <GlassWater size={24} />
                 </span>
               ))}
             </div>
@@ -130,13 +137,13 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
           <div className={styles.trackerCard}>
             <h3>Hours of Sleep: (Hours) 🌙</h3>
             <div className={styles.iconRow}>
-              {[1,2,3,4,5,6,7,8,9,10].map(i => (
-                <span 
-                  key={i} 
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
+                <span
+                  key={i}
                   className={`${styles.iconItem} ${(data.sleep || 0) >= i ? styles.iconActive : ''}`}
                   onClick={() => setLevel('sleep', i)}
                 >
-                  🌙
+                  <Moon size={24} fill={(data.sleep || 0) >= i ? "currentColor" : "none"} />
                 </span>
               ))}
             </div>
@@ -147,8 +154,8 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
         <div className={styles.moodRow}>
           <span className={styles.moodLabel}>Mood:</span>
           {['Angry', 'Tired', 'Sad', 'Happy', 'Fun'].map(m => (
-            <button 
-              key={m} 
+            <button
+              key={m}
               className={`${styles.moodBtn} ${data.mood === m ? styles.activeMood : ''}`}
               onClick={() => setData(prev => ({ ...prev, mood: m }))}
             >
@@ -159,12 +166,12 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
 
         {/* Score Reflection (Subtle) */}
         <div className={styles.longSection} style={{ textAlign: 'center' }}>
-           <p style={{ fontWeight: 700, opacity: 0.6 }}>My Progress Today: <span style={{ color }}>{rating} ({score} pts)</span></p>
+          <p style={{ fontWeight: 700, opacity: 0.6 }}>My Progress Today: <span style={{ color }}>{rating} ({score} pts)</span></p>
         </div>
 
         <div className={styles.finishBtn}>
           <Link href="/" className="pill-btn">
-             Complete Entry ✨
+            Complete Entry <Sparkles size={18} />
           </Link>
         </div>
       </div>

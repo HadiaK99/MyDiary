@@ -5,6 +5,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { calculateScore, getPerformanceRating } from "@/utils/scoring";
 import Header from "@/components/Navigation/Header";
+import { 
+  Sun, 
+  Sparkles, 
+  Leaf, 
+  Smile, 
+  BarChart3, 
+  Trophy, 
+  ArrowRight,
+  Target
+} from "lucide-react";
 
 const DAYS = [
   { short: "Mon", date: 7 },
@@ -36,7 +46,7 @@ export default function Home() {
       <Header />
 
       <section className={styles.greetingHeader}>
-        <h1>Hi, <span style={{ color: 'var(--primary)' }}>Jose Maria</span> 👋</h1>
+        <h1>Hi, <span style={{ color: 'var(--primary)' }}>Hero</span> <Smile size={32} inline style={{ color: 'var(--primary)', verticalAlign: 'middle' }} /></h1>
         
         {/* Day Selector */}
         <div className={styles.daySelector}>
@@ -53,9 +63,11 @@ export default function Home() {
       <section className={`${styles.featuredCard} animate-fade-in`}>
         <h2>Let's start your day</h2>
         <p>Begin with a mindful morning reflection.</p>
-        <div className={styles.sunIllustration}>🌞</div>
+        <div className={styles.sunIllustration}>
+          <Sun size={80} strokeWidth={1.5} />
+        </div>
         <Link href={`/diary/daily/${todayDate}`} className="pill-btn" style={{ marginTop: '20px' }}>
-          Record My Day 📝
+          Record My Day <ArrowRight size={18} />
         </Link>
       </section>
 
@@ -67,7 +79,7 @@ export default function Home() {
 
       <section className={styles.quickGrid}>
         <div className={`${styles.quickCard} ${styles.pinkCard}`}>
-          <h4>Pause & reflect 🌱</h4>
+          <h4>Pause & reflect <Leaf size={16} inline /></h4>
           <p>What are you grateful for today?</p>
           <div className={styles.tagGroup}>
             <span className={styles.miniTag}>Today</span>
@@ -76,7 +88,7 @@ export default function Home() {
         </div>
 
         <div className={`${styles.quickCard} ${styles.blueCard}`}>
-          <h4>Set Intentions 😊</h4>
+          <h4>Set Intentions <Sparkles size={16} inline /></h4>
           <p>How do you want to feel?</p>
           <div className={styles.tagGroup}>
             <span className={styles.miniTag}>Today</span>
@@ -100,11 +112,11 @@ export default function Home() {
       
       <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr' }}>
         <Link href="/monthly/analysis/april" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
-          <span style={{ fontSize: '2rem' }}>📊</span>
+          <BarChart3 size={32} style={{ margin: '0 auto', color: 'var(--primary)' }} />
           <p style={{ fontWeight: 700, marginTop: '10px' }}>Monthly Analysis</p>
         </Link>
         <Link href="/yearly/review" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
-          <span style={{ fontSize: '2rem' }}>🏆</span>
+          <Trophy size={32} style={{ margin: '0 auto', color: '#facc15' }} />
           <p style={{ fontWeight: 700, marginTop: '10px' }}>Yearly Review</p>
         </Link>
       </div>

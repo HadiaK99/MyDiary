@@ -28,12 +28,14 @@ MyDiary is a modern, illustrative digital journal designed specifically for chil
 
 ### 🛠 Visual Design & Navigation
 - **Kid-Friendly Typography**: Using **Fredoka** and **Quicksand** fonts for a soft, rounded feel.
+- **Lucide React Icons**: Replaced decorative emojis with a sleek, consistent set of professional icons for actions, tracking, and navigation.
 - **Clean Navigation**: Circular chevron back buttons and pill-shaped interactive elements.
 - **Dashboard Hub**: A persistent header allows easy access to the Home screen from any page except the dashboard itself.
 
 ## 🚀 Technical Features
 - **Next.js 15 (App Router)**: Blazing fast performance and modern routing.
 - **Vanilla CSS Architecture**: Custom token system for pastels and glassmorphism.
+- **Icon Engine**: Powered by `lucide-react` for scalable and consistent vector icons.
 - **Client-Side Persistence**: Data is saved to `localStorage` for privacy and instant responsiveness.
 
 ## 🛠 Getting Started
