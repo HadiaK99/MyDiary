@@ -1,16 +1,10 @@
-'use client';
-import { use } from "react";
-import styles from "./planning.module.css";
-import Link from "next/link";
+import Header from "@/components/Navigation/Header";
 
 export default function MonthlyPlanning({ params: paramsPromise }: { params: Promise<{ month: string }> }) {
   const params = use(paramsPromise);
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.backBtn}>⬅️ Dashboard</Link>
-        <h1>Planning for May 2026 🎯</h1>
-      </header>
+      <Header />
 
       <div className={styles.grid}>
         {/* Schedule Section */}
@@ -51,7 +45,7 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
       </div>
 
       <div className={styles.footer}>
-        <button className="primary-btn">Save May Planning</button>
+        <button className="pill-btn">Save May Planning</button>
       </div>
     </div>
   );

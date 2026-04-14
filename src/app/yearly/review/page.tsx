@@ -1,15 +1,9 @@
-"use client";
-
-import styles from "./review.module.css";
-import Link from "next/link";
+import Header from "@/components/Navigation/Header";
 
 export default function YearlyReview() {
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.backBtn}>⬅️ Dashboard</Link>
-        <h1>Year-End Review 2026 🏆</h1>
-      </header>
+      <Header />
 
       <section className={`${styles.mainCard} glass animate-fade-in`}>
         <h2>Celebrating My Growth! 🎉</h2>
@@ -46,7 +40,7 @@ export default function YearlyReview() {
         </div>
 
         <div className={styles.footer}>
-          <button className="primary-btn">Finish Year-end Review</button>
+          <button className="pill-btn">Finish Year-end Review</button>
         </div>
       </section>
     </div>

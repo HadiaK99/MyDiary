@@ -1,43 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Color Palette */
-  --primary: hsl(245, 80%, 65%);
-  --primary-glow: hsla(245, 80%, 65%, 0.3);
-  --secondary: hsl(35, 95%, 60%);
-  --success: hsl(150, 70%, 50%);
-  --danger: hsl(0, 70%, 60%);
+  /* Softer Journal Palette */
+  --primary: hsl(245, 80%, 70%);
+  --primary-glow: hsla(245, 80%, 70%, 0.3);
+  --secondary: hsl(35, 95%, 65%);
+  --success: hsl(150, 60%, 55%);
+  --danger: hsl(0, 70%, 65%);
   
-  --bg-light: hsl(210, 40%, 98%);
-  --bg-dark: hsl(220, 40%, 10%);
+  --bg-journal: hsl(30, 30%, 98%);
+  --card-white: #ffffff;
   
-  --text-light: hsl(220, 40%, 15%);
-  --text-dark: hsl(210, 40%, 95%);
+  --text-main: hsl(220, 30%, 20%);
+  --text-muted: hsl(220, 20%, 45%);
   
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(255, 255, 255, 0.3);
+  /* Radius */
+  --radius-sm: 14px;
+  --radius-md: 24px;
+  --radius-lg: 40px;
   
-  /* Spacing & Radius */
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-lg: 32px;
-  
-  /* Transitions */
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* Default mode (Light) */
-  --background: var(--bg-light);
-  --foreground: var(--text-light);
-  --glass-bg: var(--card-bg);
-  --glass-border: var(--card-border);
+  --background: var(--bg-journal);
+  --foreground: var(--text-main);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: var(--bg-dark);
-    --foreground: var(--text-dark);
-    --glass-bg: rgba(30, 41, 59, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --background: hsl(220, 40%, 10%);
+    --foreground: hsl(210, 40%, 95%);
+    --card-white: rgba(30, 41, 59, 0.8);
   }
 }
 
@@ -51,68 +43,96 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Quicksand', sans-serif;
   background: var(--background);
   color: var(--foreground);
   line-height: 1.6;
   scroll-behavior: smooth;
 }
 
+h1, h2, h3, .brand {
+  font-family: 'Fredoka', sans-serif;
+}
+
 body {
   background-image: 
-    radial-gradient(at 0% 0%, hsla(245, 80%, 65%, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(35, 95%, 60%, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(150, 70%, 50%, 0.1) 0px, transparent 50%);
+    radial-gradient(at 10% 10%, hsla(245, 80%, 70%, 0.1) 0px, transparent 40%),
+    radial-gradient(at 90% 10%, hsla(35, 95%, 65%, 0.08) 0px, transparent 40%);
   background-attachment: fixed;
   min-height: 100vh;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Journal Card */
+.journal-card {
+  background: var(--card-white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+  border: 4px solid #fff;
+  transition: transform 0.3s ease;
 }
 
-/* Glassmorphism Utility */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+.journal-card:hover {
+  transform: translateY(-5px);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn var(--transition) forwards;
-}
-
-/* Buttons and Interactions */
-button, .btn {
-  cursor: pointer;
+/* Circular Chevron Back Button */
+.back-btn-styled {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  transition: all 0.2s ease;
   border: none;
-  font-family: inherit;
-  transition: var(--transition);
+  cursor: pointer;
 }
 
-button:active {
-  transform: scale(0.95);
+.back-btn-styled:hover {
+  background: #e2e8f0;
+  transform: scale(1.05);
 }
 
-.primary-btn {
+.back-arrow {
+  border: solid currentColor;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 4px;
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+  margin-left: 4px;
+}
+
+/* Pill Primary Button */
+.pill-btn {
   background: var(--primary);
   color: white;
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  box-shadow: 0 4px 14px var(--primary-glow);
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-family: 'Fredoka', sans-serif;
+  box-shadow: 0 8px 0 hsl(245, 80%, 55%);
+  transition: all 0.1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.primary-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
+.pill-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 hsl(245, 80%, 55%);
+}
+
+/* Score Indicators */
+.bg-excellent { background: #10b981; }
+.bg-good { background: #6366f1; }
+.bg-fair { background: #f59e0b; }
+.bg-poor { background: #ef4444; }
+
+.glass {
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.3);
 }

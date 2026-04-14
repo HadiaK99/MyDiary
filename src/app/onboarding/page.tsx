@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./onboarding.module.css";
 import { useRouter } from "next/navigation";
+import Header from "@/components/Navigation/Header";
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
@@ -14,6 +15,7 @@ export default function Onboarding() {
 
   return (
     <div className={styles.container}>
+      <Header />
       <div className={`${styles.formCard} glass animate-fade-in`}>
         {/* Progress Bar */}
         <div className={styles.progressHeader}>
@@ -67,8 +69,8 @@ export default function Onboarding() {
               </div>
             </div>
 
-            <button className="primary-btn" style={{ width: '100%', marginTop: '20px' }} onClick={nextStep}>
-              Next: My Annual Focuses ➡️
+            <button className="pill-btn" style={{ width: '100%', marginTop: '20px' }} onClick={nextStep}>
+              Next: My Annual Focuses
             </button>
           </div>
         )}
@@ -89,7 +91,7 @@ export default function Onboarding() {
 
             <div className={styles.buttonGroup}>
               <button className={styles.backBtn} onClick={prevStep}>Back</button>
-              <button className="primary-btn" onClick={nextStep}>Next: Month Planning ➡️</button>
+              <button className="pill-btn" onClick={nextStep}>Next: Month Planning</button>
             </div>
           </div>
         )}
@@ -114,7 +116,7 @@ export default function Onboarding() {
 
             <div className={styles.buttonGroup}>
               <button className={styles.backBtn} onClick={prevStep}>Back</button>
-              <button className="primary-btn" onClick={finish}>Finish & Open My Diary! 🎉</button>
+              <button className="pill-btn" onClick={finish}>Finish & Open My Diary! 🎉</button>
             </div>
           </div>
         )}

@@ -1,7 +1,4 @@
-'use client';
-import { use } from "react";
-import styles from "./analysis.module.css";
-import Link from "next/link";
+import Header from "@/components/Navigation/Header";
 
 const CATEGORIES = ["Ibadah (Prayers)", "Manners/Ethics", "Study", "Health & Cleanliness", "Media / Gadgets"];
 
@@ -9,10 +6,7 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
   const params = use(paramsPromise);
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.backBtn}>⬅️ Dashboard</Link>
-        <h1>Monthly Analysis - April 2026</h1>
-      </header>
+      <Header />
 
       <section className={`${styles.analysisCard} glass animate-fade-in`}>
         <h2>How did I do? ✨</h2>
@@ -58,7 +52,7 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
         </div>
 
         <div className={styles.footer}>
-          <button className="primary-btn">Save Analysis</button>
+          <button className="pill-btn">Save Analysis</button>
         </div>
       </section>
     </div>

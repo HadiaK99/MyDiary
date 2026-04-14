@@ -1,49 +1,43 @@
-# MyDiary - Kids' Moral & Spiritual Journal
+# MyDiary - A Playful Journal for Kids 🌟
 
-A modern, vibrant digital diary designed for children to track their daily activities, moral growth, and spiritual goals. Built with **Next.js** and **Vanilla CSS** for a premium, lightweight experience.
+MyDiary is a modern, illustrative digital journal designed specifically for children. It moves away from rigid forms to create a playful "planner-style" experience where kids can track their habits, reflect on their moral growth, and celebrate their daily achievements.
 
-## ✨ Key Features
+## ✨ The Journal Experience
 
-- **Premium Dashboard**: welcoming home screen with custom-generated illustrations and progress tracking.
-- **Weekly Habit Tracker**: Digital grid for tracking 30+ activities (Prayers, Manners, Health, etc.).
-- **Interactive Onboarding**: Personalized profile setup including the "Bio Page" and Annual Focuses/Resolutions.
-- **Monthly Analysis & Planning**: Reflection tools for previous months and scheduling tools for the next.
-- **Year-End Review**: A celebratory section to evaluate annual progress.
+### 📅 Playful Dashboard
+- **Daily Greeting**: Personalized "Hello" with an illustrative featured card.
+- **Visual Day Selector**: Easily navigate through the week with a colorful horizontal calendar.
+- **Quick Journal Cards**: Colorful shortcuts for gratitude, intentions, and emotion tracking.
 
-## 🚀 Getting Started
+### 📔 Daily Planner Entries
+- **Hand-drawn Aesthetic**: A "Planner Sheet" layout with decorative borders and dashed lines.
+- **Visual Trackers**:
+  - **Hydration**: Clickable water cup icons to track glass intake.
+  - **Rest**: Moon icons to log hours of sleep.
+  - **Mood**: One-click emotion selector (Happy, Fun, Tired, etc.).
+- **Dynamic Checklists**: Two-column habit lists for prayers, manners, and health.
 
-To run the application locally:
+### 🏆 Points & Performance
+- **Automatic Scoring**: A background engine tracks progress across four categories:
+  - **Prayers & Spirituality** (+5 pts)
+  - **Character & Manners** (+3 pts)
+  - **Self-Discipline & Health** (+2 pts)
+  - **Daily Habits** (+1 pt)
+- **Moral Reflections**: Bonus points for **"Good Things (+)"** and growth opportunities for **"Bad Things (-)"**.
+- **Performance Rating**: Real-time feedback categorizing the day as **Excellent, Good, Fair, or Poor**.
 
-1. **Navigate to the project**:
-   ```bash
-   cd /Users/mac/Documents/Projects/personal-projects/MyDiary
-   ```
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
-4. **Open in browser**: [http://localhost:3000](http://localhost:3000)
+### 🛠 Visual Design & Navigation
+- **Kid-Friendly Typography**: Using **Fredoka** and **Quicksand** fonts for a soft, rounded feel.
+- **Clean Navigation**: Circular chevron back buttons and pill-shaped interactive elements.
+- **Dashboard Hub**: A persistent header allows easy access to the Home screen from any page except the dashboard itself.
 
-## 🛠 Tech Stack
-- **Framework**: Next.js 15 (App Router)
-- **Styling**: Vanilla CSS (Custom design system, Glassmorphism)
-- **Typography**: Outfit (Google Fonts)
-- **Icons**: Custom 2D Illustrations
+## 🚀 Technical Features
+- **Next.js 15 (App Router)**: Blazing fast performance and modern routing.
+- **Vanilla CSS Architecture**: Custom token system for pastels and glassmorphism.
+- **Client-Side Persistence**: Data is saved to `localStorage` for privacy and instant responsiveness.
 
----
+## 🛠 Getting Started
 
-## 🕒 Recent Changes
-
-### 2026-04-14
-- **Documentation**: Created project README based on initial implementations.
-- **Technical Fixes**: Added `'use client'` directives to `WeeklyDiary`, `MonthlyAnalysis`, and `MonthlyPlanning` pages to comply with Next.js App Router requirements for client-side state.
-- **Compatibility**: Fixed dynamic routing issues in Next.js 15+ by properly unwrapping `params` in core pages.
-
-### 2026-04-13
-- **Initial Build**: Completed core application structure including Dashboard, Onboarding, and Weekly Grid.
-- **Design System**: Established a global Vanilla CSS design system with HSL-based colors and animation tokens.
-- **Illustration**: Generated a custom cover illustration for the landing page.
+1. **Install**: `npm install`
+2. **Launch**: `npm run dev`
+3. **Visit**: [http://localhost:3000](http://localhost:3000)

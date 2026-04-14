@@ -1,82 +1,113 @@
-import Image from "next/image";
+"use client";
+
 import styles from "./page.module.css";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { calculateScore, getPerformanceRating } from "@/utils/scoring";
+import Header from "@/components/Navigation/Header";
+
+const DAYS = [
+  { short: "Mon", date: 7 },
+  { short: "Tue", date: 8 },
+  { short: "Wed", date: 9 },
+  { short: "Thu", date: 10, active: true },
+  { short: "Fri", date: 11 },
+  { short: "Sat", date: 12 },
+  { short: "Sun", date: 13 },
+];
 
 export default function Home() {
+  const [todayScore, setTodayScore] = useState(0);
+  const [todayRating, setTodayRating] = useState({ rating: "Poor", color: "#ccc" });
+  const todayDate = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`diary-${todayDate}`);
+    if (saved) {
+      const data = JSON.parse(saved);
+      const score = calculateScore(data);
+      setTodayScore(score);
+      setTodayRating(getPerformanceRating(score));
+    }
+  }, [todayDate]);
+
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className="glass" style={{ padding: '8px 16px', borderRadius: '40px' }}>
-          <span style={{ fontWeight: 600 }}>🌟 MyDiary</span>
-        </div>
-        <Link href="/onboarding" className="btn" style={{ fontSize: '0.8rem', opacity: 0.6 }}>⚙️ Settings</Link>
-      </header>
+      <Header />
 
-      {/* Hero Section */}
-      <section className={`${styles.hero} animate-fade-in`}>
-        <div className={styles.heroText}>
-          <h1>Welcome back, <span style={{ color: 'var(--primary)' }}>Hero!</span></h1>
-          <p>Ready to record your amazing day and reach your goals?</p>
-          <Link href="/diary/weekly/1" className="primary-btn" style={{ marginTop: '20px', display: 'inline-block' }}>
-            Start Today's Entry 📝
-          </Link>
-        </div>
-        <div className={styles.heroImage}>
-          <Image
-            src="/cover.png"
-            alt="My Diary Illustration"
-            width={500}
-            height={400}
-            style={{ borderRadius: 'var(--radius-lg)', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
-            priority
-          />
+      <section className={styles.greetingHeader}>
+        <h1>Hi, <span style={{ color: 'var(--primary)' }}>Jose Maria</span> 👋</h1>
+        
+        {/* Day Selector */}
+        <div className={styles.daySelector}>
+          {DAYS.map(day => (
+            <div key={day.short} className={`${styles.dayBtn} ${day.active ? styles.dayBtnActive : ''}`}>
+              <span>{day.short}</span>
+              <span>{day.date}</span>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Grid Section */}
-      <section className={styles.grid}>
-        <Link href="/diary/weekly/1" className={`${styles.card} glass`} style={{ cursor: 'pointer' }}>
-          <h3>📅 This Week</h3>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>4/7</span>
-            <span className={styles.statLabel}>Days Logged</span>
-          </div>
-          <div className={styles.progressBar}>
-            <div className={styles.progressFill} style={{ width: '60%' }}></div>
-          </div>
+      {/* Hero / Featured Card */}
+      <section className={`${styles.featuredCard} animate-fade-in`}>
+        <h2>Let's start your day</h2>
+        <p>Begin with a mindful morning reflection.</p>
+        <div className={styles.sunIllustration}>🌞</div>
+        <Link href={`/diary/daily/${todayDate}`} className="pill-btn" style={{ marginTop: '20px' }}>
+          Record My Day 📝
         </Link>
+      </section>
 
-        <div className={`${styles.card} glass`}>
-          <h3>✨ Spiritual Goal</h3>
-          <p>Prayer focus: <strong>Fajr</strong></p>
-          <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>You've hit this 3 times this week!</p>
+      {/* Quick Journal Sections */}
+      <div className={styles.sectionHeader}>
+        <h3>Quick Journal</h3>
+        <Link href={`/diary/daily/${todayDate}`} className={styles.seeAll}>See all</Link>
+      </div>
+
+      <section className={styles.quickGrid}>
+        <div className={`${styles.quickCard} ${styles.pinkCard}`}>
+          <h4>Pause & reflect 🌱</h4>
+          <p>What are you grateful for today?</p>
+          <div className={styles.tagGroup}>
+            <span className={styles.miniTag}>Today</span>
+            <span className={`${styles.miniTag} ${styles.activeTag}`}>Personal</span>
+          </div>
         </div>
 
-        <div className={`${styles.card} glass`}>
-          <h3>📚 Reading List</h3>
-          <p>Next book: <strong>The Brave Lion</strong></p>
+        <div className={`${styles.quickCard} ${styles.blueCard}`}>
+          <h4>Set Intentions 😊</h4>
+          <p>How do you want to feel?</p>
+          <div className={styles.tagGroup}>
+            <span className={styles.miniTag}>Today</span>
+            <span className={styles.miniTag}>Family</span>
+          </div>
+        </div>
+
+        <div className={`${styles.quickCard} ${styles.greenCard}`}>
+          <h4>Emotions Tracker</h4>
+          <p>Logged: Happy & Calm</p>
+          <div className={styles.tagGroup}>
+            <div className="score-badge bg-excellent" style={{ fontSize: '0.6rem' }}>EXCELLENT</div>
+          </div>
         </div>
       </section>
 
-      {/* Quick Actions */}
-      <section className={styles.actions}>
-        <h2>What's next?</h2>
-        <div className={styles.actionButtons}>
-          <Link href="/monthly/analysis/april" className={`${styles.actionCard} glass`}>
-            <span>📊</span>
-            <h4>Monthly Analysis</h4>
-          </Link>
-          <Link href="/monthly/planning/may" className={`${styles.actionCard} glass`}>
-            <span>🎯</span>
-            <h4>Next Month Planning</h4>
-          </Link>
-          <Link href="/yearly/review" className={`${styles.actionCard} glass`}>
-            <span>🏆</span>
-            <h4>Yearly Review</h4>
-          </Link>
-        </div>
+      {/* Secondary Actions */}
+      <section className={styles.sectionHeader} style={{ marginTop: '20px' }}>
+        <h3>Milestones</h3>
       </section>
+      
+      <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <Link href="/monthly/analysis/april" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
+          <span style={{ fontSize: '2rem' }}>📊</span>
+          <p style={{ fontWeight: 700, marginTop: '10px' }}>Monthly Analysis</p>
+        </Link>
+        <Link href="/yearly/review" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
+          <span style={{ fontSize: '2rem' }}>🏆</span>
+          <p style={{ fontWeight: 700, marginTop: '10px' }}>Yearly Review</p>
+        </Link>
+      </div>
     </div>
   );
 }

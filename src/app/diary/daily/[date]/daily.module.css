@@ -1,0 +1,191 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 24px 100px;
+}
+
+.plannerSheet {
+  background: #fffafa; /* Off-white / Cream */
+  border: 1px solid #ffe4e6;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+  position: relative;
+  min-height: 1000px;
+}
+
+.plannerHeader {
+  text-align: center;
+  margin-bottom: 50px;
+  border-bottom: 2px solid #fecaca;
+  padding-bottom: 20px;
+}
+
+.plannerHeader h1 {
+  font-family: 'Fredoka', cursive;
+  font-size: 3.5rem;
+  color: #be123c; /* Deep pink-red */
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.subHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #9f1239;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.quoteBox {
+  margin: 30px 0;
+  padding: 15px;
+  border: 1px solid #fecaca;
+  text-align: center;
+  font-style: italic;
+  color: #9f1239;
+  font-weight: 500;
+  position: relative;
+}
+
+/* Two Column Checklists */
+.checklistsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.checklistCard {
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.checkTitle {
+  font-weight: 800;
+  color: #881337;
+  margin-bottom: 20px;
+  font-size: 1rem;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px dashed #fecaca;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.itemLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4c0519;
+}
+
+.checkSquare {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #9f1239;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #9f1239;
+}
+
+/* Visual Trackers */
+.visualTrackers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.trackerCard h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #881337;
+  margin-bottom: 15px;
+}
+
+.iconRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.iconItem {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.2;
+  transition: opacity 0.2s;
+}
+
+.iconActive {
+  opacity: 1;
+}
+
+/* Good/Bad Thing Sections */
+.longSection {
+  margin-top: 40px;
+  border-top: 2px solid #fecaca;
+  padding-top: 30px;
+}
+
+.moodRow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.moodLabel {
+  font-weight: 800;
+  color: #881337;
+}
+
+.moodBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: transparent;
+  color: #475569;
+}
+
+.activeMood {
+  color: #be123c;
+  background: #fff1f2;
+}
+
+/* Floating Finish Button */
+.finishBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 100;
+}
+
+@media (max-width: 600px) {
+  .checklistsGrid, .visualTrackers { grid-template-columns: 1fr; }
+  .plannerSheet { padding: 20px; }
+  .plannerHeader h1 { font-size: 2.2rem; }
+}
