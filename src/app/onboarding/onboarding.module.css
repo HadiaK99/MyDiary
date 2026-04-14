@@ -1,0 +1,137 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.formCard {
+  width: 100%;
+  max-width: 700px;
+  padding: 40px;
+  border-radius: var(--radius-lg);
+}
+
+.progressHeader {
+  margin-bottom: 30px;
+}
+
+.stepIndicator {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.progressLine {
+  height: 6px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.5s ease;
+}
+
+.stepContent h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.stepContent p {
+  opacity: 0.7;
+  margin-bottom: 30px;
+}
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputGroup label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.inputGroup input,
+.inputGroup textarea {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.5);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.inputGroup input:focus,
+.inputGroup textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.focusList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.focusItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.focusItem span {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.focusItem input {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.backBtn {
+  background: rgba(0,0,0,0.05);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.backBtn:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+@media (max-width: 600px) {
+  .inputGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formCard {
+    padding: 24px;
+  }
+}

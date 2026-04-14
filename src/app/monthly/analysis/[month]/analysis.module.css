@@ -1,0 +1,92 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.backBtn {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.analysisCard {
+  padding: 40px;
+  border-radius: var(--radius-lg);
+}
+
+.analysisCard h2 {
+  margin-bottom: 8px;
+}
+
+.analysisCard p {
+  opacity: 0.7;
+  margin-bottom: 30px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-bottom: 30px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.table th {
+  background: rgba(0,0,0,0.02);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cell {
+  text-align: center;
+}
+
+.cell input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.overallRow {
+  background: rgba(99, 102, 241, 0.05);
+  font-weight: 700;
+}
+
+.notesArea {
+  margin-bottom: 30px;
+}
+
+.notesArea h3 {
+  margin-bottom: 15px;
+}
+
+.notesArea textarea {
+  width: 100%;
+  height: 150px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  padding: 20px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
