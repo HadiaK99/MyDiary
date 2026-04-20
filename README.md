@@ -38,8 +38,43 @@ MyDiary is a modern, illustrative digital journal designed specifically for chil
 - **Icon Engine**: Powered by `lucide-react` for scalable and consistent vector icons.
 - **Client-Side Persistence**: Data is saved to `localStorage` for privacy and instant responsiveness.
 
-## 🛠 Getting Started
+## 🗄️ Backend & ORM
+### 🛠 Architecture & Structure
 
-1. **Install**: `npm install`
-2. **Launch**: `npm run dev`
-3. **Visit**: [http://localhost:3000](http://localhost:3000)
+The project is divided into three main modules for maximum clarity and maintainability:
+
+-   **`src/frontend`**: React components, contexts (Auth), and UI logic.
+-   **`src/backend`**: Prisma ORM, services (Business logic), and API handlers.
+-   **`src/shared`**: Shared types, constants, and utilities used by both.
+
+### 🗄 Database Management
+
+This project uses **Prisma ORM** with **SQLite**. To view and edit your data through a beautiful web interface:
+
+1.  Open your terminal in the project root.
+2.  Run the following command:
+    ```bash
+    npx prisma studio
+    ```
+3.  Access the UI at `http://localhost:5555`.
+
+## 👥 Multi-User Architecture
+The system supports three distinct roles with specific access levels:
+1. **Child**: Can manage their own diary entries and personal goals.
+2. **Parent**: Linked to a specific child, allowing them to view that child's data and write reviews.
+3. **Admin**: Full read/write access to all users and global system configuration (tasks/categories).
+
+### 🚀 Getting Started (Backend)
+
+1.  **Install dependencies**: `npm install`
+2.  **Initialize Database**: 
+    ```bash
+    npx prisma generate
+    npx prisma migrate dev --name init
+    ```
+3.  **Seed Default Data**:
+    ```bash
+    node prisma/seed.js
+    ```
+4.  **Run Development Server**: `npm run dev`
+4. **Visit**: [http://localhost:3000](http://localhost:3000)
