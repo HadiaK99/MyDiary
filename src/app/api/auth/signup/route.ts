@@ -24,7 +24,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ user });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Error creating user" }, { status: 400 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error creating user";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

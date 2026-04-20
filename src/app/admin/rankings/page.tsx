@@ -20,7 +20,8 @@ export default function Rankings() {
       const rankings = await Promise.all(children.map(async (child: User) => {
         const diaryRes = await fetch(`/api/diary?userId=${child.id}`);
         const diaryData = await diaryRes.json();
-        const totalScore = diaryData.entries?.reduce((acc: number, curr: any) => acc + curr.score, 0) || 0;
+        const entries = diaryData.entries as DiaryEntry[] || [];
+        const totalScore = entries.reduce((acc, curr) => acc + curr.score, 0);
         return {
           username: child.username,
           totalScore

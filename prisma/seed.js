@@ -10,21 +10,21 @@ const ACTIVITY_CATEGORIES = [
     pointsPerItem: 5,
     activities: [
       "Fajr Prayer", "Zuhr Prayer", "Asr Prayer", "Maghrib Prayer", "Isha Prayer",
-      "Quran (Quantity)", "Durood Pak (Numbers)", "Bismillah (Doing every thing)", "Salam/Meeting (Leaving, Entering)"
+      "Quran", "Tasbihaat / Dhikr", "Bismillah", "Salam"
     ]
   },
   {
     name: "Character & Manners",
     pointsPerItem: 3,
     activities: [
-      "Truth / Honesty", "Gratitude - Patience", "Obedience", "Speech / Language", "Manners / Behavior", "Human Rights / Kindness"
+      "Truth / Honesty", "Gratitude - Patience", "Speech / Language", "Manners / Behavior", "Kindness / Generosity", "Respect / Politeness"
     ]
   },
   {
     name: "Self-Discipline & Health",
     pointsPerItem: 2,
     activities: [
-      "Self Service", "Help / Service", "Not Wasting (Time, Food, Money)", "Animals / Plants Caring", "Management / Discipline", "Cleanliness (Body, Cloth, Room)", "Teeth Brush (Morning, Night)", "Exercise / Physical Games"
+      "Self Service", "No Wastage (Time, Food, Money)", "Caring for Animals / Plants", "Discipline", "Cleanliness / Hygiene", "Teeth Brush", "Exercise / Physical Games"
     ]
   },
   {

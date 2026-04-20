@@ -8,10 +8,10 @@ export const DEFAULT_ACTIVITY_CATEGORIES = [
       "Asr Prayer",
       "Maghrib Prayer",
       "Isha Prayer",
-      "Quran (Quantity)",
-      "Durood Pak (Numbers)",
-      "Bismillah (Doing every thing)",
-      "Salam/Meeting (Leaving, Entering)"
+      "Quran",
+      "Tasbihaat / Dhikr",
+      "Bismillah",
+      "Salam"
     ]
   },
   {
@@ -20,10 +20,10 @@ export const DEFAULT_ACTIVITY_CATEGORIES = [
     activities: [
       "Truth / Honesty",
       "Gratitude - Patience",
-      "Obedience",
       "Speech / Language",
       "Manners / Behavior",
-      "Human Rights / Kindness"
+      "Kindness / Generosity",
+      "Respect / Politeness"
     ]
   },
   {
@@ -31,12 +31,11 @@ export const DEFAULT_ACTIVITY_CATEGORIES = [
     pointsPerItem: 2,
     activities: [
       "Self Service",
-      "Help / Service",
-      "Not Wasting (Time, Food, Money)",
-      "Animals / Plants Caring",
-      "Management / Discipline",
-      "Cleanliness (Body, Cloth, Room)",
-      "Teeth Brush (Morning, Night)",
+      "No Wastage (Time, Food, Money)",
+      "Caring for Animals / Plants",
+      "Discipline",
+      "Cleanliness / Hygiene",
+      "Teeth Brush",
       "Exercise / Physical Games"
     ]
   },

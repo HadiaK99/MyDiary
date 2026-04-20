@@ -36,9 +36,27 @@ export default function Header() {
       <div className={styles.right}>
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <button 
+              onClick={() => router.push("/profile")}
+              style={{ 
+                fontSize: '0.85rem', 
+                fontWeight: 700, 
+                color: '#64748b', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '5px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease',
+                padding: '4px 8px',
+                borderRadius: '8px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
               <User size={14} /> {user.username}
-            </span>
+            </button>
             <button onClick={logout} className={styles.settingsBtn} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }} title="Logout" type="button">
               <LogOut size={20} />
             </button>

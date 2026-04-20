@@ -34,7 +34,8 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
       const diaryRes = await fetch(`/api/diary?userId=${childId}`);
       const diaryData = await diaryRes.json();
       if (diaryData.entries) {
-        setEntries(diaryData.entries.sort((a: any, b: any) => b.date.localeCompare(a.date)));
+        const sortedEntries = (diaryData.entries as {date: string, score: number, rating: string}[]).sort((a, b) => b.date.localeCompare(a.date));
+        setEntries(sortedEntries);
       }
     };
     fetchData();

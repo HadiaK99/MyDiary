@@ -22,17 +22,18 @@ export default function ParentDashboard() {
         // Fetch child profile
         const userRes = await fetch("/api/admin/users");
         const userData = await userRes.json();
-        const foundChild = userData.users?.find((u: User) => u.id === user.childId);
+        const foundChild = (userData.users as User[])?.find((u) => u.id === user.childId);
         if (foundChild) setChild(foundChild);
 
         // Fetch child diary entries for stats
         const diaryRes = await fetch(`/api/diary?userId=${user.childId}`);
         const diaryData = await diaryRes.json();
         if (diaryData.entries) {
-          const totalPoints = diaryData.entries.reduce((acc: number, curr: any) => acc + curr.score, 0);
+          const entries = diaryData.entries as DiaryEntry[];
+          const totalPoints = entries.reduce((acc, curr) => acc + curr.score, 0);
           setChildStats({
-            entries: diaryData.entries.length,
-            avgScore: diaryData.entries.length > 0 ? Math.round(totalPoints / diaryData.entries.length) : 0,
+            entries: entries.length,
+            avgScore: entries.length > 0 ? Math.round(totalPoints / entries.length) : 0,
             totalPoints
           });
         }
