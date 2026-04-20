@@ -3,7 +3,7 @@
 import { useState } from "react";
 import styles from "./onboarding.module.css";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Navigation/Header";
+import Header from "@frontend/components/Navigation/Header";
 import { Sparkles, Trophy, Calendar, Check, ArrowRight } from "lucide-react";
 
 export default function Onboarding() {

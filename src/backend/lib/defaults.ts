@@ -1,10 +1,4 @@
-export interface ActivityCategory {
-  name: string;
-  activities: string[];
-  pointsPerItem: number;
-}
-
-export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
+export const DEFAULT_ACTIVITY_CATEGORIES = [
   {
     name: "Prayers & Spirituality",
     pointsPerItem: 5,
@@ -61,21 +55,8 @@ export const ACTIVITY_CATEGORIES: ActivityCategory[] = [
   }
 ];
 
-export const GOOD_THINGS = [
-  "Sadqa", "Care of Patient", "Learning Surah/Dua", "Islamic Constructive Reading", 
-  "Audio / Video Sharing", "Teaching", "Learning Good Things", "Fasting", 
-  "Forgiveness", "Hospitality", "Gathering Manners"
-];
-
-export const BAD_THINGS = [
-  "Abuse", "Back Biting", "Fear", "Horror/Magic Stories", "Jealousy", 
-  "Bad Spendings", "Theft", "Stubborn"
-];
-
 export const POINTS = {
-  HABIT: 1, // Standard habit check
+  HABIT: 1,
   GOOD_THING: 10,
   BAD_THING: -15
 };
-
-export const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
