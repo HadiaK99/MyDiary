@@ -2,10 +2,12 @@
 
 import { useState, useEffect, use } from "react";
 import styles from "./daily.module.css";
-import { ACTIVITY_CATEGORIES } from "@/constants/activities";
-import { calculateScore, getPerformanceRating, DayData } from "@/utils/scoring";
+import { type ActivityCategory } from "@shared/constants/activities";
+import { calculateScore, getPerformanceRating, calculateMaxScore, DayData } from "@shared/utils/scoring";
+import { useAuth } from "@frontend/context/AuthContext";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/Navigation/Header";
+import Header from "@frontend/components/Navigation/Header";
 import {
   Check,
   GlassWater,
@@ -14,14 +16,15 @@ import {
   Heart
 } from "lucide-react";
 
-// Split categories into two for the checklist grid
-const half = Math.ceil(ACTIVITY_CATEGORIES.length / 2);
-const leftCats = ACTIVITY_CATEGORIES.slice(0, half);
-const rightCats = ACTIVITY_CATEGORIES.slice(half);
-
+// Split categories helper - we'll do this inside component or keep it reactive
 export default function DailyDiary({ params: paramsPromise }: { params: Promise<{ date: string }> }) {
   const params = use(paramsPromise);
   const date = params.date;
+  const { user } = useAuth();
+  const [categories, setCategories] = useState<ActivityCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const router = useRouter();
 
   const [data, setData] = useState<DayData & { water?: number, sleep?: number, mood?: string }>({
     activities: {},
@@ -33,19 +36,78 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
   });
 
   const [score, setScore] = useState(0);
+  const [showSummary, setShowSummary] = useState(false);
+
+  const maxScore = calculateMaxScore(categories);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`diary-${date}`);
-    if (saved) {
-      setData(JSON.parse(saved));
+    // Load custom categories from admin settings
+      const fetchCats = async () => {
+        try {
+          const res = await fetch("/api/admin/activities");
+          const data = await res.json();
+          if (data.categories?.length > 0) {
+            setCategories(data.categories);
+          }
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchCats();
+    }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchEntry = async () => {
+        const res = await fetch(`/api/diary?date=${date}`);
+        const data = await res.json();
+        if (data.entry) {
+          setData(JSON.parse(data.entry.data));
+        }
+      };
+      fetchEntry();
     }
-  }, [date]);
+  }, [date, user]);
 
   useEffect(() => {
-    const newScore = calculateScore(data);
-    setScore(newScore);
-    localStorage.setItem(`diary-${date}`, JSON.stringify(data));
-  }, [data, date]);
+    if (user && categories.length > 0) {
+      const newScore = calculateScore(data, categories);
+      setScore(newScore);
+    }
+  }, [data, categories, user]);
+
+  const handleComplete = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const { rating } = getPerformanceRating(score, maxScore);
+      const res = await fetch("/api/diary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          date, 
+          data, 
+          score, 
+          rating 
+        }),
+      });
+      
+      if (res.ok) {
+        setShowSummary(true);
+      } else {
+        alert("Failed to save entry. Please try again.");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("Something went wrong while saving.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const half = Math.ceil(categories.length / 2);
+  const leftCats = categories.slice(0, half);
+  const rightCats = categories.slice(half);
 
   const toggleItem = (category: keyof DayData, item: string) => {
     setData(prev => ({
@@ -61,13 +123,19 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
     setData(prev => ({ ...prev, [key]: level }));
   };
 
-  const { rating, color } = getPerformanceRating(score);
+  const { rating, color, message } = getPerformanceRating(score, maxScore);
 
   return (
     <div className={styles.container}>
       <Header />
 
-      <div className={styles.plannerSheet}>
+      {loading ? (
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+          <Sparkles className="animate-pulse" />
+          <p>Preparing your diary...</p>
+        </div>
+      ) : (
+        <div className={styles.plannerSheet}>
         <div className={styles.plannerHeader}>
           <div className={styles.subHeader}>
             <span>Daily</span>
@@ -79,20 +147,20 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
         </div>
 
         <div className={styles.quoteBox}>
-          "Taking care of yourself is productive." <Heart size={16} inline fill="#be123c" />
+          "Taking care of yourself is productive." <Heart size={16} style={{ display: 'inline', verticalAlign: 'text-bottom' }} fill="#be123c" />
         </div>
 
         {/* Two Column Checklists */}
         <div className={styles.checklistsGrid}>
           <div className={styles.checklistCol}>
             {leftCats.map(cat => (
-              <div key={cat.name} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
+              <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
                 <h3 className={styles.checkTitle}>{cat.name}</h3>
                 {cat.activities.map(act => (
-                  <div key={act} className={styles.listItem} onClick={() => toggleItem('activities', act)}>
-                    <span className={styles.itemLabel}>{act}</span>
+                  <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
+                    <span className={styles.itemLabel}>{act.name}</span>
                     <div className={styles.checkSquare}>
-                      {data.activities[act] && <Check size={14} />}
+                      {data.activities[act.name] && <Check size={14} />}
                     </div>
                   </div>
                 ))}
@@ -102,13 +170,13 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
 
           <div className={styles.checklistCol}>
             {rightCats.map(cat => (
-              <div key={cat.name} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
+              <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
                 <h3 className={styles.checkTitle}>{cat.name}</h3>
                 {cat.activities.map(act => (
-                  <div key={act} className={styles.listItem} onClick={() => toggleItem('activities', act)}>
-                    <span className={styles.itemLabel}>{act}</span>
+                  <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
+                    <span className={styles.itemLabel}>{act.name}</span>
                     <div className={styles.checkSquare}>
-                      {data.activities[act] && <Check size={14} />}
+                      {data.activities[act.name] && <Check size={14} />}
                     </div>
                   </div>
                 ))}
@@ -170,11 +238,47 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
         </div>
 
         <div className={styles.finishBtn}>
-          <Link href="/" className="pill-btn">
-            Complete Entry <Sparkles size={18} />
-          </Link>
+          <button 
+            onClick={handleComplete} 
+            className="pill-btn" 
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Complete Entry"} <Sparkles size={18} />
+          </button>
         </div>
-      </div>
+        </div>
+      )}
+
+      {showSummary && (
+        <div className={styles.summaryOverlay}>
+          <div className={styles.summaryCard}>
+            <Sparkles size={48} color="#be123c" style={{ marginBottom: '10px' }} />
+            <h2>Daily Summary</h2>
+            <p>You've completed your self-care planner!</p>
+            
+            <div className={styles.summaryScore}>
+              {score} <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>pts</span>
+            </div>
+            
+            <div className={styles.summaryRating} style={{ color }}>
+              {rating}: {message}
+            </div>
+
+            <div className={styles.summaryActions}>
+              <Link href="/" className="pill-btn" style={{ background: color }}>
+                Back to Dashboard
+              </Link>
+              <button 
+                onClick={() => setShowSummary(false)} 
+                className="pill-btn" 
+                style={{ background: 'transparent', color: '#be123c', border: '1px solid #be123c' }}
+              >
+                Oh, I forgot something!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

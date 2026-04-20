@@ -3,8 +3,10 @@
 import styles from "./page.module.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { calculateScore, getPerformanceRating } from "@/utils/scoring";
-import Header from "@/components/Navigation/Header";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@frontend/context/AuthContext";
+import { calculateScore, getPerformanceRating } from "@shared/utils/scoring";
+import Header from "@frontend/components/Navigation/Header";
 import { 
   Sun, 
   Sparkles, 
@@ -27,26 +29,51 @@ const DAYS = [
 ];
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [todayScore, setTodayScore] = useState(0);
   const [todayRating, setTodayRating] = useState({ rating: "Poor", color: "#ccc" });
   const todayDate = new Date().toISOString().split('T')[0];
 
+  const [reviews, setReviews] = useState<{id: string, text: string, date: string}[]>([]);
+
   useEffect(() => {
-    const saved = localStorage.getItem(`diary-${todayDate}`);
-    if (saved) {
-      const data = JSON.parse(saved);
-      const score = calculateScore(data);
-      setTodayScore(score);
-      setTodayRating(getPerformanceRating(score));
+    if (!loading) {
+      if (!user) {
+        router.push("/login");
+      } else if (user.role === "ADMIN") {
+        router.push("/admin");
+      } else if (user.role === "PARENT") {
+        router.push("/parent");
+      } else if (user.role === "CHILD") {
+        const fetchData = async () => {
+          // Fetch reviews
+          const reviewRes = await fetch("/api/reviews");
+          const reviewData = await reviewRes.json();
+          if (reviewData.reviews) setReviews(reviewData.reviews);
+
+          // Fetch today's entry
+          const entryRes = await fetch(`/api/diary?date=${todayDate}`);
+          const entryData = await entryRes.json();
+          if (entryData.entry) {
+            const entry = entryData.entry;
+            setTodayScore(entry.score);
+            setTodayRating(getPerformanceRating(entry.score));
+          }
+        };
+        fetchData();
+      }
     }
-  }, [todayDate]);
+  }, [user, loading, router, todayDate]);
+
+  if (loading || !user || user.role !== "CHILD") return null;
 
   return (
     <div className={styles.container}>
       <Header />
 
       <section className={styles.greetingHeader}>
-        <h1>Hi, <span style={{ color: 'var(--primary)' }}>Hero</span> <Smile size={32} inline style={{ color: 'var(--primary)', verticalAlign: 'middle' }} /></h1>
+        <h1>Hi, <span style={{ color: 'var(--primary)' }}>{user.username}</span> <Smile size={32} style={{ color: 'var(--primary)', verticalAlign: 'middle', display: 'inline' }} /></h1>
         
         {/* Day Selector */}
         <div className={styles.daySelector}>
@@ -71,6 +98,17 @@ export default function Home() {
         </Link>
       </section>
 
+      {/* Parent Reviews Section */}
+      {reviews.length > 0 && (
+        <section className={`${styles.featuredCard} animate-fade-in`} style={{ background: '#fef2f2', border: '2px solid #fecaca', marginTop: '20px' }}>
+          <h4 style={{ color: '#e11d48', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <Heart size={18} fill="#e11d48" /> Message from Parents
+          </h4>
+          <p style={{ fontStyle: 'italic', fontSize: '1.1rem', color: '#475569' }}>"{reviews[reviews.length - 1].text}"</p>
+          <p style={{ textAlign: 'right', fontSize: '0.8rem', color: '#94a3b8', marginTop: '10px' }}>— {reviews[reviews.length - 1].date}</p>
+        </section>
+      )}
+
       {/* Quick Journal Sections */}
       <div className={styles.sectionHeader}>
         <h3>Quick Journal</h3>
@@ -78,17 +116,17 @@ export default function Home() {
       </div>
 
       <section className={styles.quickGrid}>
-        <div className={`${styles.quickCard} ${styles.pinkCard}`}>
-          <h4>Pause & reflect <Leaf size={16} inline /></h4>
-          <p>What are you grateful for today?</p>
+        <Link href="/diary/goals" className={`${styles.quickCard} ${styles.pinkCard}`} style={{ textDecoration: 'none' }}>
+          <h4>My Goals <Target size={16} style={{ display: 'inline' }} /></h4>
+          <p>Check your weekly targets.</p>
           <div className={styles.tagGroup}>
-            <span className={styles.miniTag}>Today</span>
-            <span className={`${styles.miniTag} ${styles.activeTag}`}>Personal</span>
+            <span className={styles.miniTag}>Active</span>
+            <span className={`${styles.miniTag} ${styles.activeTag}`}>Track</span>
           </div>
-        </div>
+        </Link>
 
         <div className={`${styles.quickCard} ${styles.blueCard}`}>
-          <h4>Set Intentions <Sparkles size={16} inline /></h4>
+          <h4>Set Intentions <Sparkles size={16} style={{ display: 'inline' }} /></h4>
           <p>How do you want to feel?</p>
           <div className={styles.tagGroup}>
             <span className={styles.miniTag}>Today</span>

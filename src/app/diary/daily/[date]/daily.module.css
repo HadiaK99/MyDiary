@@ -189,3 +189,54 @@
   .plannerSheet { padding: 20px; }
   .plannerHeader h1 { font-size: 2.2rem; }
 }
+
+.summaryOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 241, 242, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.summaryCard {
+  background: #fffafa;
+  border: 1px solid #ffe4e6;
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(190, 18, 60, 0.1);
+  animation: slideUp 0.4s ease-out;
+}
+
+.summaryScore {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #be123c;
+  margin: 20px 0;
+}
+
+.summaryRating {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.summaryActions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
