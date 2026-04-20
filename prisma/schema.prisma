@@ -1,0 +1,71 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // Hashed
+  role      String   // "CHILD" | "PARENT" | "ADMIN"
+  childId   String?  // For parents to link to a child
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  diaryEntries DiaryEntry[]
+  goals        Goal[]
+  sentReviews  Review[]     @relation("SentReviews")
+  receivedReviews Review[]  @relation("ReceivedReviews")
+}
+
+model DiaryEntry {
+  id        String   @id @default(cuid())
+  date      String   // "YYYY-MM-DD"
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      String   // JSON string of activity completions
+  score     Int
+  rating    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text      String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  childId   String
+  parentId  String
+  child     User     @relation("ReceivedReviews", fields: [childId], references: [id], onDelete: Cascade)
+  parent    User     @relation("SentReviews", fields: [parentId], references: [id], onDelete: Cascade)
+  text      String
+  date      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model ActivityCategory {
+  id            String   @id @default(cuid())
+  name          String
+  pointsPerItem Int
+  activities    Activity[]
+}
+
+model Activity {
+  id         String   @id @default(cuid())
+  name       String
+  categoryId String
+  category   ActivityCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
