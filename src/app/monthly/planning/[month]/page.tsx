@@ -1,4 +1,6 @@
-import Header from "@/components/Navigation/Header";
+import { use } from "react";
+import styles from "./planning.module.css";
+import Header from "@frontend/components/Navigation/Header";
 
 export default function MonthlyPlanning({ params: paramsPromise }: { params: Promise<{ month: string }> }) {
   const params = use(paramsPromise);

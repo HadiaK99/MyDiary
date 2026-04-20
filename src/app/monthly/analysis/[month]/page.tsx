@@ -1,4 +1,6 @@
-import Header from "@/components/Navigation/Header";
+import { use } from "react";
+import styles from "./analysis.module.css";
+import Header from "@frontend/components/Navigation/Header";
 
 const CATEGORIES = ["Ibadah (Prayers)", "Manners/Ethics", "Study", "Health & Cleanliness", "Media / Gadgets"];
 

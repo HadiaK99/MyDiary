@@ -3,7 +3,8 @@
 import { useState } from "react";
 import styles from "./onboarding.module.css";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Navigation/Header";
+import Header from "@frontend/components/Navigation/Header";
+import { Sparkles, Trophy, Calendar, Check, ArrowRight } from "lucide-react";
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
@@ -27,7 +28,7 @@ export default function Onboarding() {
 
         {step === 1 && (
           <div className={styles.stepContent}>
-            <h1>All About Me! 🌈</h1>
+            <h1>All About Me! <Sparkles size={32} inline style={{ color: 'var(--primary)', verticalAlign: 'middle' }} /></h1>
             <p>Let's personalize your diary. Tell us a bit about yourself.</p>
             
             <div className={styles.inputGrid}>
@@ -70,14 +71,14 @@ export default function Onboarding() {
             </div>
 
             <button className="pill-btn" style={{ width: '100%', marginTop: '20px' }} onClick={nextStep}>
-              Next: My Annual Focuses
+              Next: My Annual Focuses <ArrowRight size={18} />
             </button>
           </div>
         )}
 
         {step === 2 && (
           <div className={styles.stepContent}>
-            <h1>Yearly Focuses 🏆</h1>
+            <h1>Yearly Focuses <Trophy size={32} inline style={{ color: '#facc15', verticalAlign: 'middle' }} /></h1>
             <p>What are your big dreams and goals for this year? (Resolutions)</p>
             
             <div className={styles.focusList}>
@@ -91,14 +92,14 @@ export default function Onboarding() {
 
             <div className={styles.buttonGroup}>
               <button className={styles.backBtn} onClick={prevStep}>Back</button>
-              <button className="pill-btn" onClick={nextStep}>Next: Month Planning</button>
+              <button className="pill-btn" onClick={nextStep}>Next: Month Planning <ArrowRight size={18} /></button>
             </div>
           </div>
         )}
 
         {step === 3 && (
           <div className={styles.stepContent}>
-            <h1>First Month Plan 📅</h1>
+            <h1>First Month Plan <Calendar size={32} inline style={{ color: 'var(--primary)', verticalAlign: 'middle' }} /></h1>
             <p>Let's plan your schedule for the first month.</p>
             
             <div className={styles.inputGroup}>
@@ -116,7 +117,7 @@ export default function Onboarding() {
 
             <div className={styles.buttonGroup}>
               <button className={styles.backBtn} onClick={prevStep}>Back</button>
-              <button className="pill-btn" onClick={finish}>Finish & Open My Diary! 🎉</button>
+              <button className="pill-btn" onClick={finish}>Finish & Open My Diary! <Check size={18} /></button>
             </div>
           </div>
         )}
