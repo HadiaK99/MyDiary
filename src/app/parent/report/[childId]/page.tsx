@@ -6,12 +6,13 @@ import styles from "../../parent.module.css";
 import { calculateScore, getPerformanceRating } from "@shared/utils/scoring";
 import { ActivityCategory } from "@shared/constants/activities";
 import { ArrowLeft, Calendar, MessageSquare, Star } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ChildReport({ params: paramsPromise }: { params: Promise<{ childId: string }> }) {
   const params = use(paramsPromise);
   const childId = params.childId;
   const { user } = useAuth();
+  const router = useRouter();
   const [child, setChild] = useState<User | null>(null);
   const [entries, setEntries] = useState<{date: string, score: number, rating: string}[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
@@ -45,7 +46,14 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
     <div>
       <div className={styles.tableTitle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <Link href="/parent" className={styles.actionBtn}><ArrowLeft size={18} /></Link>
+          <button 
+            type="button"
+            onClick={() => router.push("/parent")} 
+            className={styles.actionBtn}
+            style={{ padding: '8px', cursor: 'pointer', border: 'none', background: 'none' }}
+          >
+            <ArrowLeft size={18} />
+          </button>
           <div>
             <h1>{child.username}'s Report</h1>
             <p>Detailed breakdown of daily performance.</p>
@@ -85,7 +93,7 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
                     </div>
                   </td>
                   <td>
-                    <button className={styles.actionBtn}><MessageSquare size={14} /></button>
+                    <button className={styles.actionBtn} type="button"><MessageSquare size={14} /></button>
                   </td>
                 </tr>
               ))}

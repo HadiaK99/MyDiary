@@ -6,7 +6,6 @@ import { type ActivityCategory } from "@shared/constants/activities";
 import { calculateScore, getPerformanceRating, calculateMaxScore, DayData } from "@shared/utils/scoring";
 import { useAuth } from "@frontend/context/AuthContext";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Header from "@frontend/components/Navigation/Header";
 import {
   Check,
@@ -242,6 +241,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
             onClick={handleComplete} 
             className="pill-btn" 
             disabled={saving}
+            type="button"
           >
             {saving ? "Saving..." : "Complete Entry"} <Sparkles size={18} />
           </button>
@@ -265,13 +265,19 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
             </div>
 
             <div className={styles.summaryActions}>
-              <Link href="/" className="pill-btn" style={{ background: color }}>
+              <button 
+                onClick={() => router.push("/")} 
+                className="pill-btn" 
+                style={{ background: color }}
+                type="button"
+              >
                 Back to Dashboard
-              </Link>
+              </button>
               <button 
                 onClick={() => setShowSummary(false)} 
                 className="pill-btn" 
                 style={{ background: 'transparent', color: '#be123c', border: '1px solid #be123c' }}
+                type="button"
               >
                 Oh, I forgot something!
               </button>

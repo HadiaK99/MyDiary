@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "./page.module.css";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@frontend/context/AuthContext";
@@ -93,9 +92,13 @@ export default function Home() {
         <div className={styles.sunIllustration}>
           <Sun size={80} strokeWidth={1.5} />
         </div>
-        <Link href={`/diary/daily/${todayDate}`} className="pill-btn" style={{ marginTop: '20px' }}>
+        <button 
+          onClick={() => router.push(`/diary/daily/${todayDate}`)} 
+          className="pill-btn" 
+          style={{ marginTop: '20px' }}
+        >
           Record My Day <ArrowRight size={18} />
-        </Link>
+        </button>
       </section>
 
       {/* Parent Reviews Section */}
@@ -112,18 +115,21 @@ export default function Home() {
       {/* Quick Journal Sections */}
       <div className={styles.sectionHeader}>
         <h3>Quick Journal</h3>
-        <Link href={`/diary/daily/${todayDate}`} className={styles.seeAll}>See all</Link>
       </div>
 
       <section className={styles.quickGrid}>
-        <Link href="/diary/goals" className={`${styles.quickCard} ${styles.pinkCard}`} style={{ textDecoration: 'none' }}>
+        <button 
+          onClick={() => router.push("/diary/goals")} 
+          className={`${styles.quickCard} ${styles.pinkCard}`} 
+          style={{ textDecoration: 'none', border: 'none', textAlign: 'left', cursor: 'pointer' }}
+        >
           <h4>My Goals <Target size={16} style={{ display: 'inline' }} /></h4>
           <p>Check your weekly targets.</p>
           <div className={styles.tagGroup}>
             <span className={styles.miniTag}>Active</span>
             <span className={`${styles.miniTag} ${styles.activeTag}`}>Track</span>
           </div>
-        </Link>
+        </button>
 
         <div className={`${styles.quickCard} ${styles.blueCard}`}>
           <h4>Set Intentions <Sparkles size={16} style={{ display: 'inline' }} /></h4>
@@ -149,14 +155,22 @@ export default function Home() {
       </section>
       
       <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <Link href="/monthly/analysis/april" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
+        <button 
+          onClick={() => router.push("/monthly/analysis/april")} 
+          className="journal-card" 
+          style={{ padding: '20px', textAlign: 'center', width: '100%', border: '4px solid #fff' }}
+        >
           <BarChart3 size={32} style={{ margin: '0 auto', color: 'var(--primary)' }} />
           <p style={{ fontWeight: 700, marginTop: '10px' }}>Monthly Analysis</p>
-        </Link>
-        <Link href="/yearly/review" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
+        </button>
+        <button 
+          onClick={() => router.push("/yearly/review")} 
+          className="journal-card" 
+          style={{ padding: '20px', textAlign: 'center', width: '100%', border: '4px solid #fff' }}
+        >
           <Trophy size={32} style={{ margin: '0 auto', color: '#facc15' }} />
           <p style={{ fontWeight: 700, marginTop: '10px' }}>Yearly Review</p>
-        </Link>
+        </button>
       </div>
     </div>
   );

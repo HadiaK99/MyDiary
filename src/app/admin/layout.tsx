@@ -4,7 +4,6 @@ import { useAuth } from "@frontend/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import styles from "./admin.module.css";
-import Link from "next/link";
 import { 
   Users, 
   Settings, 
@@ -38,13 +37,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className={styles.nav}>
-          <Link href="/admin"><LayoutDashboard size={20} /> Dashboard</Link>
-          <Link href="/admin/users"><Users size={20} /> Manage Users</Link>
-          <Link href="/admin/tasks"><Settings size={20} /> Daily Tasks</Link>
-          <Link href="/admin/rankings"><Trophy size={20} /> Rankings</Link>
+          <button onClick={() => router.push("/admin")} type="button"><LayoutDashboard size={20} /> Dashboard</button>
+          <button onClick={() => router.push("/admin/users")} type="button"><Users size={20} /> Manage Users</button>
+          <button onClick={() => router.push("/admin/tasks")} type="button"><Settings size={20} /> Daily Tasks</button>
+          <button onClick={() => router.push("/admin/rankings")} type="button"><Trophy size={20} /> Rankings</button>
         </nav>
 
-        <button onClick={logout} className={styles.logoutBtn}>
+        <button onClick={logout} className={styles.logoutBtn} type="button">
           <LogOut size={20} /> Logout
         </button>
       </aside>

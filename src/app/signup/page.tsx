@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth, UserRole, User } from "@frontend/context/AuthContext";
 import styles from "./login.module.css";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Sparkles, Star } from "lucide-react";
 
 export default function SignupPage() {
@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [childId, setChildId] = useState("");
   const [availableChildren, setAvailableChildren] = useState<User[]>([]);
   const { signup } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch children for parents to link
@@ -116,7 +117,11 @@ export default function SignupPage() {
         </form>
 
         <p className={styles.switchAuth}>
-          Already have an account? <Link href="/login">Log In</Link>
+          Already have an account? <button 
+            type="button" 
+            onClick={() => router.push("/login")}
+            style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 'inherit', fontFamily: 'inherit' }}
+          >Log In</button>
         </p>
       </div>
     </div>

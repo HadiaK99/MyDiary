@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useAuth, User } from "@frontend/context/AuthContext";
 import styles from "./parent.module.css";
 import { Heart, Star, Sparkles, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ParentDashboard() {
   const { user } = useAuth();
+  const router = useRouter();
   const [child, setChild] = useState<User | null>(null);
   const [childStats, setChildStats] = useState({
     entries: 0,
@@ -66,9 +67,14 @@ export default function ParentDashboard() {
             <h3>{child.username}</h3>
             <p><Sparkles size={16} inline /> Level 4 Moral Hero</p>
           </div>
-          <Link href={`/parent/report/${child.id}`} className="pill-btn" style={{ marginLeft: 'auto' }}>
+          <button 
+            type="button"
+            onClick={() => router.push(`/parent/report/${child.id}`)} 
+            className="pill-btn" 
+            style={{ marginLeft: 'auto' }}
+          >
             Full Report <ArrowRight size={18} />
-          </Link>
+          </button>
         </div>
 
         <div className={styles.progressGrid}>
@@ -95,9 +101,13 @@ export default function ParentDashboard() {
             </h4>
             <p>"I'm so proud of how consistent you've been with your morning prayers this week. Keep it up, champ!"</p>
           </div>
-          <Link href="/parent/reviews" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
+          <button 
+            type="button"
+            onClick={() => router.push("/parent/reviews")} 
+            style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
             + Add New Review
-          </Link>
+          </button>
         </div>
       </div>
     </div>

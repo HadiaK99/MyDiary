@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import styles from "./Header.module.css";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@frontend/context/AuthContext";
 import { LogOut, Star, User } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const isHome = pathname === "/";
 
@@ -15,9 +15,14 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.left}>
         {!isHome && (
-          <Link href="/" className="back-btn-styled" title="Return to Dashboard">
+          <button 
+            onClick={() => router.push("/")} 
+            className="back-btn-styled" 
+            title="Return to Dashboard"
+            type="button"
+          >
             <i className="back-arrow"></i>
-          </Link>
+          </button>
         )}
       </div>
 
@@ -34,14 +39,19 @@ export default function Header() {
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <User size={14} /> {user.username}
             </span>
-            <button onClick={logout} className={styles.settingsBtn} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }} title="Logout">
+            <button onClick={logout} className={styles.settingsBtn} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444' }} title="Logout" type="button">
               <LogOut size={20} />
             </button>
           </div>
         ) : (
-          <Link href="/login" className={styles.settingsBtn}>
+          <button 
+            onClick={() => router.push("/login")} 
+            className={styles.settingsBtn}
+            style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+            type="button"
+          >
             <User size={20} />
-          </Link>
+          </button>
         )}
       </div>
     </header>

@@ -69,6 +69,10 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.03);
   border: 4px solid #fff;
   transition: transform 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .journal-card:hover {
@@ -118,6 +122,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .pill-btn:active {
