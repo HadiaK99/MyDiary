@@ -31,4 +31,24 @@ export const AuthService = {
       select: { id: true, username: true, role: true, childId: true },
     });
   },
+
+  async updateUser(id: string, data: { username?: string; password?: string }) {
+    const updateData: { username?: string; password?: string } = {};
+    if (data.username) updateData.username = data.username;
+    if (data.password) {
+      updateData.password = await bcrypt.hash(data.password, 10);
+    }
+
+    return prisma.user.update({
+      where: { id },
+      data: updateData,
+      select: { id: true, username: true, role: true, childId: true },
+    });
+  },
+
+  async deleteUser(id: string) {
+    return prisma.user.delete({
+      where: { id },
+    });
+  },
 };

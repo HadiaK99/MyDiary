@@ -18,8 +18,7 @@ export const AdminService = {
     });
   },
 
-  async updateActivities(categories: ActivityCategory[]) {
-    // Sequential approach to avoid SQLite transaction issues with spread
+  async updateActivities(categories: { name: string; pointsPerItem: number; activities: { name: string }[] }[]) {
     await prisma.activity.deleteMany({});
     await prisma.activityCategory.deleteMany({});
     for (const cat of categories) {
@@ -28,8 +27,8 @@ export const AdminService = {
           name: cat.name,
           pointsPerItem: cat.pointsPerItem,
           activities: {
-            create: cat.activities.map((act: any) => ({
-              name: typeof act === "string" ? act : act.name,
+            create: cat.activities.map((act) => ({
+              name: act.name,
             })),
           },
         },

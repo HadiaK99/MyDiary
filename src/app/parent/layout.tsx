@@ -4,7 +4,6 @@ import { useAuth } from "@frontend/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import styles from "./parent.module.css";
-import Link from "next/link";
 import { 
   Heart, 
   BarChart3, 
@@ -34,13 +33,13 @@ export default function ParentLayout({ children }: { children: React.ReactNode }
           <span>Parent Hub</span>
         </div>
         <div className={styles.navLinks}>
-          <Link href="/parent"><Home size={20} /> Home</Link>
-          <Link href="/parent/reports"><BarChart3 size={20} /> Reports</Link>
-          <Link href="/parent/reviews"><MessageSquare size={20} /> My Reviews</Link>
+          <button onClick={() => router.push("/parent")} type="button"><Home size={20} /> Home</button>
+          <button onClick={() => router.push("/parent/reports")} type="button"><BarChart3 size={20} /> Reports</button>
+          <button onClick={() => router.push("/parent/reviews")} type="button"><MessageSquare size={20} /> My Reviews</button>
         </div>
         <div className={styles.userInfo}>
           <span>Hi, {user.username}</span>
-          <button onClick={logout} className="pill-btn" style={{ padding: '8px 15px', fontSize: '0.8rem' }}>
+          <button onClick={logout} className="pill-btn" style={{ padding: '8px 15px', fontSize: '0.8rem' }} type="button">
             <LogOut size={16} />
           </button>
         </div>

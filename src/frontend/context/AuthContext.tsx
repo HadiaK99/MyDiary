@@ -4,9 +4,6 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { User, UserRole } from "@shared/types";
 
-// Re-export for convenience so pages can import from one place
-export type { User, UserRole };
-
 interface AuthContextType {
   user: User | null;
   loading: boolean;

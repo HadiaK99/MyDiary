@@ -6,7 +6,7 @@ export interface ActivityCategory {
 }
 
 export const POINTS = {
-  HABIT: 1, // Standard habit check
+  HABIT: 1,
   GOOD_THING: 10,
   BAD_THING: -15
 };

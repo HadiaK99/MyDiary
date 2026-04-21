@@ -39,6 +39,11 @@
   margin: 0;
 }
 
+::placeholder {
+  color: #94a3b8;
+  opacity: 0.6;
+}
+
 html,
 body {
   max-width: 100vw;
@@ -69,6 +74,10 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.03);
   border: 4px solid #fff;
   transition: transform 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .journal-card:hover {
@@ -118,6 +127,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .pill-btn:active {
@@ -135,4 +147,10 @@ body {
   background: rgba(255,255,255,0.6);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.3);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }

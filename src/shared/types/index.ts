@@ -7,6 +7,13 @@ export interface User {
   childId?: string | null;
 }
 
+export interface SessionPayload {
+  userId: string;
+  username: string;
+  role: UserRole;
+  expires: Date;
+}
+
 export interface DiaryEntry {
   id: string;
   date: string;
@@ -14,6 +21,14 @@ export interface DiaryEntry {
   data: string;
   score: number;
   rating: string;
+}
+
+export interface DiaryEntryData {
+  activities: Record<string, boolean>;
+  water: number;
+  sleep: number;
+  mood: string;
+  notes?: string;
 }
 
 export interface Goal {
@@ -30,4 +45,17 @@ export interface Review {
   text: string;
   date: string;
   read: boolean;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  categoryId: string;
+}
+
+export interface ActivityCategory {
+  id: string;
+  name: string;
+  pointsPerItem: number;
+  activities: Activity[];
 }

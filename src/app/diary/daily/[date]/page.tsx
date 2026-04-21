@@ -6,7 +6,6 @@ import { type ActivityCategory } from "@shared/constants/activities";
 import { calculateScore, getPerformanceRating, calculateMaxScore, DayData } from "@shared/utils/scoring";
 import { useAuth } from "@frontend/context/AuthContext";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Header from "@frontend/components/Navigation/Header";
 import {
   Check,
@@ -16,7 +15,6 @@ import {
   Heart
 } from "lucide-react";
 
-// Split categories helper - we'll do this inside component or keep it reactive
 export default function DailyDiary({ params: paramsPromise }: { params: Promise<{ date: string }> }) {
   const params = use(paramsPromise);
   const date = params.date;
@@ -42,19 +40,19 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
 
   useEffect(() => {
     // Load custom categories from admin settings
-      const fetchCats = async () => {
-        try {
-          const res = await fetch("/api/admin/activities");
-          const data = await res.json();
-          if (data.categories?.length > 0) {
-            setCategories(data.categories);
-          }
-        } finally {
-          setLoading(false);
+    const fetchCats = async () => {
+      try {
+        const res = await fetch("/api/admin/activities");
+        const data = await res.json();
+        if (data.categories?.length > 0) {
+          setCategories(data.categories);
         }
-      };
-      fetchCats();
-    }, []);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCats();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -84,14 +82,14 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
       const res = await fetch("/api/diary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          date, 
-          data, 
-          score, 
-          rating 
+        body: JSON.stringify({
+          date,
+          data,
+          score,
+          rating
         }),
       });
-      
+
       if (res.ok) {
         setShowSummary(true);
       } else {
@@ -136,116 +134,114 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
         </div>
       ) : (
         <div className={styles.plannerSheet}>
-        <div className={styles.plannerHeader}>
-          <div className={styles.subHeader}>
-            <span>Daily</span>
-            <span>Works</span>
-            <span>Today Is</span>
-            <span>{new Date(date).toLocaleDateString()}</span>
+          <div className={styles.plannerHeader}>
+            <div className={styles.subHeader}>
+              <span>{new Date(date).toLocaleDateString()}</span>
+            </div>
+            <h1>Self-care Planner</h1>
           </div>
-          <h1>Self-care Planner</h1>
-        </div>
 
-        <div className={styles.quoteBox}>
-          "Taking care of yourself is productive." <Heart size={16} style={{ display: 'inline', verticalAlign: 'text-bottom' }} fill="#be123c" />
-        </div>
+          <div className={styles.quoteBox}>
+            "Taking care of yourself is productive." <Heart size={16} style={{ display: 'inline', verticalAlign: 'text-bottom' }} fill="#be123c" />
+          </div>
 
-        {/* Two Column Checklists */}
-        <div className={styles.checklistsGrid}>
-          <div className={styles.checklistCol}>
-            {leftCats.map(cat => (
-              <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
-                <h3 className={styles.checkTitle}>{cat.name}</h3>
-                {cat.activities.map(act => (
-                  <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
-                    <span className={styles.itemLabel}>{act.name}</span>
-                    <div className={styles.checkSquare}>
-                      {data.activities[act.name] && <Check size={14} />}
+          {/* Two Column Checklists */}
+          <div className={styles.checklistsGrid}>
+            <div className={styles.checklistCol}>
+              {leftCats.map(cat => (
+                <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
+                  <h3 className={styles.checkTitle}>{cat.name}</h3>
+                  {cat.activities.map(act => (
+                    <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
+                      <span className={styles.itemLabel}>{act.name}</span>
+                      <div className={styles.checkSquare}>
+                        {data.activities[act.name] && <Check size={14} />}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+                  ))}
+                </div>
+              ))}
+            </div>
 
-          <div className={styles.checklistCol}>
-            {rightCats.map(cat => (
-              <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
-                <h3 className={styles.checkTitle}>{cat.name}</h3>
-                {cat.activities.map(act => (
-                  <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
-                    <span className={styles.itemLabel}>{act.name}</span>
-                    <div className={styles.checkSquare}>
-                      {data.activities[act.name] && <Check size={14} />}
+            <div className={styles.checklistCol}>
+              {rightCats.map(cat => (
+                <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
+                  <h3 className={styles.checkTitle}>{cat.name}</h3>
+                  {cat.activities.map(act => (
+                    <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
+                      <span className={styles.itemLabel}>{act.name}</span>
+                      <div className={styles.checkSquare}>
+                        {data.activities[act.name] && <Check size={14} />}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Trackers */}
-        <div className={styles.visualTrackers}>
-          <div className={styles.trackerCard}>
-            <h3>Water Intake: (Glass) 💧</h3>
-            <div className={styles.iconRow}>
-              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                <span
-                  key={i}
-                  className={`${styles.iconItem} ${(data.water || 0) >= i ? styles.iconActive : ''}`}
-                  onClick={() => setLevel('water', i)}
-                >
-                  <GlassWater size={24} />
-                </span>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
 
-          <div className={styles.trackerCard}>
-            <h3>Hours of Sleep: (Hours) 🌙</h3>
-            <div className={styles.iconRow}>
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
-                <span
-                  key={i}
-                  className={`${styles.iconItem} ${(data.sleep || 0) >= i ? styles.iconActive : ''}`}
-                  onClick={() => setLevel('sleep', i)}
-                >
-                  <Moon size={24} fill={(data.sleep || 0) >= i ? "currentColor" : "none"} />
-                </span>
-              ))}
+          {/* Trackers */}
+          <div className={styles.visualTrackers}>
+            <div className={styles.trackerCard}>
+              <h3>Water Intake: (Glass) 💧</h3>
+              <div className={styles.iconRow}>
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                  <span
+                    key={i}
+                    className={`${styles.iconItem} ${(data.water || 0) >= i ? styles.iconActive : ''}`}
+                    onClick={() => setLevel('water', i)}
+                  >
+                    <GlassWater size={24} />
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.trackerCard}>
+              <h3>Hours of Sleep: (Hours) 🌙</h3>
+              <div className={styles.iconRow}>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => (
+                  <span
+                    key={i}
+                    className={`${styles.iconItem} ${(data.sleep || 0) >= i ? styles.iconActive : ''}`}
+                    onClick={() => setLevel('sleep', i)}
+                  >
+                    <Moon size={24} fill={(data.sleep || 0) >= i ? "currentColor" : "none"} />
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Mood Section */}
-        <div className={styles.moodRow}>
-          <span className={styles.moodLabel}>Mood:</span>
-          {['Angry', 'Tired', 'Sad', 'Happy', 'Fun'].map(m => (
+          {/* Mood Section */}
+          <div className={styles.moodRow}>
+            <span className={styles.moodLabel}>Mood:</span>
+            {['Angry', 'Tired', 'Sad', 'Happy', 'Fun'].map(m => (
+              <button
+                key={m}
+                className={`${styles.moodBtn} ${data.mood === m ? styles.activeMood : ''}`}
+                onClick={() => setData(prev => ({ ...prev, mood: m }))}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+
+          {/* Score Reflection (Subtle) */}
+          <div className={styles.longSection} style={{ textAlign: 'center' }}>
+            <p style={{ fontWeight: 700, opacity: 0.6 }}>My Progress Today: <span style={{ color }}>{rating} ({score} pts)</span></p>
+          </div>
+
+          <div className={styles.finishBtn}>
             <button
-              key={m}
-              className={`${styles.moodBtn} ${data.mood === m ? styles.activeMood : ''}`}
-              onClick={() => setData(prev => ({ ...prev, mood: m }))}
+              onClick={handleComplete}
+              className="pill-btn"
+              disabled={saving}
+              type="button"
             >
-              {m}
+              {saving ? "Saving..." : "Complete Entry"} <Sparkles size={18} />
             </button>
-          ))}
-        </div>
-
-        {/* Score Reflection (Subtle) */}
-        <div className={styles.longSection} style={{ textAlign: 'center' }}>
-          <p style={{ fontWeight: 700, opacity: 0.6 }}>My Progress Today: <span style={{ color }}>{rating} ({score} pts)</span></p>
-        </div>
-
-        <div className={styles.finishBtn}>
-          <button 
-            onClick={handleComplete} 
-            className="pill-btn" 
-            disabled={saving}
-          >
-            {saving ? "Saving..." : "Complete Entry"} <Sparkles size={18} />
-          </button>
-        </div>
+          </div>
         </div>
       )}
 
@@ -255,23 +251,29 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
             <Sparkles size={48} color="#be123c" style={{ marginBottom: '10px' }} />
             <h2>Daily Summary</h2>
             <p>You've completed your self-care planner!</p>
-            
+
             <div className={styles.summaryScore}>
               {score} <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>pts</span>
             </div>
-            
+
             <div className={styles.summaryRating} style={{ color }}>
               {rating}: {message}
             </div>
 
             <div className={styles.summaryActions}>
-              <Link href="/" className="pill-btn" style={{ background: color }}>
+              <button
+                onClick={() => router.push("/")}
+                className="pill-btn"
+                style={{ background: color }}
+                type="button"
+              >
                 Back to Dashboard
-              </Link>
-              <button 
-                onClick={() => setShowSummary(false)} 
-                className="pill-btn" 
+              </button>
+              <button
+                onClick={() => setShowSummary(false)}
+                className="pill-btn"
                 style={{ background: 'transparent', color: '#be123c', border: '1px solid #be123c' }}
+                type="button"
               >
                 Oh, I forgot something!
               </button>

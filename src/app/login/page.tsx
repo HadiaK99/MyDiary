@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useAuth, UserRole } from "@frontend/context/AuthContext";
 import styles from "./login.module.css";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Smile, BookOpen } from "lucide-react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +63,11 @@ export default function LoginPage() {
         </form>
 
         <p className={styles.switchAuth}>
-          Don't have an account? <Link href="/signup">Sign Up</Link>
+          Don't have an account? <button 
+            type="button" 
+            onClick={() => router.push("/signup")}
+            style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 'inherit', fontFamily: 'inherit' }}
+          >Sign Up</button>
         </p>
       </div>
     </div>

@@ -6,7 +6,7 @@ export interface DayData {
   badThings: Record<string, boolean>;
 }
 
-export type PerformanceRating = "Excellent" | "Good" | "Fair" | "Poor";
+export type PerformanceRating = "Superstar" | "Doing Great" | "Solid Start" | "Needs Focus" | "Fair" | "None";
 
 export const calculateScore = (data: DayData, categories: ActivityCategory[]) => {
   let totalScore = 0;
@@ -36,13 +36,13 @@ export const calculateMaxScore = (categories: ActivityCategory[]) => {
   return categories.reduce((total, cat) => total + (cat.activities.length * cat.pointsPerItem), 0);
 };
 
-export const getPerformanceRating = (score: number, maxScore: number): { rating: PerformanceRating, color: string, message: string } => {
-  if (maxScore === 0) return { rating: "Fair", color: "#f59e0b", message: "Let's start your journey!" };
+export const getPerformanceRating = (score: number, maxScore?: number): { rating: PerformanceRating, color: string, message: string } => {
+  if (!maxScore || maxScore === 0) return { rating: "Fair", color: "#f59e0b", message: "Let's start your journey! ✨" };
   
   const percentage = (score / maxScore) * 100;
   
-  if (percentage >= 80) return { rating: "Excellent", color: "#10b981", message: "Amazing! You're a Superstar! 🌟" };
-  if (percentage >= 60) return { rating: "Good", color: "#6366f1", message: "Great job! Keep it up! ✨" };
-  if (percentage >= 30) return { rating: "Fair", color: "#f59e0b", message: "Doing good! Aim a bit higher tomorrow! 💪" };
-  return { rating: "Poor", color: "#ef4444", message: "Remember, self-care is a journey. Let's try harder! ❤️" };
+  if (percentage >= 85) return { rating: "Superstar", color: "#8b5cf6", message: "Incredible! You're a Superstar! 🌟" };
+  if (percentage >= 65) return { rating: "Doing Great", color: "#10b981", message: "Amazing work! You're doing great! ✨" };
+  if (percentage >= 40) return { rating: "Solid Start", color: "#6366f1", message: "Good progress! Keep building your habits! 💪" };
+  return { rating: "Needs Focus", color: "#f97316", message: "Every day is a new chance to grow. Let's aim higher! ❤️" };
 };

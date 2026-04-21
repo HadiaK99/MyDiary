@@ -20,6 +20,36 @@ model User {
   goals        Goal[]
   sentReviews  Review[]     @relation("SentReviews")
   receivedReviews Review[]  @relation("ReceivedReviews")
+  profile      Profile?
+}
+
+model Profile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Personal Info
+  realName       String?
+  fathersName    String?
+  mothersName    String?
+  dob            String?
+  school         String?
+  bloodGroup     String?
+  zodiacSign     String?
+  address        String?
+  
+  // Favorites
+  favColor       String?
+  favColorCode   String?
+  favFood        String?
+  favPlace       String?
+  favBook        String?
+  hobbies     String?
+  personalGoals  String?
+  
+  picture        String?  // Base64 or URL
+  
+  updatedAt      DateTime @updatedAt
 }
 
 model DiaryEntry {

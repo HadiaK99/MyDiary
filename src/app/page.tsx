@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "./page.module.css";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@frontend/context/AuthContext";
@@ -15,7 +14,9 @@ import {
   BarChart3, 
   Trophy, 
   ArrowRight,
-  Target
+  Target,
+  Calendar,
+  Heart
 } from "lucide-react";
 
 const DAYS = [
@@ -31,11 +32,26 @@ const DAYS = [
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(todayStr);
   const [todayScore, setTodayScore] = useState(0);
-  const [todayRating, setTodayRating] = useState({ rating: "Poor", color: "#ccc" });
-  const todayDate = new Date().toISOString().split('T')[0];
-
+  const [todayRating, setTodayRating] = useState({ rating: "None", color: "#ccc" });
   const [reviews, setReviews] = useState<{id: string, text: string, date: string}[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  // Generate last 7 days
+  const days = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    const dateStr = d.toISOString().split('T')[0];
+    return {
+      short: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      dateNum: d.getDate(),
+      fullDate: dateStr,
+      active: dateStr === selectedDate
+    };
+  });
 
   useEffect(() => {
     if (!loading) {
@@ -47,26 +63,41 @@ export default function Home() {
         router.push("/parent");
       } else if (user.role === "CHILD") {
         const fetchData = async () => {
+          // Fetch categories first to calculate max score
+          const catRes = await fetch("/api/admin/activities");
+          const catData = await catRes.json();
+          const cats = catData.categories || [];
+          setCategories(cats);
+          
+          let maxSc = 0;
+          cats.forEach((cat: any) => {
+            maxSc += (cat.activities.length * cat.pointsPerItem);
+          });
+
           // Fetch reviews
           const reviewRes = await fetch("/api/reviews");
           const reviewData = await reviewRes.json();
           if (reviewData.reviews) setReviews(reviewData.reviews);
 
-          // Fetch today's entry
-          const entryRes = await fetch(`/api/diary?date=${todayDate}`);
+          // Fetch entry for selected date
+          const entryRes = await fetch(`/api/diary?date=${selectedDate}`);
           const entryData = await entryRes.json();
           if (entryData.entry) {
-            const entry = entryData.entry;
-            setTodayScore(entry.score);
-            setTodayRating(getPerformanceRating(entry.score));
+            setTodayScore(entryData.entry.score);
+            setTodayRating(getPerformanceRating(entryData.entry.score, maxSc));
+          } else {
+            setTodayScore(0);
+            setTodayRating({ rating: "None", color: "#ccc" });
           }
         };
         fetchData();
       }
     }
-  }, [user, loading, router, todayDate]);
+  }, [user, loading, router, selectedDate]);
 
   if (loading || !user || user.role !== "CHILD") return null;
+
+  const isToday = selectedDate === todayStr;
 
   return (
     <div className={styles.container}>
@@ -77,25 +108,41 @@ export default function Home() {
         
         {/* Day Selector */}
         <div className={styles.daySelector}>
-          {DAYS.map(day => (
-            <div key={day.short} className={`${styles.dayBtn} ${day.active ? styles.dayBtnActive : ''}`}>
+          {days.map(day => (
+            <button 
+              key={day.fullDate} 
+              onClick={() => setSelectedDate(day.fullDate)}
+              className={`${styles.dayBtn} ${day.active ? styles.dayBtnActive : ''}`}
+              style={{ border: 'none', cursor: 'pointer' }}
+            >
               <span>{day.short}</span>
-              <span>{day.date}</span>
-            </div>
+              <span>{day.dateNum}</span>
+            </button>
           ))}
         </div>
       </section>
 
       {/* Hero / Featured Card */}
       <section className={`${styles.featuredCard} animate-fade-in`}>
-        <h2>Let's start your day</h2>
-        <p>Begin with a mindful morning reflection.</p>
+        <h2>{isToday ? "Let's start your day" : `Journal for ${selectedDate}`}</h2>
+        <p>{isToday ? "Begin with a mindful morning reflection." : "Look back and reflect on how you did."}</p>
         <div className={styles.sunIllustration}>
-          <Sun size={80} strokeWidth={1.5} />
+          {todayScore > 0 ? (
+             <div style={{ color: todayRating.color, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ fontSize: '3rem', fontWeight: 800 }}>{todayScore}</span>
+                <span style={{ fontSize: '1rem', fontWeight: 600 }}>{todayRating.rating}</span>
+             </div>
+          ) : (
+            <Sun size={80} strokeWidth={1.5} />
+          )}
         </div>
-        <Link href={`/diary/daily/${todayDate}`} className="pill-btn" style={{ marginTop: '20px' }}>
-          Record My Day <ArrowRight size={18} />
-        </Link>
+        <button 
+          onClick={() => router.push(`/diary/daily/${selectedDate}`)} 
+          className="pill-btn" 
+          style={{ marginTop: '20px' }}
+        >
+          {isToday ? "Record My Day" : "Record Previous Day"} <ArrowRight size={18} />
+        </button>
       </section>
 
       {/* Parent Reviews Section */}
@@ -111,36 +158,35 @@ export default function Home() {
 
       {/* Quick Journal Sections */}
       <div className={styles.sectionHeader}>
-        <h3>Quick Journal</h3>
-        <Link href={`/diary/daily/${todayDate}`} className={styles.seeAll}>See all</Link>
+        <h3>Strategic Planning</h3>
       </div>
 
       <section className={styles.quickGrid}>
-        <Link href="/diary/goals" className={`${styles.quickCard} ${styles.pinkCard}`} style={{ textDecoration: 'none' }}>
-          <h4>My Goals <Target size={16} style={{ display: 'inline' }} /></h4>
-          <p>Check your weekly targets.</p>
+        <button 
+          onClick={() => router.push(`/monthly/planning/${new Date().toLocaleString('en-US', { month: 'long' }).toLowerCase()}`)} 
+          className={`${styles.quickCard} ${styles.blueCard}`} 
+          style={{ textDecoration: 'none', border: 'none', textAlign: 'left', cursor: 'pointer' }}
+        >
+          <h4>Monthly Plan <Calendar size={16} style={{ display: 'inline' }} /></h4>
+          <p>Set your intentions for the month ahead.</p>
+          <div className={styles.tagGroup}>
+            <span className={styles.miniTag}>New</span>
+            <span className={`${styles.miniTag} ${styles.activeTag}`}>Draft</span>
+          </div>
+        </button>
+
+        <button 
+          onClick={() => router.push("/diary/goals")} 
+          className={`${styles.quickCard} ${styles.pinkCard}`} 
+          style={{ textDecoration: 'none', border: 'none', textAlign: 'left', cursor: 'pointer' }}
+        >
+          <h4>Personal Growth <Target size={16} style={{ display: 'inline' }} /></h4>
+          <p>Track your weekly goals and progress.</p>
           <div className={styles.tagGroup}>
             <span className={styles.miniTag}>Active</span>
-            <span className={`${styles.miniTag} ${styles.activeTag}`}>Track</span>
+            <span className={styles.miniTag}>Focus</span>
           </div>
-        </Link>
-
-        <div className={`${styles.quickCard} ${styles.blueCard}`}>
-          <h4>Set Intentions <Sparkles size={16} style={{ display: 'inline' }} /></h4>
-          <p>How do you want to feel?</p>
-          <div className={styles.tagGroup}>
-            <span className={styles.miniTag}>Today</span>
-            <span className={styles.miniTag}>Family</span>
-          </div>
-        </div>
-
-        <div className={`${styles.quickCard} ${styles.greenCard}`}>
-          <h4>Emotions Tracker</h4>
-          <p>Logged: Happy & Calm</p>
-          <div className={styles.tagGroup}>
-            <div className="score-badge bg-excellent" style={{ fontSize: '0.6rem' }}>EXCELLENT</div>
-          </div>
-        </div>
+        </button>
       </section>
 
       {/* Secondary Actions */}
@@ -148,15 +194,31 @@ export default function Home() {
         <h3>Milestones</h3>
       </section>
       
-      <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <Link href="/monthly/analysis/april" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
+      <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+        <button 
+          onClick={() => router.push("/yearly/planning")} 
+          className="journal-card" 
+          style={{ padding: '20px', textAlign: 'center', width: '100%', border: '4px solid #fff' }}
+        >
+          <Calendar size={32} style={{ margin: '0 auto', color: '#10b981' }} />
+          <p style={{ fontWeight: 700, marginTop: '10px' }}>Yearly Plan</p>
+        </button>
+        <button 
+          onClick={() => router.push("/monthly/analysis/april")} 
+          className="journal-card" 
+          style={{ padding: '20px', textAlign: 'center', width: '100%', border: '4px solid #fff' }}
+        >
           <BarChart3 size={32} style={{ margin: '0 auto', color: 'var(--primary)' }} />
           <p style={{ fontWeight: 700, marginTop: '10px' }}>Monthly Analysis</p>
-        </Link>
-        <Link href="/yearly/review" className="journal-card" style={{ padding: '20px', textAlign: 'center' }}>
+        </button>
+        <button 
+          onClick={() => router.push("/yearly/review")} 
+          className="journal-card" 
+          style={{ padding: '20px', textAlign: 'center', width: '100%', border: '4px solid #fff' }}
+        >
           <Trophy size={32} style={{ margin: '0 auto', color: '#facc15' }} />
           <p style={{ fontWeight: 700, marginTop: '10px' }}>Yearly Review</p>
-        </Link>
+        </button>
       </div>
     </div>
   );
