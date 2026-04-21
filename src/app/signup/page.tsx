@@ -16,7 +16,6 @@ export default function SignupPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch children for parents to link
     const fetchChildren = async () => {
       const res = await fetch("/api/children");
       const data = await res.json();
@@ -91,8 +90,8 @@ export default function SignupPage() {
           {role === "PARENT" && (
             <div className={styles.inputGroup}>
               <label htmlFor="child">Link his/her Child</label>
-              <select 
-                id="child" 
+              <select
+                id="child"
                 className={styles.inputField}
                 value={childId}
                 onChange={(e) => setChildId(e.target.value)}
@@ -117,8 +116,8 @@ export default function SignupPage() {
         </form>
 
         <p className={styles.switchAuth}>
-          Already have an account? <button 
-            type="button" 
+          Already have an account? <button
+            type="button"
             onClick={() => router.push("/login")}
             style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 'inherit', fontFamily: 'inherit' }}
           >Log In</button>

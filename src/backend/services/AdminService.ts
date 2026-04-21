@@ -19,7 +19,6 @@ export const AdminService = {
   },
 
   async updateActivities(categories: { name: string; pointsPerItem: number; activities: { name: string }[] }[]) {
-    // Sequential approach to avoid SQLite transaction issues with spread
     await prisma.activity.deleteMany({});
     await prisma.activityCategory.deleteMany({});
     for (const cat of categories) {

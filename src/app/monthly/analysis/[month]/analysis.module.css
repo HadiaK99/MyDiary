@@ -177,3 +177,61 @@
   .summaryFooter { flex-direction: column; gap: 20px; }
   .insightBox { max-width: 100%; }
 }
+
+@media print {
+  @page {
+    margin: 10mm;
+    size: auto;
+  }
+
+  body {
+    background: white !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .container {
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .analysisCard {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    background: transparent;
+  }
+
+  .heroSection {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  .markSheet {
+    gap: 10px;
+  }
+
+  .sheetRow {
+    padding: 10px;
+    background: #f8fafc !important; /* Force background for print */
+  }
+
+  .progressBarWrapper {
+    border: 1px solid #e2e8f0;
+  }
+
+  .insightBox {
+    display: none !important;
+  }
+
+  .summaryFooter {
+    justify-content: center;
+  }
+
+  /* Force background colors to print */
+  .progressBar, .overallBadge, .pill-btn, .sheetRow {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+}

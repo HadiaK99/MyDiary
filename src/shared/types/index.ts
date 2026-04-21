@@ -18,7 +18,7 @@ export interface DiaryEntry {
   id: string;
   date: string;
   userId: string;
-  data: string; // JSON string
+  data: string;
   score: number;
   rating: string;
 }

@@ -28,9 +28,8 @@ export default function AdminTasks() {
 
   const resetTasks = async () => {
     if (confirm("Reset to default activities? This will restart the activities from a clean state.")) {
-       // We can trigger a re-seed or similar on the backend
-       // For now, I'll just alert that this should be done via seeding
-       alert("Default activities are managed via the database seeding process.");
+      // We can trigger a re-seed or similar on the backend
+      alert("Default activities are managed via the database seeding process.");
     }
   };
 
@@ -73,19 +72,19 @@ export default function AdminTasks() {
         {categories.map((cat, catIndex) => (
           <div key={catIndex} className={styles.tableContainer} style={{ marginTop: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
-              <input 
-                value={cat.name} 
+              <input
+                value={cat.name}
                 onChange={(e) => updateCategoryName(catIndex, e.target.value)}
                 style={{ fontSize: '1.2rem', fontWeight: 800, border: 'none', background: 'transparent', width: '100%' }}
               />
               <span className={styles.badgeChild}>{cat.pointsPerItem} pts/item</span>
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {cat.activities.map((act, actIndex) => (
                 <div key={actIndex} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input 
-                    className={styles.actionBtn} 
+                  <input
+                    className={styles.actionBtn}
                     style={{ flexGrow: 1, textAlign: 'left', background: '#f8fafc' }}
                     value={act}
                     onChange={(e) => {
@@ -99,8 +98,8 @@ export default function AdminTasks() {
                   </button>
                 </div>
               ))}
-              <button 
-                className={styles.actionBtn} 
+              <button
+                className={styles.actionBtn}
                 style={{ borderStyle: 'dashed', marginTop: '10px' }}
                 onClick={() => addActivity(catIndex)}
               >

@@ -14,27 +14,24 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
   const { user } = useAuth();
   const router = useRouter();
   const [child, setChild] = useState<User | null>(null);
-  const [entries, setEntries] = useState<{date: string, score: number, rating: string}[]>([]);
+  const [entries, setEntries] = useState<{ date: string, score: number, rating: string }[]>([]);
   const [categories, setCategories] = useState<ActivityCategory[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Load child info
       const userRes = await fetch("/api/admin/users");
       const userData = await userRes.json();
       const found = userData.users?.find((u: User) => u.id === childId);
       if (found) setChild(found);
 
-      // Load categories for correct scoring
       const catRes = await fetch("/api/admin/activities");
       const catData = await catRes.json();
       if (catData.categories) setCategories(catData.categories);
 
-      // Fetch entries for this child
       const diaryRes = await fetch(`/api/diary?userId=${childId}`);
       const diaryData = await diaryRes.json();
       if (diaryData.entries) {
-        const sortedEntries = (diaryData.entries as {date: string, score: number, rating: string}[]).sort((a, b) => b.date.localeCompare(a.date));
+        const sortedEntries = (diaryData.entries as { date: string, score: number, rating: string }[]).sort((a, b) => b.date.localeCompare(a.date));
         setEntries(sortedEntries);
       }
     };
@@ -47,9 +44,9 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
     <div>
       <div className={styles.tableTitle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <button 
+          <button
             type="button"
-            onClick={() => router.push("/parent")} 
+            onClick={() => router.push("/parent")}
             className={styles.actionBtn}
             style={{ padding: '8px', cursor: 'pointer', border: 'none', background: 'none' }}
           >
@@ -81,16 +78,15 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
                   <td style={{ fontWeight: 700 }}><Calendar size={14} inline /> {entry.date}</td>
                   <td style={{ color: 'var(--primary)', fontWeight: 800 }}>{entry.score} pts</td>
                   <td>
-                    <span className={`${styles.badge} ${
-                        entry.rating === 'Excellent' ? styles.badgeChild : 
+                    <span className={`${styles.badge} ${entry.rating === 'Excellent' ? styles.badgeChild :
                         entry.rating === 'Good' ? styles.badgeParent : styles.badgeAdmin
-                    }`}>
-                        {entry.rating}
+                      }`}>
+                      {entry.rating}
                     </span>
                   </td>
                   <td>
                     <div style={{ height: '8px', background: '#f1f5f9', borderRadius: '4px', width: '100px' }}>
-                        <div style={{ height: '100%', background: 'var(--primary)', borderRadius: '4px', width: `${Math.min(entry.score, 100)}%` }}></div>
+                      <div style={{ height: '100%', background: 'var(--primary)', borderRadius: '4px', width: `${Math.min(entry.score, 100)}%` }}></div>
                     </div>
                   </td>
                   <td>
@@ -107,18 +103,18 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
           <h3>Summary</h3>
           <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div className={styles.progressStat} style={{ textAlign: 'left' }}>
-                <h5>Average Performance</h5>
-                <p>Great (42 pts)</p>
+              <h5>Average Performance</h5>
+              <p>Great (42 pts)</p>
             </div>
             <div className={styles.progressStat} style={{ textAlign: 'left' }}>
-                <h5>Best Activity</h5>
-                <p>Spirituality (95%)</p>
+              <h5>Best Activity</h5>
+              <p>Spirituality (95%)</p>
             </div>
             <div className={styles.progressStat} style={{ textAlign: 'left' }}>
-                <h5>Growth Mindset</h5>
-                <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-                    {[1, 2, 3, 4, 5].map(s => <Star key={s} size={16} fill="#fb8500" color="#fb8500" />)}
-                </div>
+              <h5>Growth Mindset</h5>
+              <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+                {[1, 2, 3, 4, 5].map(s => <Star key={s} size={16} fill="#fb8500" color="#fb8500" />)}
+              </div>
             </div>
           </div>
         </div>

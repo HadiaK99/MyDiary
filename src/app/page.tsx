@@ -30,11 +30,25 @@ const DAYS = [
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(todayStr);
   const [todayScore, setTodayScore] = useState(0);
   const [todayRating, setTodayRating] = useState({ rating: "Poor", color: "#ccc" });
-  const todayDate = new Date().toISOString().split('T')[0];
-
   const [reviews, setReviews] = useState<{id: string, text: string, date: string}[]>([]);
+
+  // Generate last 7 days
+  const days = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    const dateStr = d.toISOString().split('T')[0];
+    return {
+      short: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      dateNum: d.getDate(),
+      fullDate: dateStr,
+      active: dateStr === selectedDate
+    };
+  });
 
   useEffect(() => {
     if (!loading) {
@@ -51,21 +65,25 @@ export default function Home() {
           const reviewData = await reviewRes.json();
           if (reviewData.reviews) setReviews(reviewData.reviews);
 
-          // Fetch today's entry
-          const entryRes = await fetch(`/api/diary?date=${todayDate}`);
+          // Fetch entry for selected date
+          const entryRes = await fetch(`/api/diary?date=${selectedDate}`);
           const entryData = await entryRes.json();
           if (entryData.entry) {
-            const entry = entryData.entry;
-            setTodayScore(entry.score);
-            setTodayRating(getPerformanceRating(entry.score));
+            setTodayScore(entryData.entry.score);
+            setTodayRating(getPerformanceRating(entryData.entry.score));
+          } else {
+            setTodayScore(0);
+            setTodayRating({ rating: "None", color: "#ccc" });
           }
         };
         fetchData();
       }
     }
-  }, [user, loading, router, todayDate]);
+  }, [user, loading, router, selectedDate]);
 
   if (loading || !user || user.role !== "CHILD") return null;
+
+  const isToday = selectedDate === todayStr;
 
   return (
     <div className={styles.container}>
@@ -76,28 +94,40 @@ export default function Home() {
         
         {/* Day Selector */}
         <div className={styles.daySelector}>
-          {DAYS.map(day => (
-            <div key={day.short} className={`${styles.dayBtn} ${day.active ? styles.dayBtnActive : ''}`}>
+          {days.map(day => (
+            <button 
+              key={day.fullDate} 
+              onClick={() => setSelectedDate(day.fullDate)}
+              className={`${styles.dayBtn} ${day.active ? styles.dayBtnActive : ''}`}
+              style={{ border: 'none', cursor: 'pointer' }}
+            >
               <span>{day.short}</span>
-              <span>{day.date}</span>
-            </div>
+              <span>{day.dateNum}</span>
+            </button>
           ))}
         </div>
       </section>
 
       {/* Hero / Featured Card */}
       <section className={`${styles.featuredCard} animate-fade-in`}>
-        <h2>Let's start your day</h2>
-        <p>Begin with a mindful morning reflection.</p>
+        <h2>{isToday ? "Let's start your day" : `Journal for ${selectedDate}`}</h2>
+        <p>{isToday ? "Begin with a mindful morning reflection." : "Look back and reflect on how you did."}</p>
         <div className={styles.sunIllustration}>
-          <Sun size={80} strokeWidth={1.5} />
+          {todayScore > 0 ? (
+             <div style={{ color: todayRating.color, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ fontSize: '3rem', fontWeight: 800 }}>{todayScore}</span>
+                <span style={{ fontSize: '1rem', fontWeight: 600 }}>{todayRating.rating}</span>
+             </div>
+          ) : (
+            <Sun size={80} strokeWidth={1.5} />
+          )}
         </div>
         <button 
-          onClick={() => router.push(`/diary/daily/${todayDate}`)} 
+          onClick={() => router.push(`/diary/daily/${selectedDate}`)} 
           className="pill-btn" 
           style={{ marginTop: '20px' }}
         >
-          Record My Day <ArrowRight size={18} />
+          {isToday ? "Record My Day" : "Record Previous Day"} <ArrowRight size={18} />
         </button>
       </section>
 

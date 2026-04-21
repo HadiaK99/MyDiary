@@ -45,4 +45,10 @@ export const AuthService = {
       select: { id: true, username: true, role: true, childId: true },
     });
   },
+
+  async deleteUser(id: string) {
+    return prisma.user.delete({
+      where: { id },
+    });
+  },
 };

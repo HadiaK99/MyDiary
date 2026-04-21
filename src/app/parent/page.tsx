@@ -19,7 +19,6 @@ export default function ParentDashboard() {
   useEffect(() => {
     if (user?.childId) {
       const fetchData = async () => {
-        // Fetch child profile
         const userRes = await fetch("/api/admin/users");
         const userData = await userRes.json();
         const foundChild = (userData.users as User[])?.find((u) => u.id === user.childId);
@@ -68,10 +67,10 @@ export default function ParentDashboard() {
             <h3>{child.username}</h3>
             <p><Sparkles size={16} inline /> Level 4 Moral Hero</p>
           </div>
-          <button 
+          <button
             type="button"
-            onClick={() => router.push(`/parent/report/${child.id}`)} 
-            className="pill-btn" 
+            onClick={() => router.push(`/parent/report/${child.id}`)}
+            className="pill-btn"
             style={{ marginLeft: 'auto' }}
           >
             Full Report <ArrowRight size={18} />
@@ -102,9 +101,9 @@ export default function ParentDashboard() {
             </h4>
             <p>"I'm so proud of how consistent you've been with your morning prayers this week. Keep it up, champ!"</p>
           </div>
-          <button 
+          <button
             type="button"
-            onClick={() => router.push("/parent/reviews")} 
+            onClick={() => router.push("/parent/reviews")}
             style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
             + Add New Review

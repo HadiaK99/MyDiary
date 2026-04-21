@@ -45,16 +45,16 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Fetch categories to know what to track
+        // Fetch categories to know what to track
         const catRes = await fetch("/api/admin/activities");
         const catData = await catRes.json();
         const categories: ActivityCategory[] = catData.categories || [];
 
-        // 2. Fetch all entries
+        // Fetch all entries
         const entriesRes = await fetch("/api/diary");
         const entriesData = await entriesRes.json();
         const entries = entriesData.entries as DiaryEntry[];
-        
+
         const monthIndex = new Date(`${month} 1, 2026`).getMonth();
         const filteredEntries = (entries || []).filter((e) => {
           const entryDate = new Date(e.date);
@@ -67,7 +67,7 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
           return;
         }
 
-        // 3. Aggregate data
+        // Aggregate data
         const catStats: CategoryStat[] = categories.map(cat => {
           let totalItemsChecked = 0;
           let totalPossibleItems = 0;
@@ -75,7 +75,7 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
           filteredEntries.forEach((entry) => {
             const entryData = JSON.parse(entry.data) as DiaryEntryData;
             const entryActivities = entryData.activities || {};
-            
+
             cat.activities.forEach(act => {
               totalPossibleItems++;
               if (entryActivities[act.name]) {
@@ -84,13 +84,15 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
             });
           });
 
-          const percentage = totalPossibleItems > 0 ? Math.round((totalItemsChecked / totalPossibleItems) * 100) : 0;
+          const percentage = totalPossibleItems > 0 ? Math.floor((totalItemsChecked / totalPossibleItems) * 100) : 0;
+          const finalPercent = (totalItemsChecked === totalPossibleItems && totalPossibleItems > 0) ? 100 : percentage;
+
           return {
             name: cat.name,
-            percentage,
-            emoji: getEmoji(percentage),
-            color: getColor(percentage),
-            status: getStatusText(percentage)
+            percentage: finalPercent,
+            emoji: getEmoji(finalPercent),
+            color: getColor(finalPercent),
+            status: getStatusText(finalPercent)
           };
         });
 
@@ -134,17 +136,17 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
               <span style={{ textAlign: 'center' }}>Progress</span>
               <span style={{ textAlign: 'right' }}>Ranking</span>
             </div>
-            
+
             {stats.map(stat => (
               <div key={stat.name} className={styles.sheetRow}>
                 <div className={styles.catName}>
                   <strong>{stat.name}</strong>
                 </div>
-                
+
                 <div className={styles.progressCol}>
                   <div className={styles.progressBarWrapper}>
-                    <div 
-                      className={styles.progressBar} 
+                    <div
+                      className={styles.progressBar}
                       style={{ width: `${stat.percentage}%`, background: stat.color }}
                     ></div>
                   </div>
@@ -170,8 +172,8 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
             <Heart size={20} fill="#ef4444" color="#ef4444" />
             <span>Reflect on your growth. Every small step counts towards a better version of you!</span>
           </div>
-          <button className="pill-btn" onClick={() => window.print()}>
-             Print My Mark Sheet
+          <button className="pill-btn no-print" onClick={() => window.print()}>
+            Print My Mark Sheet
           </button>
         </div>
       </section>

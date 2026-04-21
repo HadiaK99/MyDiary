@@ -23,13 +23,11 @@ export default function ParentReviews() {
   useEffect(() => {
     const fetchData = async () => {
       if (user?.childId) {
-        // Fetch child profile
         const userRes = await fetch("/api/admin/users");
         const userData = await userRes.json();
         const found = userData.users?.find((u: User) => u.id === user.childId);
         if (found) setChild(found);
 
-        // Fetch reviews for this child
         const reviewRes = await fetch(`/api/reviews?childId=${user.childId}`);
         const reviewData = await reviewRes.json();
         if (reviewData.reviews) setReviews(reviewData.reviews);
@@ -86,15 +84,15 @@ export default function ParentReviews() {
       <div className={styles.tableContainer}>
         <h3>New Review</h3>
         <div style={{ marginTop: '15px' }}>
-          <textarea 
-            className={styles.actionBtn} 
+          <textarea
+            className={styles.actionBtn}
             style={{ width: '100%', height: '120px', textAlign: 'left', padding: '15px', background: '#f8fafc' }}
             placeholder={`Tell ${child.username} how proud you are today...`}
             value={newReview}
             onChange={(e) => setNewReview(e.target.value)}
           ></textarea>
-          <button 
-            className={styles.submitBtn} 
+          <button
+            className={styles.submitBtn}
             style={{ width: 'auto', padding: '10px 30px', marginTop: '15px', marginLeft: 'auto', display: 'flex', gap: '8px' }}
             onClick={addReview}
           >
@@ -106,7 +104,7 @@ export default function ParentReviews() {
       <div className={styles.reviewSection} style={{ marginTop: '40px' }}>
         <h3>Past Reviews</h3>
         <div style={{ marginTop: '20px' }}>
-          {reviews.sort((a,b) => b.id.localeCompare(a.id)).map(review => (
+          {reviews.sort((a, b) => b.id.localeCompare(a.id)).map(review => (
             <div key={review.id} className={styles.reviewCard}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
