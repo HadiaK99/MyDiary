@@ -22,24 +22,24 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
   const [overallScore, setOverallScore] = useState(0);
 
   const getEmoji = (percent: number) => {
-    if (percent >= 90) return "🌟";
-    if (percent >= 70) return "🙂";
-    if (percent >= 40) return "⚠️";
-    return "🚨";
+    if (percent >= 85) return "🌟";
+    if (percent >= 65) return "✨";
+    if (percent >= 40) return "💪";
+    return "❤️";
   };
 
   const getColor = (percent: number) => {
-    if (percent >= 90) return "#10b981";
-    if (percent >= 70) return "#6366f1";
-    if (percent >= 40) return "#f59e0b";
-    return "#ef4444";
+    if (percent >= 85) return "#8b5cf6"; // Superstar (Purple)
+    if (percent >= 65) return "#10b981"; // Doing Great (Green)
+    if (percent >= 40) return "#6366f1"; // Solid Start (Blue)
+    return "#f97316"; // Needs Focus (Orange)
   };
 
   const getStatusText = (percent: number) => {
-    if (percent >= 90) return "Well Done!";
-    if (percent >= 70) return "Doing Fine";
-    if (percent >= 40) return "Needs Improvement";
-    return "Urgent Focus Required";
+    if (percent >= 85) return "Superstar!";
+    if (percent >= 65) return "Doing Great!";
+    if (percent >= 40) return "Solid Progress";
+    return "Needs Focus";
   };
 
   useEffect(() => {
@@ -73,18 +73,24 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
           let totalPossibleItems = 0;
 
           filteredEntries.forEach((entry) => {
-            const entryData = JSON.parse(entry.data) as DiaryEntryData;
+            const entryData = JSON.parse(entry.data) as any;
             const entryActivities = entryData.activities || {};
+            
+            // Normalize keys to avoid space-related mismatches
+            const normalizedActivities: Record<string, boolean> = {};
+            Object.keys(entryActivities).forEach(k => {
+              normalizedActivities[k.trim()] = entryActivities[k];
+            });
 
-            cat.activities.forEach(act => {
+            cat.activities.forEach((act: any) => {
               totalPossibleItems++;
-              if (entryActivities[act.name]) {
+              if (normalizedActivities[act.name.trim()]) {
                 totalItemsChecked++;
               }
             });
           });
 
-          const percentage = totalPossibleItems > 0 ? Math.floor((totalItemsChecked / totalPossibleItems) * 100) : 0;
+          const percentage = totalPossibleItems > 0 ? Math.round((totalItemsChecked / totalPossibleItems) * 100) : 0;
           const finalPercent = (totalItemsChecked === totalPossibleItems && totalPossibleItems > 0) ? 100 : percentage;
 
           return {

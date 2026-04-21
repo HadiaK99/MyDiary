@@ -14,7 +14,9 @@ import {
   BarChart3, 
   Trophy, 
   ArrowRight,
-  Target
+  Target,
+  Calendar,
+  Heart
 } from "lucide-react";
 
 const DAYS = [
@@ -34,8 +36,9 @@ export default function Home() {
   const todayStr = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayStr);
   const [todayScore, setTodayScore] = useState(0);
-  const [todayRating, setTodayRating] = useState({ rating: "Poor", color: "#ccc" });
+  const [todayRating, setTodayRating] = useState({ rating: "None", color: "#ccc" });
   const [reviews, setReviews] = useState<{id: string, text: string, date: string}[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
 
   // Generate last 7 days
   const days = Array.from({ length: 7 }).map((_, i) => {
@@ -60,6 +63,17 @@ export default function Home() {
         router.push("/parent");
       } else if (user.role === "CHILD") {
         const fetchData = async () => {
+          // Fetch categories first to calculate max score
+          const catRes = await fetch("/api/admin/activities");
+          const catData = await catRes.json();
+          const cats = catData.categories || [];
+          setCategories(cats);
+          
+          let maxSc = 0;
+          cats.forEach((cat: any) => {
+            maxSc += (cat.activities.length * cat.pointsPerItem);
+          });
+
           // Fetch reviews
           const reviewRes = await fetch("/api/reviews");
           const reviewData = await reviewRes.json();
@@ -70,7 +84,7 @@ export default function Home() {
           const entryData = await entryRes.json();
           if (entryData.entry) {
             setTodayScore(entryData.entry.score);
-            setTodayRating(getPerformanceRating(entryData.entry.score));
+            setTodayRating(getPerformanceRating(entryData.entry.score, maxSc));
           } else {
             setTodayScore(0);
             setTodayRating({ rating: "None", color: "#ccc" });
@@ -144,39 +158,35 @@ export default function Home() {
 
       {/* Quick Journal Sections */}
       <div className={styles.sectionHeader}>
-        <h3>Quick Journal</h3>
+        <h3>Strategic Planning</h3>
       </div>
 
       <section className={styles.quickGrid}>
+        <button 
+          onClick={() => router.push(`/monthly/planning/${new Date().toLocaleString('en-US', { month: 'long' }).toLowerCase()}`)} 
+          className={`${styles.quickCard} ${styles.blueCard}`} 
+          style={{ textDecoration: 'none', border: 'none', textAlign: 'left', cursor: 'pointer' }}
+        >
+          <h4>Monthly Plan <Calendar size={16} style={{ display: 'inline' }} /></h4>
+          <p>Set your intentions for the month ahead.</p>
+          <div className={styles.tagGroup}>
+            <span className={styles.miniTag}>New</span>
+            <span className={`${styles.miniTag} ${styles.activeTag}`}>Draft</span>
+          </div>
+        </button>
+
         <button 
           onClick={() => router.push("/diary/goals")} 
           className={`${styles.quickCard} ${styles.pinkCard}`} 
           style={{ textDecoration: 'none', border: 'none', textAlign: 'left', cursor: 'pointer' }}
         >
-          <h4>My Goals <Target size={16} style={{ display: 'inline' }} /></h4>
-          <p>Check your weekly targets.</p>
+          <h4>Personal Growth <Target size={16} style={{ display: 'inline' }} /></h4>
+          <p>Track your weekly goals and progress.</p>
           <div className={styles.tagGroup}>
             <span className={styles.miniTag}>Active</span>
-            <span className={`${styles.miniTag} ${styles.activeTag}`}>Track</span>
+            <span className={styles.miniTag}>Focus</span>
           </div>
         </button>
-
-        <div className={`${styles.quickCard} ${styles.blueCard}`}>
-          <h4>Set Intentions <Sparkles size={16} style={{ display: 'inline' }} /></h4>
-          <p>How do you want to feel?</p>
-          <div className={styles.tagGroup}>
-            <span className={styles.miniTag}>Today</span>
-            <span className={styles.miniTag}>Family</span>
-          </div>
-        </div>
-
-        <div className={`${styles.quickCard} ${styles.greenCard}`}>
-          <h4>Emotions Tracker</h4>
-          <p>Logged: Happy & Calm</p>
-          <div className={styles.tagGroup}>
-            <div className="score-badge bg-excellent" style={{ fontSize: '0.6rem' }}>EXCELLENT</div>
-          </div>
-        </div>
       </section>
 
       {/* Secondary Actions */}
@@ -184,7 +194,15 @@ export default function Home() {
         <h3>Milestones</h3>
       </section>
       
-      <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+        <button 
+          onClick={() => router.push("/yearly/planning")} 
+          className="journal-card" 
+          style={{ padding: '20px', textAlign: 'center', width: '100%', border: '4px solid #fff' }}
+        >
+          <Calendar size={32} style={{ margin: '0 auto', color: '#10b981' }} />
+          <p style={{ fontWeight: 700, marginTop: '10px' }}>Yearly Plan</p>
+        </button>
         <button 
           onClick={() => router.push("/monthly/analysis/april")} 
           className="journal-card" 

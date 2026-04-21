@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
 import Header from "@frontend/components/Navigation/Header";
 import styles from "./settings.module.css";
-import { Lock, Trash2, ArrowLeft, Save, AlertCircle } from "lucide-react";
+import { Lock, Trash2, ArrowLeft, Save, AlertCircle, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Modal from "@frontend/components/Common/Modal";
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
@@ -13,6 +14,7 @@ export default function SettingsPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   if (!user) return null;
@@ -42,7 +44,8 @@ export default function SettingsPage() {
         setPassword("");
         setConfirmPassword("");
       } else {
-        setMessage({ type: "error", text: "Update failed" });
+        const data = await res.json();
+        setMessage({ type: "error", text: data.error || "Update failed" });
       }
     } catch {
       setMessage({ type: "error", text: "Something went wrong" });
@@ -51,17 +54,24 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (confirm("Are you sure you want to delete your account? This will permanently erase ALL your data, entries, and progress. This action cannot be undone.")) {
-      try {
-        const res = await fetch("/api/auth/profile/delete", { method: "DELETE" });
-        if (res.ok) {
-          alert("Your account has been deleted.");
-          window.location.href = "/login";
-        }
-      } catch {
+  const handleDeleteAccount = () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/profile/delete", { method: "DELETE" });
+      if (res.ok) {
+        window.location.href = "/login";
+      } else {
         alert("Failed to delete account");
       }
+    } catch {
+      alert("Failed to delete account");
+    } finally {
+      setLoading(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -123,6 +133,37 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+
+      <Modal 
+        isOpen={showDeleteModal} 
+        onClose={() => setShowDeleteModal(false)}
+        title="Confirm Deletion"
+      >
+        <div className={styles.modalContent}>
+          <div className={styles.modalIcon}>
+            <AlertTriangle size={48} color="#ef4444" />
+          </div>
+          <p>Are you sure you want to delete your account? This will <strong>permanently erase</strong> ALL your data, entries, and progress. </p>
+          <p className={styles.modalNote}>This action cannot be undone.</p>
+          
+          <div className={styles.modalActions}>
+            <button 
+              className={styles.cancelBtn} 
+              onClick={() => setShowDeleteModal(false)}
+              disabled={loading}
+            >
+              Cancel, I'll stay
+            </button>
+            <button 
+              className={styles.confirmDeleteBtn} 
+              onClick={confirmDelete}
+              disabled={loading}
+            >
+              {loading ? "Deleting..." : "Yes, Delete Everything"}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

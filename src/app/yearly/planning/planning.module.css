@@ -1,0 +1,225 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.topActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.backLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: var(--primary);
+}
+
+.planningCard {
+  padding: 50px;
+  border-radius: 32px;
+  text-align: center;
+}
+
+.hero {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.hero h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 2.5rem;
+  color: #1e293b;
+}
+
+.hero p {
+  color: #64748b;
+  font-weight: 500;
+  max-width: 500px;
+}
+
+.successMsg {
+  background: #f0fdf4;
+  color: #166534;
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #bbf7d0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.visionArea {
+  margin-bottom: 50px;
+}
+
+.visionArea textarea {
+  width: 100%;
+  height: 180px;
+  padding: 24px;
+  border-radius: 20px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  font-family: inherit;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: all 0.2s;
+}
+
+.visionArea textarea:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+.visionView {
+  background: #f8fafc;
+  padding: 30px;
+  border-radius: 24px;
+  border: 2px dashed #cbd5e1;
+  min-height: 150px;
+  color: #1e293b;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goalsSection {
+  text-align: left;
+}
+
+.goalsSection h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.5rem;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.goalList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.goalItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.goalIndex {
+  background: #8b5cf6;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.goalItem input {
+  flex: 1;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  padding: 5px;
+}
+
+.goalItem input:focus {
+  outline: none;
+}
+
+.goalText {
+  flex: 1;
+  font-weight: 600;
+  color: #475569;
+}
+
+.removeBtn {
+  background: #fef2f2;
+  color: #ef4444;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.removeBtn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px;
+  background: #f8fafc;
+  border: 2px dashed #e2e8f0;
+  border-radius: 16px;
+  color: #8b5cf6;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+
+.addBtn:hover {
+  background: white;
+  border-color: #8b5cf6;
+  transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .planningCard {
+    padding: 30px 20px;
+  }
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+}
