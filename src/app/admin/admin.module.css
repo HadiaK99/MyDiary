@@ -1,5 +1,6 @@
 .adminContainer {
   display: flex;
+  align-items: stretch;
   min-height: 100vh;
   background: #f8fafc;
   font-family: 'Quicksand', sans-serif;
@@ -7,14 +8,13 @@
 
 .sidebar {
   width: 280px;
+  min-width: 280px;
   background: white;
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   padding: 30px 20px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .sidebarHeader {
@@ -57,7 +57,7 @@
   flex-grow: 1;
 }
 
-.nav a {
+.navItem {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -67,10 +67,21 @@
   text-decoration: none;
   font-weight: 600;
   transition: all 0.2s;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
 }
 
-.nav a:hover {
+.navItem:hover {
   background: #f1f5f9;
+  color: var(--primary);
+}
+
+.navItem.active {
+  background: var(--primary-glow);
   color: var(--primary);
 }
 
@@ -199,4 +210,278 @@
 .actionBtn:hover {
   background: #f1f5f9;
   color: #ef4444;
+}
+
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 25px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.submitBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resetBtn:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+}
+
+/* ── Category Cards ── */
+.categoryCard {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1.5px solid #f1f5f9;
+}
+
+.categoryNameInput {
+  flex: 1;
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-family: inherit;
+  color: #1e293b;
+  border: none;
+  background: transparent;
+  outline: none;
+  min-width: 0;
+}
+
+.categoryNameInput:focus {
+  color: var(--primary);
+}
+
+.pointsBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #dcfce7;
+  border-radius: 10px;
+  padding: 5px 10px;
+  flex-shrink: 0;
+}
+
+.pointsInput {
+  width: 42px;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #166534;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.pointsInput::-webkit-outer-spin-button,
+.pointsInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pointsLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.dialBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: #166534;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+  padding: 0;
+}
+
+.dialBtn:hover {
+  background: #14532d;
+  transform: scale(1.12);
+}
+
+.dialBtn:active {
+  transform: scale(0.95);
+}
+
+/* ── Activity Items ── */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 4px 4px 4px 12px;
+  transition: border-color 0.2s;
+}
+
+.activityRow:focus-within {
+  border-color: var(--primary);
+}
+
+.activityInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #334155;
+  outline: none;
+  padding: 6px 0;
+}
+
+.deleteBtn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.addActivityBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px;
+  border-radius: 10px;
+  border: 1.5px dashed #cbd5e1;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.addActivityBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-glow);
+}
+
+/* ── Edit Mode Toggle ── */
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1.5px solid var(--primary);
+  background: var(--primary-glow);
+  color: var(--primary);
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editBtn:hover {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+/* ── Read-only Activity View ── */
+.categoryNameStatic {
+  flex: 1;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1e293b;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.activityReadOnly {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 4px;
+  color: #334155;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.activityReadOnly:last-of-type {
+  border-bottom: none;
+}
+
+.activityDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+  opacity: 0.6;
 }

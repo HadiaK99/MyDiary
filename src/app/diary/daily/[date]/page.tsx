@@ -148,14 +148,14 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
           {/* Two Column Checklists */}
           <div className={styles.checklistsGrid}>
             <div className={styles.checklistCol}>
-              {leftCats.map(cat => (
-                <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
+              {leftCats.map((cat, catIndex) => (
+                <div key={catIndex} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
                   <h3 className={styles.checkTitle}>{cat.name}</h3>
-                  {cat.activities.map(act => (
-                    <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
-                      <span className={styles.itemLabel}>{act.name}</span>
+                  {cat.activities.map((act, actIndex) => (
+                    <div key={actIndex} className={styles.listItem} onClick={() => toggleItem('activities', act)}>
+                      <span className={styles.itemLabel}>{act}</span>
                       <div className={styles.checkSquare}>
-                        {data.activities[act.name] && <Check size={14} />}
+                        {data.activities[act] && <Check size={14} />}
                       </div>
                     </div>
                   ))}
@@ -164,14 +164,14 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
             </div>
 
             <div className={styles.checklistCol}>
-              {rightCats.map(cat => (
-                <div key={cat.id} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
+              {rightCats.map((cat, catIndex) => (
+                <div key={catIndex} className={styles.checklistCard} style={{ marginBottom: '20px' }}>
                   <h3 className={styles.checkTitle}>{cat.name}</h3>
-                  {cat.activities.map(act => (
-                    <div key={act.id} className={styles.listItem} onClick={() => toggleItem('activities', act.name)}>
-                      <span className={styles.itemLabel}>{act.name}</span>
+                  {cat.activities.map((act, actIndex) => (
+                    <div key={actIndex} className={styles.listItem} onClick={() => toggleItem('activities', act)}>
+                      <span className={styles.itemLabel}>{act}</span>
                       <div className={styles.checkSquare}>
-                        {data.activities[act.name] && <Check size={14} />}
+                        {data.activities[act] && <Check size={14} />}
                       </div>
                     </div>
                   ))}
