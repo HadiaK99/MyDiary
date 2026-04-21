@@ -17,14 +17,19 @@ MyDiary is a modern, illustrative digital journal designed specifically for chil
   - **Mood**: One-click emotion selector (Happy, Fun, Tired, etc.).
 - **Dynamic Checklists**: Two-column habit lists for prayers, manners, and health.
 
+### 🗓️ Planning & Growth
+- **Monthly Planning**: Interactive "Edit Mode" schedule with customizable task names and precise time-range selectors (From/To).
+- **Yearly Vision**: Set annual goals and a personal "Vision for the Year" with a dedicated long-term planning interface.
+- **Milestones Hub**: A dashboard section to track Monthly Analysis, Yearly Planning, and Year-End Reviews in one place.
+
 ### 🏆 Points & Performance
-- **Automatic Scoring**: A background engine tracks progress across four categories:
-  - **Prayers & Spirituality** (+5 pts)
-  - **Character & Manners** (+3 pts)
-  - **Self-Discipline & Health** (+2 pts)
-  - **Daily Habits** (+1 pt)
-- **Moral Reflections**: Bonus points for **"Good Things (+)"** and growth opportunities for **"Bad Things (-)"**.
-- **Performance Rating**: Real-time feedback categorizing the day as **Excellent, Good, Fair, or Poor**.
+- **Encouraging Feedback**: Performance ratings use positive, growth-oriented labels:
+  - **Superstar! 🌟** (85%+)
+  - **Doing Great! ✨** (65%+)
+  - **Solid Progress 💪** (40%+)
+  - **Needs Focus ❤️** (<40%)
+- **Automatic Scoring**: A background engine tracks progress across habit categories with weighted points.
+- **Data Aggregation**: Monthly and Annual reports synchronize with daily entries to provide a cohesive view of progress.
 
 ### 🛠 Visual Design & Navigation
 - **Kid-Friendly Typography**: Using **Fredoka** and **Quicksand** fonts for a soft, rounded feel.
