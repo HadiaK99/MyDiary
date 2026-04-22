@@ -4,17 +4,20 @@ import { useState, useEffect } from "react";
 import { User } from "@frontend/context/AuthContext";
 import styles from "../admin.module.css";
 import { Trash2, UserPlus, Search } from "lucide-react";
+import UserEditor from "@frontend/components/Admin/UserEditor";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showUserModal, setShowUserModal] = useState(false);
+
+  const fetchUsers = async () => {
+    const res = await fetch("/api/admin/users");
+    const data = await res.json();
+    if (data.users) setUsers(data.users);
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const res = await fetch("/api/admin/users");
-      const data = await res.json();
-      if (data.users) setUsers(data.users);
-    };
     fetchUsers();
   }, []);
 
@@ -25,7 +28,7 @@ export default function ManageUsers() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      setUsers(users.filter(u => u.id !== id));
+      fetchUsers(); // Refresh list
     }
   };
 
@@ -36,12 +39,22 @@ export default function ManageUsers() {
 
   return (
     <div>
+      {showUserModal && (
+        <UserEditor 
+          onClose={() => setShowUserModal(false)}
+          onSave={() => {
+            setShowUserModal(false);
+            fetchUsers();
+          }}
+        />
+      )}
+
       <div className={styles.tableTitle}>
         <div>
           <h1>User Management</h1>
           <p>Add, edit, or remove users from the system.</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div className={styles.tableActions}>
           <div style={{ position: 'relative' }}>
             <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
             <input 
@@ -53,8 +66,12 @@ export default function ManageUsers() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className={styles.logoutBtn} style={{ background: 'var(--primary)', color: 'white' }}>
-            <UserPlus size={18} /> Add User
+          <button 
+            className={styles.submitBtn} 
+            onClick={() => setShowUserModal(true)}
+            style={{ padding: '0 20px', height: '40px' }}
+          >
+            <UserPlus size={18} /> <span className={styles.btnText}>Add User</span>
           </button>
         </div>
       </div>
@@ -65,7 +82,7 @@ export default function ManageUsers() {
             <tr>
               <th>Username</th>
               <th>Role</th>
-              <th>System ID</th>
+              <th className={styles.hideOnMobile}>System ID</th>
               <th>Linked Child</th>
               <th>Actions</th>
             </tr>
@@ -82,7 +99,7 @@ export default function ManageUsers() {
                     {user.role}
                   </span>
                 </td>
-                <td style={{ fontFamily: 'monospace', color: '#64748b' }}>{user.id}</td>
+                <td className={`${styles.hideOnMobile}`} style={{ fontFamily: 'monospace', color: '#64748b' }}>{user.id}</td>
                 <td>
                   {user.role === 'PARENT' ? (
                     users.find(u => u.id === user.childId)?.username || 'Not Linked'

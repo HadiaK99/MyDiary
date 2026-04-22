@@ -21,4 +21,10 @@ export const DiaryService = {
       create: { userId, date, data: JSON.stringify(data), score, rating },
     });
   },
+
+  async deleteEntry(userId: string, date: string) {
+    return prisma.diaryEntry.delete({
+      where: { userId_date: { userId, date } },
+    });
+  },
 };
