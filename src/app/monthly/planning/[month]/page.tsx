@@ -1,9 +1,11 @@
 "use client";
 
 import { use, useState } from "react";
-import styles from "./planning.module.css";
 import Header from "@frontend/components/Navigation/Header";
 import { Edit3, Save, BookOpen, Heart, Clock, Plus, Trash2 } from "lucide-react";
+import { Button } from "@frontend/components/Common/Button";
+import { Card } from "@frontend/components/Common/Card";
+import { PlanningContainer } from "./PlanningStyles";
 
 interface ScheduleRow {
   task: string;
@@ -27,7 +29,7 @@ const DEFAULT_SCHEDULE: ScheduleRow[] = [
 
 export default function MonthlyPlanning({ params: paramsPromise }: { params: Promise<{ month: string }> }) {
   const params = use(paramsPromise);
-  const month = params.month.charAt(0).toUpperCase() + params.month.slice(1);
+  const monthName = params.month.charAt(0).toUpperCase() + params.month.slice(1);
   
   const [isEditing, setIsEditing] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleRow[]>(() => {
@@ -83,36 +85,35 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
   };
 
   return (
-    <div className={styles.container}>
+    <PlanningContainer>
       <Header />
 
-      <div className={styles.topActions}>
-        <div /> {/* Spacer for flex alignment */}
-        <button 
-          className={`pill-btn ${isEditing ? styles.saveBtn : styles.editBtn}`}
+      <div className="top-actions">
+        <Button 
+          variant={isEditing ? "primary" : "secondary"}
           onClick={isEditing ? handleSave : () => setIsEditing(true)}
         >
           {isEditing ? (
-            <><Save size={18} /> Save Plan</>
+            <><Save size={18} style={{ marginRight: '8px' }} /> Save Plan</>
           ) : (
-            <><Edit3 size={18} /> Edit Plan</>
+            <><Edit3 size={18} style={{ marginRight: '8px' }} /> Edit Plan</>
           )}
-        </button>
+        </Button>
       </div>
 
-      <div className={styles.header}>
-        <h1>Plan for {month}</h1>
+      <div className="header">
+        <h1>Plan for {monthName}</h1>
         <p>Set your daily routine and constructive goals for the month.</p>
       </div>
 
-      <div className={styles.grid}>
+      <div className="grid">
         {/* Schedule Section */}
-        <section className={`${styles.card} glass`}>
-          <div className={styles.cardHeader}>
+        <Card variant="default" className="planning-card glass">
+          <div className="card-header">
             <h2><Clock size={22} /> My Daily Schedule</h2>
           </div>
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
+          <div className="table-wrapper">
+            <table>
               <thead>
                 <tr>
                   <th>Task</th>
@@ -123,20 +124,20 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
               <tbody>
                 {schedule.map((row, idx) => (
                   <tr key={idx}>
-                    <td className={styles.taskNameCell}>
+                    <td style={{ width: '50%' }}>
                       {isEditing ? (
                         <input 
                           type="text" 
                           value={row.task} 
                           onChange={(e) => updateSchedule(idx, 'task', e.target.value)}
-                          className={styles.taskInput}
+                          className="task-input"
                         />
                       ) : (
-                        <span className={styles.taskLabel}>{row.task}</span>
+                        <span className="task-label">{row.task}</span>
                       )}
                     </td>
                     <td>
-                      <div className={styles.timeRange}>
+                      <div className="time-range">
                         {isEditing ? (
                           <>
                             <input type="time" value={row.dailyFrom} onChange={(e) => updateSchedule(idx, 'dailyFrom', e.target.value)} />
@@ -144,13 +145,13 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
                             <input type="time" value={row.dailyTo} onChange={(e) => updateSchedule(idx, 'dailyTo', e.target.value)} />
                           </>
                         ) : (
-                          <span className={styles.timeVal}>{row.dailyFrom} - {row.dailyTo}</span>
+                          <span className="time-val">{row.dailyFrom} - {row.dailyTo}</span>
                         )}
                       </div>
                     </td>
                     {isEditing && (
                       <td>
-                        <button onClick={() => removeRow(idx)} className={styles.removeBtn}>
+                        <button onClick={() => removeRow(idx)} className="remove-btn">
                           <Trash2 size={18} />
                         </button>
                       </td>
@@ -161,16 +162,16 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
             </table>
             
             {isEditing && (
-              <button onClick={addRow} className={styles.addBtn}>
+              <button onClick={addRow} className="add-btn">
                 <Plus size={18} /> Add More Slots
               </button>
             )}
           </div>
-        </section>
+        </Card>
 
         {/* Goals Section */}
-        <section className={`${styles.card} glass`}>
-          <div className={styles.goalSection}>
+        <Card variant="default" className="planning-card glass">
+          <div className="goal-section">
             <h2><BookOpen size={22} /> Constructive Reading</h2>
             <p>What books or stories will you read this month?</p>
             {isEditing ? (
@@ -180,11 +181,11 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
                 onChange={(e) => setReading(e.target.value)}
               />
             ) : (
-              <div className={styles.viewBox}>{reading || "No books listed yet."}</div>
+              <div className="view-box">{reading || "No books listed yet."}</div>
             )}
           </div>
 
-          <div className={styles.goalSection} style={{ marginTop: '30px' }}>
+          <div className="goal-section" style={{ marginTop: '30px' }}>
             <h2><Heart size={22} /> Family & Helping Hands</h2>
             <p>How will you help around the house and spend time with family?</p>
             {isEditing ? (
@@ -194,18 +195,18 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
                 onChange={(e) => setFamilyTime(e.target.value)}
               />
             ) : (
-              <div className={styles.viewBox}>{familyTime || "No family goals listed yet."}</div>
+              <div className="view-box">{familyTime || "No family goals listed yet."}</div>
             )}
           </div>
-        </section>
+        </Card>
       </div>
 
       {!isEditing && (
-        <div className={styles.printNote}>
+        <div className="print-note">
           <p>✨ Tip: You can print your monthly plan to keep it on your desk!</p>
-          <button className="pill-btn no-print" onClick={() => window.print()}>Print Daily Plan</button>
+          <Button variant="secondary" className="no-print" onClick={() => window.print()}>Print Daily Plan</Button>
         </div>
       )}
-    </div>
+    </PlanningContainer>
   );
 }

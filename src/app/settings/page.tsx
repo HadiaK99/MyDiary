@@ -1,11 +1,157 @@
 "use client";
 
 import { useState } from "react";
+import styled from "styled-components";
 import { useAuth } from "@frontend/context/AuthContext";
 import Header from "@frontend/components/Navigation/Header";
-import styles from "./settings.module.css";
-import { Lock, Trash2, Save, AlertCircle, AlertTriangle } from "lucide-react";
+import { Button } from "@frontend/components/Common/Button";
+import { Card } from "@frontend/components/Common/Card";
 import Modal from "@frontend/components/Common/Modal";
+import { Lock, Trash2, Save, AlertCircle, AlertTriangle, X } from "lucide-react";
+
+const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+`;
+
+const HeaderSection = styled.div`
+  margin-bottom: 40px;
+  text-align: center;
+
+  h1 {
+    font-size: 2.2rem;
+    color: var(--text-main);
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #64748b;
+    font-weight: 500;
+  }
+`;
+
+const Section = styled.section`
+  background: #f8fafc;
+  padding: 30px;
+  border-radius: var(--radius-md, 16px);
+  margin-bottom: 30px;
+
+  h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.4rem;
+    color: #1e293b;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 20px;
+  }
+`;
+
+const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    font-size: 1rem;
+    font-family: 'Quicksand', sans-serif;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-glow, rgba(236,72,153,0.1));
+    }
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    & > * { width: 100%; }
+  }
+`;
+
+const DeleteZone = styled.div`
+  margin-top: 50px;
+  padding-top: 40px;
+  border-top: 2px dashed #f1f5f9;
+`;
+
+const Message = styled.div<{ $type?: string }>`
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  ${({ $type }) => $type === 'success' ? `
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  ` : `
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  `}
+`;
+
+const ModalContent = styled.div`
+  text-align: center;
+
+  .icon {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  p {
+    color: #1e293b;
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+
+  .note {
+    font-weight: 700;
+    color: #ef4444 !important;
+    font-size: 0.9rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 30px;
+  }
+`;
+
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -25,11 +171,7 @@ export default function SettingsPage() {
       setMessage({ type: "error", text: "Passwords do not match!" });
       return;
     }
-    if (password.length < 6) {
-      setMessage({ type: "error", text: "Password must be at least 6 characters." });
-      return;
-    }
-
+    
     setLoading(true);
     setMessage({ type: "", text: "" });
 
@@ -46,6 +188,7 @@ export default function SettingsPage() {
         setMessage({ type: "success", text: "Account updated successfully!" });
         setPassword("");
         setConfirmPassword("");
+        setShowPasswordForm(false);
       } else {
         const data = await res.json();
         setMessage({ type: "error", text: data.error || "Update failed" });
@@ -79,87 +222,85 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className={styles.container}>
+    <Container>
       <Header />
       
-      <div className={`${styles.card} animate-fade-in`}>
-        <div className={styles.header}>
+      <Card variant="default" padding="40px" className="animate-fade-in">
+        <HeaderSection>
           <h1>Settings</h1>
           <p>Managed your account and security</p>
-        </div>
+        </HeaderSection>
 
         {message.text && (
-          <div className={`${styles.message} ${message.type === 'success' ? styles.success : styles.error}`}>
+          <Message $type={message.type}>
             {message.text}
-          </div>
+          </Message>
         )}
 
-        <section className={styles.section}>
+        <Section>
           <h2><Lock size={22} /> Account Settings</h2>
-          <form onSubmit={handleUpdatePassword}>
-            <div className={styles.field}>
-              <label>Username</label>
-              <input
-                type="text"
-                className={styles.input}
-                placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            {!showPasswordForm ? (
-              <button 
-                type="button" 
-                className={styles.saveBtn} 
-                onClick={() => setShowPasswordForm(true)}
-                style={{ marginTop: '20px' }}
-              >
-                <Lock size={18} /> Change Username and Password
-              </button>
-            ) : (
-              <>
-                <div className={styles.field}>
-                  <label>New Password (Optional)</label>
-                  <input
-                    type="password"
-                    className={styles.input}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <div className={styles.field}>
-                  <label>Confirm New Password</label>
-                  <input
-                    type="password"
-                    className={styles.input}
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                  <button type="submit" className={styles.saveBtn} disabled={loading}>
-                    {loading ? "Updating..." : "Update Password"} <Save size={18} />
-                  </button>
-                  <button 
-                    type="button" 
-                    className={styles.cancelBtn} 
-                    onClick={() => {
-                      setShowPasswordForm(false);
-                      setPassword("");
-                      setConfirmPassword("");
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )}
-          </form>
-        </section>
+          
+          {!showPasswordForm ? (
+            <Button 
+              type="button" 
+              onClick={() => setShowPasswordForm(true)}
+              fullWidth
+            >
+              <Lock size={18} style={{ marginRight: '8px' }} /> Change Username and Password
+            </Button>
+          ) : (
+            <form onSubmit={handleUpdatePassword}>
+              <Field>
+                <label>New Username</label>
+                <input
+                  type="text"
+                  placeholder="Enter new username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </Field>
+              <Field>
+                <label>New Password (Optional)</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Field>
+              <Field>
+                <label>Confirm New Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </Field>
+              <ButtonGroup>
+                <Button type="submit" disabled={loading} style={{ flex: 1 }}>
+                  {loading ? "Updating..." : "Update Account"} <Save size={18} style={{ marginLeft: '8px' }} />
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="secondary"
+                  onClick={() => {
+                    setShowPasswordForm(false);
+                    setPassword("");
+                    setConfirmPassword("");
+                    setUsername(user.username);
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  <X size={18} style={{ marginRight: '8px' }} /> Cancel
+                </Button>
+              </ButtonGroup>
+            </form>
+          )}
+        </Section>
 
-        <div className={styles.deleteZone}>
+        <DeleteZone>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ef4444', marginBottom: '15px' }}>
             <AlertCircle size={20} />
             <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '1px' }}>Danger Zone</span>
@@ -167,42 +308,44 @@ export default function SettingsPage() {
           <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '20px' }}>
             Once you delete your account, there is no going back. Please be certain.
           </p>
-          <button onClick={handleDeleteAccount} className={styles.deleteBtn}>
-            Delete My Account <Trash2 size={18} />
-          </button>
-        </div>
-      </div>
+          <Button variant="danger" fullWidth onClick={handleDeleteAccount}>
+            Delete My Account <Trash2 size={18} style={{ marginLeft: '8px' }} />
+          </Button>
+        </DeleteZone>
+      </Card>
 
       <Modal 
         isOpen={showDeleteModal} 
         onClose={() => setShowDeleteModal(false)}
         title="Confirm Deletion"
       >
-        <div className={styles.modalContent}>
-          <div className={styles.modalIcon}>
+        <ModalContent>
+          <div className="icon">
             <AlertTriangle size={48} color="#ef4444" />
           </div>
           <p>Are you sure you want to delete your account? This will <strong>permanently erase</strong> ALL your data, entries, and progress. </p>
-          <p className={styles.modalNote}>This action cannot be undone.</p>
+          <p className="note">This action cannot be undone.</p>
           
-          <div className={styles.modalActions}>
-            <button 
-              className={styles.cancelBtn} 
+          <div className="actions">
+            <Button 
+              variant="secondary" 
               onClick={() => setShowDeleteModal(false)}
               disabled={loading}
+              fullWidth
             >
               Cancel, I'll stay
-            </button>
-            <button 
-              className={styles.confirmDeleteBtn} 
+            </Button>
+            <Button 
+              variant="danger" 
               onClick={confirmDelete}
               disabled={loading}
+              fullWidth
             >
               {loading ? "Deleting..." : "Yes, Delete Everything"}
-            </button>
+            </Button>
           </div>
-        </div>
+        </ModalContent>
       </Modal>
-    </div>
+    </Container>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { User } from "@shared/types";
-import styles from "./admin.module.css";
 import { Users, BookOpen, Star, TrendingUp } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -24,47 +23,47 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <section className={styles.adminHeader}>
+      <section style={{ marginBottom: '30px' }}>
         <h1>System Overview</h1>
-        <p>Monitor diary usage and manage your community.</p>
+        <p style={{ color: '#64748b' }}>Monitor diary usage and manage your community.</p>
       </section>
 
-      <div className={styles.dashboardGrid}>
-        <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ background: '#3b82f6' }}><Users size={28} /></div>
-          <div className={styles.statInfo}>
+      <div className="dashboard-grid">
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: '#3b82f6' }}><Users size={28} /></div>
+          <div className="stat-info">
             <h4>Total Users</h4>
             <p>{stats.users}</p>
           </div>
         </div>
 
-        <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ background: '#ec4899' }}><Star size={28} /></div>
-          <div className={styles.statInfo}>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: '#ec4899' }}><Star size={28} /></div>
+          <div className="stat-info">
             <h4>Children</h4>
             <p>{stats.children}</p>
           </div>
         </div>
 
-        <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ background: '#10b981' }}><BookOpen size={28} /></div>
-          <div className={styles.statInfo}>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: '#10b981' }}><BookOpen size={28} /></div>
+          <div className="stat-info">
             <h4>Total Entries</h4>
             <p>{stats.entries}</p>
           </div>
         </div>
 
-        <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ background: '#f59e0b' }}><TrendingUp size={28} /></div>
-          <div className={styles.statInfo}>
+        <div className="stat-card">
+          <div className="stat-icon" style={{ background: '#f59e0b' }}><TrendingUp size={28} /></div>
+          <div className="stat-info">
             <h4>Active Parents</h4>
             <p>{stats.parents}</p>
           </div>
         </div>
       </div>
 
-      <div className={styles.tableContainer}>
-        <div className={styles.tableTitle}>
+      <div className="table-container">
+        <div className="table-title">
           <h3>Recent System Activity</h3>
         </div>
         <p style={{ color: '#64748b' }}>System is running smoothly. No issues reported.</p>

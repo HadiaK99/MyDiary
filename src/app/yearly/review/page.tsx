@@ -1,132 +1,116 @@
 "use client";
 
-import { useState } from "react";
-import styles from "./review.module.css";
+import { useState, useEffect } from "react";
 import Header from "@frontend/components/Navigation/Header";
-import { Trophy, Star, Save } from "lucide-react";
-
-interface YearlyGoal {
-  id: number;
-  text: string;
-  status: string;
-}
-
-const INITIAL_GOALS: YearlyGoal[] = [
-  { id: 1, text: "Focus on my daily prayers and connect with Allah.", status: "Almost there! ✨" },
-  { id: 2, text: "Read at least one new book every month.", status: "Yes, I did! 🌟" },
-  { id: 3, text: "Be more helpful to my siblings and parents.", status: "Working on it! 💪" },
-];
+import { Sparkles, Trophy, Star, ChevronLeft, Edit3, Save } from "lucide-react";
+import { Button } from "@frontend/components/Common/Button";
+import { Card } from "@frontend/components/Common/Card";
+import { YearlyReviewContainer } from "./YearlyReviewStyles";
+import { useRouter } from "next/navigation";
 
 export default function YearlyReview() {
+  const router = useRouter();
+  const [reflection, setReflection] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const [goals, setGoals] = useState<YearlyGoal[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedReview = localStorage.getItem("yearly_review_2026");
-      if (savedReview) {
-        const review = JSON.parse(savedReview);
-        if (review.goals) return review.goals;
-      }
+  const [focusAreas, setFocusAreas] = useState([
+    { id: 1, title: "Studies & Learning", score: "Excellent" },
+    { id: 2, title: "Helping at Home", score: "Good" },
+    { id: 3, title: "Personal Growth", score: "Improving" },
+  ]);
 
-      const savedPlan = localStorage.getItem("yearly_plan_2026");
-      if (savedPlan) {
-        const plan = JSON.parse(savedPlan);
-        if (plan.goals) {
-          return plan.goals.map((g: string, i: number) => ({ 
-            id: i + 1, 
-            text: g, 
-            status: "Working on it! 💪" 
-          }));
-        }
-      }
+  useEffect(() => {
+    const saved = localStorage.getItem("yearly_review");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setReflection(parsed.reflection || "");
+      setFocusAreas(parsed.focusAreas || focusAreas);
     }
-    return INITIAL_GOALS;
-  });
+  }, []);
 
-  const [achievements, setAchievements] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedReview = localStorage.getItem("yearly_review_2026");
-      if (savedReview) {
-        const review = JSON.parse(savedReview);
-        return review.achievements || "";
-      }
-    }
-    return "";
-  });
-
-  const [lessons, setLessons] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedReview = localStorage.getItem("yearly_review_2026");
-      if (savedReview) {
-        const review = JSON.parse(savedReview);
-        return review.lessons || "";
-      }
-    }
-    return "";
-  });
-
-  const handleSave = () => {
-    localStorage.setItem("yearly_review_2026", JSON.stringify({ goals, achievements, lessons }));
-    setIsEditing(false);
-  };
-
-  const updateGoalStatus = (id: number, status: string) => {
-    setGoals(goals.map(g => g.id === id ? { ...g, status } : g));
-  };
-
-  const updateGoalText = (id: number, text: string) => {
-    setGoals(goals.map(g => g.id === id ? { ...g, text } : g));
+  const handleSave = (): void => {
+    setIsSaving(true);
+    localStorage.setItem("yearly_review", JSON.stringify({ reflection, focusAreas }));
+    
+    setTimeout(() => {
+      setIsSaving(false);
+      setIsEditing(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000);
+    }, 1000);
   };
 
   return (
-    <div className={styles.container}>
+    <YearlyReviewContainer>
       <Header />
 
-      <section className={`${styles.mainCard} glass animate-fade-in`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
+      <div className="top-actions">
+        <Button variant="ghost" className="back-btn" onClick={() => router.back()}>
+          <ChevronLeft size={18} style={{ marginRight: '8px' }} /> Back
+        </Button>
+
+        <Button 
+          variant={isEditing ? "primary" : "secondary"}
+          onClick={isEditing ? handleSave : () => setIsEditing(true)}
+          disabled={isSaving}
+        >
+          {isEditing ? (
+            <><Save size={18} style={{ marginRight: '8px' }} /> Save My Review</>
+          ) : (
+            <><Edit3 size={18} style={{ marginRight: '8px' }} /> Edit My Review</>
+          )}
+        </Button>
+      </div>
+
+      <Card variant="default" className="main-card glass animate-fade-in">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
           <div>
-            <h2>Celebrating My Growth! 🎉</h2>
-            <p>You've completed an incredible journey this year. Let's look back at your resolutions.</p>
+            <h2>Annual Achievement Review</h2>
+            <p>Let's look back at everything you've accomplished this year!</p>
           </div>
-          <div className={styles.buttonWrapper}>
-            <button
-              className="pill-btn"
-              onClick={isEditing ? handleSave : () => setIsEditing(true)}
-              style={{ background: isEditing ? '#8b5cf6' : 'white', color: isEditing ? 'white' : '#8b5cf6', border: '2px solid #8b5cf6' }}
-            >
-              {isEditing ? <><Save size={18} /> Save Review</> : "Edit Review"}
-            </button>
-          </div>
+          <Trophy size={60} color="#facc15" />
         </div>
 
-        <div className={styles.focusReview}>
-          <h3>My Annual Focuses</h3>
-          <div className={styles.focusList}>
-            {goals.map(goal => (
-              <div key={goal.id} className={styles.focusItem}>
-                <div className={styles.focusText}>
-                  <strong>Goal #{goal.id}:</strong>
-                  {isEditing ? (
-                    <input 
-                      type="text" 
-                      value={goal.text} 
-                      onChange={(e) => updateGoalText(goal.id, e.target.value)}
-                      style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px', fontWeight: 600, fontFamily: 'inherit', width: '100%', marginTop: '5px' }}
-                    />
-                  ) : (
-                    <span>{goal.text}</span>
-                  )}
+        {showSuccess && (
+          <div className="success-msg" style={{ 
+            background: '#f0fdf4', 
+            color: '#166534', 
+            padding: '12px 20px', 
+            borderRadius: '12px', 
+            marginBottom: '30px', 
+            fontWeight: 600, 
+            fontSize: '0.9rem', 
+            border: '1px solid #bbf7d0',
+            textAlign: 'center'
+          }}>
+            ✨ Your yearly review has been safely tucked away!
+          </div>
+        )}
+
+        <div className="focus-review">
+          <h3><Star size={20} fill="#8b5cf6" style={{ verticalAlign: 'middle', marginRight: '8px' }} /> Performance Summary</h3>
+          <div className="focus-list">
+            {focusAreas.map(area => (
+              <div key={area.id} className="focus-item">
+                <div className="focus-text">
+                  <strong>{area.title}</strong>
                 </div>
-                <div className={styles.checkArea}>
-                  <label>Status:</label>
+                <div className="check-area">
                   {isEditing ? (
-                    <select value={goal.status} onChange={(e) => updateGoalStatus(goal.id, e.target.value)}>
-                      <option>Yes, I did! 🌟</option>
-                      <option>Almost there! ✨</option>
-                      <option>Working on it! 💪</option>
+                    <select 
+                      value={area.score} 
+                      onChange={(e) => setFocusAreas(focusAreas.map(a => a.id === area.id ? { ...a, score: e.target.value } : a))}
+                      style={{ padding: '8px', borderRadius: '10px', border: '1.5px solid #e2e8f0', fontFamily: 'inherit', fontWeight: 600 }}
+                    >
+                      <option>Excellent</option>
+                      <option>Good</option>
+                      <option>Improving</option>
+                      <option>Needs Effort</option>
                     </select>
                   ) : (
-                    <span style={{ fontWeight: 700, color: '#8b5cf6' }}>{goal.status}</span>
+                    <span style={{ fontWeight: 700, color: '#8b5cf6' }}>{area.score}</span>
                   )}
                 </div>
               </div>
@@ -134,40 +118,45 @@ export default function YearlyReview() {
           </div>
         </div>
 
-        <div className={styles.reflectionArea}>
-          <h3><Trophy size={20} style={{ display: 'inline', marginRight: '8px' }} /> My Big Achievements</h3>
+        <div className="reflection-area">
+          <h3>Reflection & Future Goals</h3>
+          <p>What was your favorite moment of the year? What do you want to do better next year?</p>
           {isEditing ? (
             <textarea 
-              placeholder="Write down the things you are most proud of this year..." 
-              value={achievements}
-              onChange={(e) => setAchievements(e.target.value)}
+              placeholder="I am proud of... Next year I want to..." 
+              value={reflection}
+              onChange={(e) => setReflection(e.target.value)}
             />
           ) : (
-            <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', minHeight: '80px', marginTop: '10px' }}>
-              {achievements || "Share your biggest wins here!"}
-            </div>
-          )}
-
-          <h3 style={{ marginTop: '30px' }}><Star size={20} style={{ display: 'inline', marginRight: '8px' }} /> What I learned</h3>
-          {isEditing ? (
-            <textarea 
-              placeholder="What are the biggest lessons you learned this year?" 
-              value={lessons}
-              onChange={(e) => setLessons(e.target.value)}
-            />
-          ) : (
-            <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', minHeight: '80px', marginTop: '10px' }}>
-              {lessons || "What did this year teach you?"}
+            <div style={{ 
+              background: '#f8fafc', 
+              padding: '20px', 
+              borderRadius: '16px', 
+              border: '1.5px dashed #cbd5e1',
+              minHeight: '100px',
+              color: '#1e293b',
+              lineHeight: 1.6,
+              fontStyle: 'italic'
+            }}>
+              {reflection || "A world of possibilities awaits... Start by editing your reflection!"}
             </div>
           )}
         </div>
 
-        {!isEditing && (
-          <div style={{ marginTop: '40px', textAlign: 'center', paddingTop: '30px', borderTop: '2px dashed #f1f5f9' }}>
-             <button className="pill-btn" onClick={() => window.print()}>Print My Year-End Certificate 📜</button>
+        {isEditing && (
+          <div className="footer" style={{ marginTop: '30px' }}>
+            <Button 
+              variant="primary" 
+              size="large"
+              disabled={isSaving}
+              onClick={handleSave}
+              fullWidth
+            >
+              {isSaving ? "Saving..." : "Complete Yearly Review"} <Sparkles size={18} style={{ marginLeft: '8px' }} />
+            </Button>
           </div>
         )}
-      </section>
-    </div>
+      </Card>
+    </YearlyReviewContainer>
   );
 }

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { ActivityCategory } from "@shared/constants/activities";
-import styles from "../admin.module.css";
 import Modal from "@frontend/components/Common/Modal";
-import { Plus, Trash2, Save, RotateCcw, Pencil, X } from "lucide-react";
+import { Plus, Trash2, Save, RotateCcw, Pencil, X, Minus } from "lucide-react";
+import { Button } from "@frontend/components/Common/Button";
 
 type ModalState = {
   open: boolean;
@@ -115,113 +115,114 @@ export default function AdminTasks() {
       </Modal>
 
       {/* Page Header */}
-      <div className={styles.tableTitle}>
+      <div className="table-title">
         <div style={{ maxWidth: '100%' }}>
           <h1 style={{ margin: 0, lineHeight: 1.2 }}>Daily Activity Management</h1>
           <p style={{ color: "#64748b", marginTop: 8, fontSize: '0.9rem' }}>Define which activities children should track daily.</p>
         </div>
-        <div className={styles.tableActions}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {isEditing ? (
             <>
-              <button className={styles.resetBtn} onClick={resetTasks} type="button">
-                <RotateCcw size={16} /> <span className={styles.btnText}>Reset</span>
-              </button>
-              <button className={styles.resetBtn} onClick={() => setIsEditing(false)} type="button">
-                <X size={16} /> <span className={styles.btnText}>Cancel</span>
-              </button>
-              <button className={styles.submitBtn} onClick={saveTasks} type="button" disabled={saving}>
-                <Save size={16} /> <span className={styles.btnText}>{saving ? "Saving…" : "Save Changes"}</span>
-              </button>
+              <Button variant="ghost" onClick={resetTasks} className="hide-text-on-mobile">
+                <RotateCcw size={16} style={{ marginRight: '8px' }} /> <span>Reset</span>
+              </Button>
+              <Button variant="ghost" onClick={() => setIsEditing(false)} className="hide-text-on-mobile">
+                <X size={16} style={{ marginRight: '8px' }} /> <span>Cancel</span>
+              </Button>
+              <Button onClick={saveTasks} disabled={saving} className="hide-text-on-mobile">
+                <Save size={16} style={{ marginRight: '8px' }} /> <span>{saving ? "Saving…" : "Save Changes"}</span>
+              </Button>
             </>
           ) : (
-            <button className={styles.editBtn} onClick={() => setIsEditing(true)} type="button">
-              <Pencil size={16} /> <span className={styles.btnText}>Edit Activities</span>
-            </button>
+            <Button onClick={() => setIsEditing(true)}>
+              <Pencil size={16} style={{ marginRight: '8px' }} /> <span>Edit Activities</span>
+            </Button>
           )}
         </div>
       </div>
 
       {/* Activity Grid */}
-      <div className={styles.dashboardGrid}>
+      <div className="dashboard-grid">
         {categories.map((cat, catIndex) => (
-          <div key={catIndex} className={styles.categoryCard}>
+          <div key={catIndex} className="category-card">
             {/* Category Header */}
-            <div className={styles.categoryHeader}>
+            <div className="category-header">
               {isEditing ? (
                 <input
                   value={cat.name}
                   onChange={(e) => updateCategoryName(catIndex, e.target.value)}
-                  className={styles.categoryNameInput}
+                  className="category-name-input"
                 />
               ) : (
-                <span className={styles.categoryNameStatic}>{cat.name}</span>
+                <span className="category-name-static" style={{ flex: 1, fontSize: '1.05rem', fontWeight: 800, color: '#1e293b', fontFamily: 'Fredoka, sans-serif' }}>{cat.name}</span>
               )}
-              <div className={styles.pointsBadge}>
+              <div className="points-badge">
                 {isEditing ? (
                   <>
                     <button
-                      className={styles.dialBtn}
+                      className="dial-btn"
                       type="button"
                       onClick={() => updateCategoryPoints(catIndex, Math.max(1, cat.pointsPerItem - 1))}
                       aria-label="Decrease points"
-                    >−</button>
+                     ><Minus size={14} /></button>
                     <input
                       type="number"
                       value={cat.pointsPerItem}
                       min={1}
                       max={100}
                       onChange={(e) => updateCategoryPoints(catIndex, Number(e.target.value))}
-                      className={styles.pointsInput}
+                      className="points-input"
                     />
                     <button
-                      className={styles.dialBtn}
+                      className="dial-btn"
                       type="button"
                       onClick={() => updateCategoryPoints(catIndex, Math.min(100, cat.pointsPerItem + 1))}
                       aria-label="Increase points"
-                    >+</button>
+                     ><Plus size={14} /></button>
                   </>
                 ) : (
-                  <span className={styles.pointsInput} style={{ display: "inline-block", minWidth: 24, textAlign: "center" }}>
+                  <span style={{ display: "inline-block", minWidth: 24, textAlign: "center", fontSize: '0.9rem', fontWeight: 800, color: '#166534' }}>
                     {cat.pointsPerItem}
                   </span>
                 )}
-                <span className={styles.pointsLabel}>pts</span>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#166534' }}>pts</span>
               </div>
             </div>
 
             {/* Activity List */}
-            <div className={styles.activityList}>
+            <div className="activity-list">
               {cat.activities.map((act, actIndex) => (
                 isEditing ? (
-                  <div key={actIndex} className={styles.activityRow}>
+                  <div key={actIndex} className="activity-row">
                     <input
-                      className={styles.activityInput}
                       value={act}
                       onChange={(e) => updateActivity(catIndex, actIndex, e.target.value)}
+                      style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '0.9rem', outline: 'none', padding: '6px 0' }}
                     />
                     <button
-                      className={styles.deleteBtn}
+                      className="delete-btn"
                       onClick={() => removeActivity(catIndex, actIndex)}
                       type="button"
                       title="Remove activity"
+                      style={{ background: 'transparent', border: 'none', color: '#cbd5e1', cursor: 'pointer', padding: '5px', borderRadius: '8px' }}
                     >
                       <Trash2 size={14} />
                     </button>
                   </div>
                 ) : (
-                  <div key={actIndex} className={styles.activityReadOnly}>
-                    <span className={styles.activityDot} />
+                  <div key={actIndex} className="activity-read-only" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 4px', color: '#334155', fontSize: '0.9rem', borderBottom: '1px solid #f1f5f9' }}>
+                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--primary)', opacity: 0.6 }} />
                     <span>{act}</span>
                   </div>
                 )
               ))}
               {isEditing && (
                 <button
-                  className={styles.addActivityBtn}
+                  className="add-activity-btn"
                   onClick={() => addActivity(catIndex)}
                   type="button"
                 >
-                  <Plus size={15} /> <span className={styles.btnText}>Add Activity</span>
+                  <Plus size={15} /> <span>Add Activity</span>
                 </button>
               )}
             </div>
@@ -231,4 +232,3 @@ export default function AdminTasks() {
     </div>
   );
 }
-

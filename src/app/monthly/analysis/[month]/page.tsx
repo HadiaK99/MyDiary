@@ -1,10 +1,12 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import styles from "./analysis.module.css";
 import Header from "@frontend/components/Navigation/Header";
 import { Sparkles, Calendar, Heart } from "lucide-react";
 import { ActivityCategory } from "@shared/constants/activities";
+import { Button } from "@frontend/components/Common/Button";
+import { Card } from "@frontend/components/Common/Card";
+import { AnalysisContainer } from "./AnalysisStyles";
 
 interface CategoryStat {
   name: string;
@@ -16,7 +18,7 @@ interface CategoryStat {
 
 export default function MonthlyAnalysis({ params: paramsPromise }: { params: Promise<{ month: string }> }) {
   const params = use(paramsPromise);
-  const month = params.month.charAt(0).toUpperCase() + params.month.slice(1);
+  const monthName = params.month.charAt(0).toUpperCase() + params.month.slice(1);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<CategoryStat[]>([]);
   const [overallScore, setOverallScore] = useState(0);
@@ -55,7 +57,7 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
         const entriesData = await entriesRes.json();
         const entries = (entriesData.entries || []) as { id: string; date: string; data: string }[];
 
-        const monthIndex = new Date(`${month} 1, 2026`).getMonth();
+        const monthIndex = new Date(`${monthName} 1, 2026`).getMonth();
         const filteredEntries = entries.filter((e) => {
           const entryDate = new Date(e.date);
           return entryDate.getMonth() === monthIndex;
@@ -114,76 +116,76 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
     };
 
     fetchData();
-  }, [month]);
+  }, [monthName]);
 
   return (
-    <div className={styles.container}>
+    <AnalysisContainer>
       <Header />
 
-      <section className={`${styles.analysisCard} glass animate-fade-in`}>
-        <div className={styles.heroSection}>
-          <div className={styles.heroText}>
+      <Card variant="default" className="analysis-card glass animate-fade-in">
+        <div className="hero-section">
+          <div className="hero-text">
             <h1>How did I do? <Sparkles size={28} style={{ color: '#facc15' }} /></h1>
-            <p>Your Monthly Progress Report for <strong>{month}</strong></p>
+            <p>Your Monthly Progress Report for <strong>{monthName}</strong></p>
           </div>
-          <div className={styles.overallBadge} style={{ background: getColor(overallScore) }}>
-            <span className={styles.scoreNum}>{overallScore}%</span>
-            <span className={styles.scoreLabel}>OVERALL</span>
+          <div className="overall-badge" style={{ background: getColor(overallScore) }}>
+            <span className="score-num">{overallScore}%</span>
+            <span className="score-label">OVERALL</span>
           </div>
         </div>
 
         {loading ? (
-          <div className={styles.loadingArea}>
+          <div className="loading-area">
             <div className="animate-pulse">Analyzing your achievements...</div>
           </div>
         ) : stats.length > 0 ? (
-          <div className={styles.markSheet}>
-            <div className={styles.sheetHeader}>
+          <div className="mark-sheet">
+            <div className="sheet-header">
               <span>Category</span>
               <span style={{ textAlign: 'center' }}>Progress</span>
               <span style={{ textAlign: 'right' }}>Ranking</span>
             </div>
 
             {stats.map(stat => (
-              <div key={stat.name} className={styles.sheetRow}>
-                <div className={styles.catName}>
+              <div key={stat.name} className="sheet-row">
+                <div className="cat-name">
                   <strong>{stat.name}</strong>
                 </div>
 
-                <div className={styles.progressCol}>
-                  <div className={styles.progressBarWrapper}>
+                <div className="progress-col">
+                  <div className="progress-bar-wrapper">
                     <div
-                      className={styles.progressBar}
+                      className="progress-bar"
                       style={{ width: `${stat.percentage}%`, background: stat.color }}
                     ></div>
                   </div>
-                  <span className={styles.percentText}>{stat.percentage}%</span>
+                  <span className="percent-text">{stat.percentage}%</span>
                 </div>
 
-                <div className={styles.rankCol}>
-                  <span className={styles.rankingEmoji}>{stat.emoji}</span>
-                  <span className={styles.statusText} style={{ color: stat.color }}>{stat.status}</span>
+                <div className="rank-col">
+                  <span className="ranking-emoji">{stat.emoji}</span>
+                  <span className="status-text" style={{ color: stat.color }}>{stat.status}</span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className={styles.emptyState}>
+          <div className="empty-state">
             <Calendar size={48} opacity={0.2} style={{ marginBottom: '15px' }} />
-            <p>No entries found for {month}. Keep writing every day to see your report!</p>
+            <p>No entries found for {monthName}. Keep writing every day to see your report!</p>
           </div>
         )}
 
-        <div className={styles.summaryFooter}>
-          <div className={styles.insightBox}>
+        <div className="summary-footer">
+          <div className="insight-box">
             <Heart size={20} fill="#ef4444" color="#ef4444" />
             <span>Reflect on your growth. Every small step counts towards a better version of you!</span>
           </div>
-          <button className="pill-btn no-print" onClick={() => window.print()}>
+          <Button variant="secondary" className="no-print" onClick={() => window.print()}>
             Print My Mark Sheet
-          </button>
+          </Button>
         </div>
-      </section>
-    </div>
+      </Card>
+    </AnalysisContainer>
   );
 }

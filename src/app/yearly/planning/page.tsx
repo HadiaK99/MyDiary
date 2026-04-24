@@ -1,131 +1,142 @@
 "use client";
 
-import { useState } from "react";
-import styles from "./planning.module.css";
+import { useState, useEffect } from "react";
 import Header from "@frontend/components/Navigation/Header";
-import { Sparkles, Target, Save, Plus, Trash2 } from "lucide-react";
+import { Sparkles, Save, Edit3, Trash2, Plus, Rocket } from "lucide-react";
+import { Button } from "@frontend/components/Common/Button";
+import { Card } from "@frontend/components/Common/Card";
+import { YearlyPlanningContainer } from "./YearlyPlanningStyles";
+
+interface YearlyGoal {
+  id: string;
+  text: string;
+}
+
+const DEFAULT_GOALS: YearlyGoal[] = [
+  { id: "1", text: "Learn a new language" },
+  { id: "2", text: "Read 12 books" },
+  { id: "3", text: "Help more at home" }
+];
 
 export default function YearlyPlanning() {
-  const [vision, setVision] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedPlan = localStorage.getItem("yearly_plan_2026");
-      if (savedPlan) {
-        const plan = JSON.parse(savedPlan);
-        return plan.vision || "";
-      }
-    }
-    return "";
-  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [vision, setVision] = useState("");
+  const [goals, setGoals] = useState<YearlyGoal[]>(DEFAULT_GOALS);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const [goals, setGoals] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedPlan = localStorage.getItem("yearly_plan_2026");
-      if (savedPlan) {
-        const plan = JSON.parse(savedPlan);
-        return plan.goals || ["", "", ""];
-      }
+  useEffect(() => {
+    const saved = localStorage.getItem("yearly_plan");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setVision(parsed.vision || "");
+      setGoals(parsed.goals || DEFAULT_GOALS);
     }
-    return ["", "", ""];
-  });
-
-  const [isEditing, setIsEditing] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !localStorage.getItem("yearly_plan_2026");
-    }
-    return true;
-  });
-
-  const [saved, setSaved] = useState(false);
+  }, []);
 
   const handleSave = () => {
-    localStorage.setItem("yearly_plan_2026", JSON.stringify({ vision, goals }));
-    setSaved(true);
+    localStorage.setItem("yearly_plan", JSON.stringify({ vision, goals }));
     setIsEditing(false);
-    setTimeout(() => setSaved(false), 3000);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
-  const updateGoal = (idx: number, text: string) => {
-    const newGoals = [...goals];
-    newGoals[idx] = text;
-    setGoals(newGoals);
+  const updateGoal = (id: string, text: string): void => {
+    setGoals(prev => prev.map(g => g.id === id ? { ...g, text } : g));
   };
 
-  const addGoal = () => setGoals([...goals, ""]);
-  const removeGoal = (idx: number) => setGoals(goals.filter((_, i) => i !== idx));
+  const addGoal = () => {
+    const newId = Date.now().toString();
+    setGoals(prev => [...prev, { id: newId, text: "" }]);
+  };
+
+  const removeGoal = (id: string): void => {
+    setGoals(prev => prev.filter(g => g.id !== id));
+  };
 
   return (
-    <div className={styles.container}>
+    <YearlyPlanningContainer>
       <Header />
 
-      <div className={styles.topActions}>
-        <div /> {/* Spacer for flex alignment */}
-        <button 
-          className="pill-btn" 
+      <div className="top-actions">
+        <Button 
+          variant={isEditing ? "primary" : "secondary"}
           onClick={isEditing ? handleSave : () => setIsEditing(true)}
-          style={{ background: isEditing ? '#8b5cf6' : 'white', color: isEditing ? 'white' : '#8b5cf6', border: '2px solid #8b5cf6' }}
         >
-          {isEditing ? <><Save size={18} /> Save My Vision</> : "Edit My Plan"}
-        </button>
+          {isEditing ? (
+            <><Save size={18} style={{ marginRight: '8px' }} /> Save My Year</>
+          ) : (
+            <><Edit3 size={18} style={{ marginRight: '8px' }} /> Edit My Plan</>
+          )}
+        </Button>
       </div>
 
-      <section className={`${styles.planningCard} glass animate-fade-in`}>
-        <div className={styles.hero}>
-          <Sparkles size={48} color="#facc15" />
-          <h1>My Vision for 2026</h1>
-          <p>What kind of person do you want to become this year? What big dreams do you have?</p>
+      <Card variant="default" className="planning-card glass animate-fade-in">
+        <div className="hero">
+          <Sparkles size={48} color="#8b5cf6" />
+          <h1>My Yearly Vision</h1>
+          <p>Imagine your best self. What does this year look like for you?</p>
         </div>
 
-        {saved && (
-          <div className={styles.successMsg}>
-            ✨ Your annual vision has been safely locked in your diary!
+        {showSuccess && (
+          <div className="success-msg">
+            ✨ Your yearly plan has been safely tucked away!
           </div>
         )}
 
-        <div className={styles.visionArea}>
+        <div className="vision-area">
           {isEditing ? (
             <textarea 
-              placeholder="In 2026, I want to be more patient, learn how to code, and help my parents every day. I dream of being a person who..."
+              placeholder="Write your big dream here..." 
               value={vision}
               onChange={(e) => setVision(e.target.value)}
             />
           ) : (
-            <div className={styles.visionView}>
-              {vision || "Click 'Edit My Plan' to write your vision for the year!"}
+            <div className="vision-view">
+              {vision || "A world of possibilities awaits... Start by editing your vision!"}
             </div>
           )}
         </div>
 
-        <div className={styles.goalsSection}>
-          <h2><Target size={24} /> My Top Annual Goals</h2>
-          <div className={styles.goalList}>
-            {goals.map((goal, idx) => (
-              <div key={idx} className={styles.goalItem}>
-                <span className={styles.goalIndex}>#{idx + 1}</span>
+        <div className="goals-section">
+          <h2><Rocket size={24} color="#8b5cf6" /> Top Yearly Goals</h2>
+          <div className="goal-list">
+            {goals.map((goal, index) => (
+              <div key={goal.id} className="goal-item">
+                <div className="goal-index">{index + 1}</div>
                 {isEditing ? (
                   <>
                     <input 
                       type="text" 
-                      placeholder="e.g. Master my multiplication tables" 
-                      value={goal}
-                      onChange={(e) => updateGoal(idx, e.target.value)}
+                      value={goal.text}
+                      placeholder="Enter a big goal..."
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateGoal(goal.id, e.target.value)}
                     />
-                    <button onClick={() => removeGoal(idx)} className={styles.removeBtn}>
-                      <Trash2 size={18} />
+                    <button onClick={() => removeGoal(goal.id)} className="remove-btn">
+                      <Trash2 size={16} />
                     </button>
                   </>
                 ) : (
-                  <span className={styles.goalText}>{goal || "Empty goal"}</span>
+                  <span className="goal-text">{goal.text || "Unset goal"}</span>
                 )}
               </div>
             ))}
-            {isEditing && (
-              <button onClick={addGoal} className={styles.addBtn}>
-                <Plus size={18} /> Add Another Goal
-              </button>
-            )}
           </div>
+
+          {isEditing && (
+            <Button 
+              variant="secondary" 
+              className="add-btn" 
+              onClick={(e) => {
+                e.preventDefault();
+                addGoal();
+              }}
+              style={{ width: '100%', borderStyle: 'dashed' }}
+            >
+              <Plus size={18} style={{ marginRight: '8px' }} /> Add Another Yearly Goal
+            </Button>
+          )}
         </div>
-      </section>
-    </div>
+      </Card>
+    </YearlyPlanningContainer>
   );
 }

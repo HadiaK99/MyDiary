@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
 import { UserRole, User } from "@shared/types";
-import styles from "./login.module.css";
+import { AuthContainer } from "@frontend/components/Auth/AuthStyles";
+import { Button } from "@frontend/components/Common/Button";
 import { useRouter } from "next/navigation";
 import { Sparkles, Star } from "lucide-react";
 
@@ -35,9 +36,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.authCard}>
-        <div className={styles.logoArea}>
+    <AuthContainer>
+      <div className="auth-card">
+        <div className="logo-area">
           <div style={{ background: 'var(--primary)', width: '60px', height: '60px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', color: 'white' }}>
             <Star size={32} />
           </div>
@@ -45,15 +46,15 @@ export default function SignupPage() {
           <p style={{ color: '#64748b', fontWeight: 500 }}>Start your moral journey today!</p>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
+        <form className="form" onSubmit={handleSubmit}>
+          <div className="input-group">
             <label>I am a...</label>
-            <div className={styles.roleSelect}>
+            <div className="role-select">
               {(["CHILD", "PARENT", "ADMIN"] as UserRole[]).map((r) => (
                 <button
                   key={r}
                   type="button"
-                  className={`${styles.roleBtn} ${role === r ? styles.roleBtnActive : ''}`}
+                  className={`role-btn ${role === r ? 'active' : ''}`}
                   onClick={() => setRole(r)}
                 >
                   {r.charAt(0) + r.slice(1).toLowerCase()}
@@ -62,12 +63,12 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <div className={styles.inputGroup}>
+          <div className="input-group">
             <label htmlFor="username">Username</label>
             <input
               id="username"
               type="text"
-              className={styles.inputField}
+              className="input-field"
               placeholder="Pick a cool name"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -75,12 +76,12 @@ export default function SignupPage() {
             />
           </div>
 
-          <div className={styles.inputGroup}>
+          <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
               id="password"
               type="password"
-              className={styles.inputField}
+              className="input-field"
               placeholder="Choose a strong password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -89,11 +90,11 @@ export default function SignupPage() {
           </div>
 
           {role === "PARENT" && (
-            <div className={styles.inputGroup}>
+            <div className="input-group">
               <label htmlFor="child">Link his/her Child</label>
               <select
                 id="child"
-                className={styles.inputField}
+                className="input-field"
                 value={childId}
                 onChange={(e) => setChildId(e.target.value)}
                 required
@@ -111,19 +112,18 @@ export default function SignupPage() {
             </div>
           )}
 
-          <button type="submit" className={styles.submitBtn}>
-            Create My Account <Sparkles size={20} style={{ marginLeft: '10px', verticalAlign: 'middle' }} />
-          </button>
+          <Button type="submit" fullWidth size="large">
+            Create My Account <Sparkles size={20} style={{ marginLeft: '10px' }} />
+          </Button>
         </form>
 
-        <p className={styles.switchAuth}>
+        <p className="switch-auth">
           Already have an account? <button
             type="button"
             onClick={() => router.push("/login")}
-            style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 'inherit', fontFamily: 'inherit' }}
           >Log In</button>
         </p>
       </div>
-    </div>
+    </AuthContainer>
   );
 }

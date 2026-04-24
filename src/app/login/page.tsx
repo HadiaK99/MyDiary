@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
-import styles from "./login.module.css";
+import { AuthContainer } from "@frontend/components/Auth/AuthStyles";
+import { Button } from "@frontend/components/Common/Button";
 import { useRouter } from "next/navigation";
 import { Smile, BookOpen } from "lucide-react";
 
@@ -20,9 +21,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.authCard}>
-        <div className={styles.logoArea}>
+    <AuthContainer>
+      <div className="auth-card">
+        <div className="logo-area">
           <div style={{ background: 'var(--primary)', width: '60px', height: '60px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', color: 'white' }}>
             <BookOpen size={32} />
           </div>
@@ -30,13 +31,13 @@ export default function LoginPage() {
           <p style={{ color: '#64748b', fontWeight: 500 }}>Welcome back, Hero!</p>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
+        <form className="form" onSubmit={handleSubmit}>
+          <div className="input-group">
             <label htmlFor="username">Username</label>
             <input
               id="username"
               type="text"
-              className={styles.inputField}
+              className="input-field"
               placeholder="Your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -44,12 +45,12 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className={styles.inputGroup}>
+          <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
               id="password"
               type="password"
-              className={styles.inputField}
+              className="input-field"
               placeholder="Your secret code"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -57,19 +58,18 @@ export default function LoginPage() {
             />
           </div>
 
-          <button type="submit" className={styles.submitBtn}>
-            Let's Go! <Smile size={20} style={{ marginLeft: '10px', verticalAlign: 'middle' }} />
-          </button>
+          <Button type="submit" fullWidth size="large">
+            Let's Go! <Smile size={20} style={{ marginLeft: '10px' }} />
+          </Button>
         </form>
 
-        <p className={styles.switchAuth}>
+        <p className="switch-auth">
           Don't have an account? <button 
             type="button" 
             onClick={() => router.push("/signup")}
-            style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', padding: 0, fontSize: 'inherit', fontFamily: 'inherit' }}
           >Sign Up</button>
         </p>
       </div>
-    </div>
+    </AuthContainer>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "../admin.module.css";
 import { 
   Plus, 
   Search, 
@@ -14,20 +13,8 @@ import {
   X as CloseIcon
 } from "lucide-react";
 import RecordEditor from "@frontend/components/Admin/RecordEditor";
-
-interface User {
-  id: string;
-  username: string;
-  role: string;
-}
-
-interface DiaryEntry {
-  id: string;
-  date: string;
-  score: number;
-  rating: string;
-  data: string;
-}
+import { Button } from "@frontend/components/Common/Button";
+import { User, DiaryEntry } from "@shared/types";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -50,6 +37,8 @@ export default function UserRecords() {
         const data = await res.json();
         // Only show child users
         if (data.users) setUsers(data.users.filter((u: User) => u.role === "CHILD"));
+      } catch {
+        // Silent catch for initial load
       } finally {
         setLoading(false);
       }
@@ -68,7 +57,7 @@ export default function UserRecords() {
     }
   };
 
-  const handleUserSelect = (user: User) => {
+  const handleUserSelect = (user: User): void => {
     setSelectedUser(user);
     setDateFilter(""); 
     setCurrentPage(1);
@@ -110,84 +99,124 @@ export default function UserRecords() {
   }, [dateFilter, selectedUser]);
 
   return (
-    <div className={styles.recordsContainer}>
-      <div className={styles.tableTitle} style={{ flexWrap: 'wrap', gap: '15px' }}>
+    <div style={{ width: '100%' }}>
+      <div className="table-title">
         <div>
           <h1>User Record Management</h1>
-          <p>Browse, add, or fix daily journal entries for child users.</p>
+          <p style={{ color: '#64748b' }}>Browse, add, or fix daily journal entries for child users.</p>
         </div>
         {selectedUser && (
-          <div className={styles.tableActions}>
-            <button 
-              className={styles.submitBtn} 
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <Button 
               onClick={() => { setEditingEntry(null); setShowEditor(true); }}
-              style={{ width: 'fit-content' }}
+              className="hide-text-on-mobile"
             >
-              <Plus size={18} /> <span className={styles.btnText}>Add New Record</span>
-            </button>
+              <Plus size={18} style={{ marginRight: '8px' }} /> <span>Add New Record</span>
+            </Button>
           </div>
         )}
       </div>
 
-      <div className={styles.recordsGrid}>
+      <div className="records-grid">
         {/* User Selection Sidebar */}
-        <div className={styles.tableContainer} style={{ marginTop: 0, paddingBottom: '10px' }}>
-          <div style={{ marginBottom: '20px', position: 'relative' }}>
+        <div className="table-container" style={{ marginTop: 0, paddingBottom: '10px' }}>
+          <div className="hide-on-mobile" style={{ marginBottom: '20px', position: 'relative' }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
             <input 
               type="text"
               placeholder="Search users..."
-              className={styles.actionBtn}
-              style={{ width: '100%', paddingLeft: '36px', height: '44px', background: '#f8fafc' }}
+              style={{ 
+                width: '100%', 
+                padding: '10px 10px 10px 36px', 
+                height: '44px', 
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                fontFamily: 'inherit',
+                fontWeight: 600
+              }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <div style={{ maxHeight: 'calc(100vh - 350px)', overflowY: 'auto' }}>
+          <select 
+            className="mobile-user-select"
+            value={selectedUser?.id || ""}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              const user = users.find(u => u.id === e.target.value);
+              if (user) handleUserSelect(user);
+            }}
+          >
+            <option value="" disabled>Select a child user...</option>
+            {users.map(user => (
+              <option key={user.id} value={user.id}>{user.username}</option>
+            ))}
+          </select>
+
+          <div className="user-selector-list">
             {loading ? (
               <p style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>Loading users...</p>
             ) : filteredUsers.length > 0 ? filteredUsers.map(user => (
               <div 
                 key={user.id}
-                className={`${styles.navItem} ${selectedUser?.id === user.id ? styles.active : ''}`}
-                style={{ cursor: 'pointer', marginBottom: '4px', justifyContent: 'space-between' }}
+                className={`nav-item ${selectedUser?.id === user.id ? 'active' : ''}`}
+                style={{ cursor: 'pointer', justifyContent: 'space-between', display: 'flex', alignItems: 'center', padding: '12px 15px', borderRadius: '12px' }}
                 onClick={() => handleUserSelect(user)}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <UserIcon size={16} />
-                  <span>{user.username}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '8px', 
+                    background: selectedUser?.id === user.id ? 'white' : '#f1f5f9',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: selectedUser?.id === user.id ? 'var(--primary)' : '#64748b'
+                  }}>
+                    <UserIcon size={16} />
+                  </div>
+                  <span style={{ fontWeight: 700 }}>{user.username}</span>
                 </div>
                 <ChevronRight size={14} style={{ opacity: selectedUser?.id === user.id ? 1 : 0.3 }} />
               </div>
             )) : (
-              <p style={{ textAlign: 'center', color: '#94a3b8', padding: '20px', fontSize: '0.9rem' }}>No child users found</p>
+              <p style={{ textAlign: 'center', color: '#94a3b8', padding: '20px', fontSize: '0.9rem', width: '100%' }}>No child users found</p>
             )}
           </div>
         </div>
 
         {/* Entries List Area */}
-        <div className={styles.tableContainer} style={{ marginTop: 0 }}>
+        <div className="table-container" style={{ marginTop: 0, minWidth: 0 }}>
           {selectedUser ? (
             <>
-              <div className={styles.entryHistoryTitle}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>
                 <h3 style={{ margin: 0 }}>Entry History for {selectedUser.username}</h3>
                 
-                <div className={styles.filterGroup} style={{ gap: '10px' }}>
+                <div className="filter-group" style={{ gap: '10px' }}>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <label className={styles.filterLabel} style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>Filter by Date:</label>
+                    <label style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>Filter by Date:</label>
                     <input 
                       type="date"
-                      className={`${styles.actionBtn} ${styles.filterControl}`}
-                      style={{ height: '36px', fontSize: '0.85rem', width: '130px', padding: '0 10px' }}
+                      style={{ 
+                        height: '36px', 
+                        fontSize: '0.85rem', 
+                        width: '130px', 
+                        padding: '0 10px',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        background: 'white',
+                        fontFamily: 'inherit'
+                      }}
                       value={dateFilter}
                       onChange={(e) => setDateFilter(e.target.value)}
                     />
                   </div>
 
                   {dateFilter && (
-                    <button 
-                      className={styles.actionBtn}
+                    <Button 
+                      variant="ghost"
                       style={{ 
                         display: 'flex', 
                         alignItems: 'center', 
@@ -202,7 +231,7 @@ export default function UserRecords() {
                       onClick={() => setDateFilter("")}
                     >
                       <CloseIcon size={14} /> Clear
-                    </button>
+                    </Button>
                   )}
 
                   <div style={{ color: '#94a3b8', fontSize: '0.83rem', borderLeft: '1px solid #e2e8f0', paddingLeft: '15px' }}>
@@ -217,30 +246,30 @@ export default function UserRecords() {
                 </div>
               ) : filteredEntries.length > 0 ? (
                 <>
-                  <div className={styles.tableWrapper}>
-                    <table className={styles.adminTable}>
+                  <div className="table-wrapper">
+                    <table className="admin-table">
                       <thead>
                         <tr>
                           <th style={{ width: '150px' }}>Date</th>
-                          <th>Score</th>
-                          <th>Performance</th>
-                          <th style={{ textAlign: 'right' }}>Actions</th>
+                          <th style={{ width: '100px' }}>Score</th>
+                          <th style={{ width: '150px' }}>Performance</th>
+                          <th style={{ textAlign: 'right', width: '100px' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {paginatedEntries.map(entry => (
                           <tr key={entry.id}>
-                            <td style={{ fontWeight: 700 }} className={styles.nowrap}>
+                            <td style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Calendar size={14} style={{ color: '#64748b' }} />
                                 {new Date(entry.date).toLocaleDateString()}
                               </div>
                             </td>
-                            <td className={styles.nowrap}>
+                            <td style={{ whiteSpace: 'nowrap' }}>
                               <span style={{ fontWeight: 800, color: '#1e293b' }}>{entry.score}</span> pts
                             </td>
-                            <td className={styles.nowrap} style={{ minWidth: '140px' }}>
-                              <span className={styles.badge} style={{ 
+                            <td style={{ whiteSpace: 'nowrap' }}>
+                              <span className="badge" style={{ 
                                 background: getRatingColor(entry.rating),
                                 color: 'white',
                                 display: 'inline-block',
@@ -250,20 +279,22 @@ export default function UserRecords() {
                             </td>
                             <td style={{ textAlign: 'right' }}>
                               <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                <button 
-                                  className={styles.actionBtn}
+                                <Button 
+                                  variant="ghost"
                                   onClick={() => { setEditingEntry(entry); setShowEditor(true); }}
+                                  style={{ padding: '8px' }}
                                   title="Edit record"
                                 >
                                   <Edit3 size={16} />
-                                </button>
-                                <button 
-                                  className={styles.actionBtn}
+                                </Button>
+                                <Button 
+                                  variant="ghost"
                                   onClick={() => deleteEntry(entry.date)}
+                                  style={{ padding: '8px' }}
                                   title="Delete record"
                                 >
-                                  <Trash2 size={16} />
-                                </button>
+                                  <Trash2 size={16} color="#ef4444" />
+                                </Button>
                               </div>
                             </td>
                           </tr>
@@ -274,32 +305,35 @@ export default function UserRecords() {
 
                   {/* Pagination Controls */}
                   {totalPages > 1 && (
-                    <div className={styles.paginationContainer}>
-                      <button 
-                        className={styles.pageBtn}
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '30px' }}>
+                      <Button 
+                        variant="secondary"
                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
+                        style={{ padding: '8px' }}
                       >
                         <ChevronLeft size={18} />
-                      </button>
+                      </Button>
                       
                       {[...Array(totalPages)].map((_, i) => (
-                        <button
+                        <Button
                           key={i + 1}
-                          className={`${styles.pageBtn} ${currentPage === i + 1 ? styles.pageBtnActive : ''}`}
+                          variant={currentPage === i + 1 ? "primary" : "secondary"}
                           onClick={() => setCurrentPage(i + 1)}
+                          style={{ minWidth: '40px', padding: '8px' }}
                         >
                           {i + 1}
-                        </button>
+                        </Button>
                       ))}
 
-                      <button 
-                        className={styles.pageBtn}
+                      <Button 
+                        variant="secondary"
                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
+                        style={{ padding: '8px' }}
                       >
                         <ChevronRight size={18} />
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </>
@@ -308,22 +342,22 @@ export default function UserRecords() {
                   <Calendar size={48} style={{ opacity: 0.1, marginBottom: '15px' }} />
                   <p>{dateFilter ? "No records found for this date." : "No records found for this user."}</p>
                   {!dateFilter && (
-                    <button 
-                      className={styles.submitBtn} 
-                      style={{ marginTop: '20px', background: '#f1f5f9', color: '#475569', boxShadow: 'none' }}
+                    <Button 
+                      variant="secondary"
+                      style={{ marginTop: '20px', color: '#475569' }}
                       onClick={() => { setEditingEntry(null); setShowEditor(true); }}
                     >
                       Create the first record
-                    </button>
+                    </Button>
                   )}
                   {dateFilter && (
-                    <button 
-                      className={styles.actionBtn} 
-                      style={{ margin: '20px auto 0', padding: '10px 20px' }}
+                    <Button 
+                      variant="ghost"
+                      style={{ margin: '20px auto 0', padding: '10px 20px', border: '1px solid #e2e8f0' }}
                       onClick={() => setDateFilter("")}
                     >
                       View all entries
-                    </button>
+                    </Button>
                   )}
                 </div>
               )}

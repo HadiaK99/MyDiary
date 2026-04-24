@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
 import { User } from "@shared/types";
-import styles from "../parent.module.css";
 import { Send, Heart, Trash2 } from "lucide-react";
+import { Button } from "@frontend/components/Common/Button";
 
 interface Review {
   id: string;
@@ -74,47 +74,54 @@ export default function ParentReviews() {
 
   return (
     <div>
-      <div className={styles.tableTitle}>
+      <div className="table-title">
         <div>
           <h1>Encouraging Reviews</h1>
-          <p>Send a message of love and encouragement to {child.username}.</p>
+          <p style={{ color: '#64748b' }}>Send a message of love and encouragement to {child.username}.</p>
         </div>
         <Heart size={40} fill="#fb7185" color="#fb7185" />
       </div>
 
-      <div className={styles.tableContainer}>
+      <div className="table-container">
         <h3>New Review</h3>
         <div style={{ marginTop: '15px' }}>
           <textarea
-            className={styles.actionBtn}
-            style={{ width: '100%', height: '120px', textAlign: 'left', padding: '15px', background: '#f8fafc' }}
+            style={{ 
+              width: '100%', 
+              height: '120px', 
+              textAlign: 'left', 
+              padding: '15px', 
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '12px',
+              fontFamily: 'inherit'
+            }}
             placeholder={`Tell ${child.username} how proud you are today...`}
             value={newReview}
             onChange={(e) => setNewReview(e.target.value)}
           ></textarea>
-          <button
-            className={styles.submitBtn}
+          <Button
             style={{ width: 'auto', padding: '10px 30px', marginTop: '15px', marginLeft: 'auto', display: 'flex', gap: '8px' }}
             onClick={addReview}
           >
-            Send Message <Send size={18} />
-          </button>
+            <span>Send Message</span> <Send size={18} />
+          </Button>
         </div>
       </div>
 
-      <div className={styles.reviewSection} style={{ marginTop: '40px' }}>
+      <div className="review-section" style={{ marginTop: '40px' }}>
         <h3>Past Reviews</h3>
         <div style={{ marginTop: '20px' }}>
           {reviews.sort((a, b) => b.id.localeCompare(a.id)).map(review => (
-            <div key={review.id} className={styles.reviewCard}>
+            <div key={review.id} className="review-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <h4 style={{ color: 'var(--primary)', marginBottom: '5px' }}>{review.date}</h4>
                   <p>{review.text}</p>
                 </div>
-                <button className={styles.actionBtn} onClick={() => deleteReview(review.id)}>
+                <Button variant="ghost" onClick={() => deleteReview(review.id)} style={{ padding: '8px' }}>
                   <Trash2 size={16} />
-                </button>
+                </Button>
               </div>
             </div>
           ))}

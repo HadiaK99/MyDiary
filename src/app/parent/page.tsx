@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
 import { User } from "@shared/types";
-import styles from "./parent.module.css";
 import { Heart, Sparkles, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@frontend/components/Common/Button";
 
-interface DiaryEntry {
-  score: number;
-}
+import { DiaryEntry } from "@shared/types";
 
 export default function ParentDashboard() {
   const { user } = useAuth();
@@ -47,8 +45,8 @@ export default function ParentDashboard() {
   }, [user]);
 
   if (!child) return (
-    <div className={styles.welcomeCard}>
-      <div className={styles.welcomeText}>
+    <div className="welcome-card">
+      <div className="welcome-text">
         <h1>Welcome, {user?.username}!</h1>
         <p>You haven't linked a child account yet. Please contact the administrator.</p>
       </div>
@@ -57,49 +55,47 @@ export default function ParentDashboard() {
 
   return (
     <div>
-      <section className={styles.welcomeCard}>
-        <div className={styles.welcomeText}>
+      <section className="welcome-card">
+        <div className="welcome-text">
           <h1>Welcome, <span style={{ color: 'var(--primary)' }}>{user?.username}</span>!</h1>
           <p>Here's how {child.username} is doing today.</p>
         </div>
         <Heart size={80} fill="#fce7f3" color="#fce7f3" />
       </section>
 
-      <div className={styles.childPreview}>
-        <div className={styles.childHeader}>
-          <div className={styles.childAvatar}>{child.username.charAt(0)}</div>
-          <div className={styles.childInfo}>
+      <div className="child-preview">
+        <div className="child-header">
+          <div className="child-avatar">{child.username.charAt(0)}</div>
+          <div className="child-info">
             <h3>{child.username}</h3>
             <p><Sparkles size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> Level 4 Moral Hero</p>
           </div>
-          <button
-            type="button"
-            onClick={() => router.push(`/parent/report/${child.id}`)}
-            className="pill-btn"
+          <Button
+            onClick={() => router.push(`/parent/report`)}
             style={{ marginLeft: 'auto' }}
           >
-            Full Report <ArrowRight size={18} />
-          </button>
+            Full Report <ArrowRight size={18} style={{ marginLeft: '8px' }} />
+          </Button>
         </div>
 
-        <div className={styles.progressGrid}>
-          <div className={styles.progressStat}>
+        <div className="progress-grid">
+          <div className="progress-stat">
             <h5>Total Entries</h5>
             <p>{childStats.entries}</p>
           </div>
-          <div className={styles.progressStat}>
+          <div className="progress-stat">
             <h5>Avg. Score</h5>
             <p>{childStats.avgScore}%</p>
           </div>
-          <div className={styles.progressStat}>
+          <div className="progress-stat">
             <h5>Total Points</h5>
             <p>{childStats.totalPoints}</p>
           </div>
         </div>
 
-        <div className={styles.reviewSection}>
+        <div className="review-section">
           <h4 style={{ color: '#64748b', marginBottom: '15px' }}>Recent Review from You</h4>
-          <div className={styles.reviewCard}>
+          <div className="review-card">
             <h4>
               <span>Great job on Fajr!</span>
               <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Yesterday</span>

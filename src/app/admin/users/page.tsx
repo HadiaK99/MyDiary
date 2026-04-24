@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { User } from "@shared/types";
-import styles from "../admin.module.css";
 import { Trash2, UserPlus, Search } from "lucide-react";
 import UserEditor from "@frontend/components/Admin/UserEditor";
+import { Button } from "@frontend/components/Common/Button";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -51,71 +51,78 @@ export default function ManageUsers() {
         />
       )}
 
-      <div className={styles.tableTitle}>
+      <div className="table-title">
         <div>
           <h1>User Management</h1>
-          <p>Add, edit, or remove users from the system.</p>
+          <p style={{ color: '#64748b' }}>Add, edit, or remove users from the system.</p>
         </div>
-        <div className={styles.tableActions}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative' }}>
             <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
             <input 
               type="text" 
               placeholder="Search users..." 
-              className={styles.actionBtn} 
-              style={{ paddingLeft: '40px', width: '250px', background: '#f1f5f9' }}
+              style={{ 
+                padding: '10px 15px 10px 40px', 
+                width: '250px', 
+                background: '#f1f5f9',
+                border: 'none',
+                borderRadius: '12px',
+                fontFamily: 'inherit',
+                fontWeight: 600
+              }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button 
-            className={styles.submitBtn} 
+          <Button 
             onClick={() => setShowUserModal(true)}
             style={{ padding: '0 20px', height: '40px' }}
+            className="hide-text-on-mobile"
           >
-            <UserPlus size={18} /> <span className={styles.btnText}>Add User</span>
-          </button>
+            <UserPlus size={18} style={{ marginRight: '8px' }} /> <span className="hide-text-on-mobile">Add User</span>
+          </Button>
         </div>
       </div>
 
-      <div className={styles.tableContainer}>
-        <table className={styles.adminTable}>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Role</th>
-              <th className={styles.hideOnMobile}>System ID</th>
-              <th>Linked Child</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map(user => (
-              <tr key={user.id}>
-                <td style={{ fontWeight: 700 }}>{user.username}</td>
-                <td>
-                  <span className={`${styles.badge} ${
-                    user.role === 'ADMIN' ? styles.badgeAdmin : 
-                    user.role === 'PARENT' ? styles.badgeParent : styles.badgeChild
-                  }`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td className={`${styles.hideOnMobile}`} style={{ fontFamily: 'monospace', color: '#64748b' }}>{user.id}</td>
-                <td>
-                  {user.role === 'PARENT' ? (
-                    users.find(u => u.id === user.childId)?.username || 'Not Linked'
-                  ) : '-'}
-                </td>
-                <td>
-                  <button className={styles.actionBtn} onClick={() => deleteUser(user.id)}>
-                    <Trash2 size={16} />
-                  </button>
-                </td>
+      <div className="table-container">
+        <div className="table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Linked Child</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr key={user.id}>
+                  <td style={{ fontWeight: 700 }}>{user.username}</td>
+                  <td>
+                    <span className={`badge ${
+                      user.role === 'ADMIN' ? 'badge-admin' : 
+                      user.role === 'PARENT' ? 'badge-parent' : 'badge-child'
+                    }`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td>
+                    {user.role === 'PARENT' ? (
+                      users.find(u => u.id === user.childId)?.username || 'Not Linked'
+                    ) : '-'}
+                  </td>
+                  <td>
+                    <Button variant="ghost" onClick={() => deleteUser(user.id)} style={{ padding: '8px' }}>
+                      <Trash2 size={16} color="#ef4444" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
