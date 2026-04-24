@@ -1,15 +1,20 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState } from "react";
 import styles from "./planning.module.css";
 import Header from "@frontend/components/Navigation/Header";
-import { Edit3, Save, ArrowLeft, BookOpen, Heart, Clock, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Edit3, Save, BookOpen, Heart, Clock, Plus, Trash2 } from "lucide-react";
 
 interface ScheduleRow {
   task: string;
   dailyFrom: string;
   dailyTo: string;
+}
+
+interface SavedPlan {
+  schedule?: ScheduleRow[];
+  reading?: string;
+  familyTime?: string;
 }
 
 const DEFAULT_SCHEDULE: ScheduleRow[] = [
@@ -25,20 +30,38 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
   const month = params.month.charAt(0).toUpperCase() + params.month.slice(1);
   
   const [isEditing, setIsEditing] = useState(false);
-  const [schedule, setSchedule] = useState<ScheduleRow[]>(DEFAULT_SCHEDULE);
-  const [reading, setReading] = useState("");
-  const [familyTime, setFamilyTime] = useState("");
-
-  // Load from localStorage if available
-  useEffect(() => {
-    const saved = localStorage.getItem(`planning_${params.month}`);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.schedule) setSchedule(parsed.schedule);
-      if (parsed.reading) setReading(parsed.reading);
-      if (parsed.familyTime) setFamilyTime(parsed.familyTime);
+  const [schedule, setSchedule] = useState<ScheduleRow[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`planning_${params.month}`);
+      if (saved) {
+        const parsed: SavedPlan = JSON.parse(saved);
+        return parsed.schedule || DEFAULT_SCHEDULE;
+      }
     }
-  }, [params.month]);
+    return DEFAULT_SCHEDULE;
+  });
+
+  const [reading, setReading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`planning_${params.month}`);
+      if (saved) {
+        const parsed: SavedPlan = JSON.parse(saved);
+        return parsed.reading || "";
+      }
+    }
+    return "";
+  });
+
+  const [familyTime, setFamilyTime] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`planning_${params.month}`);
+      if (saved) {
+        const parsed: SavedPlan = JSON.parse(saved);
+        return parsed.familyTime || "";
+      }
+    }
+    return "";
+  });
 
   const handleSave = () => {
     localStorage.setItem(`planning_${params.month}`, JSON.stringify({ schedule, reading, familyTime }));
@@ -100,7 +123,7 @@ export default function MonthlyPlanning({ params: paramsPromise }: { params: Pro
               <tbody>
                 {schedule.map((row, idx) => (
                   <tr key={idx}>
-                    <td>
+                    <td className={styles.taskNameCell}>
                       {isEditing ? (
                         <input 
                           type="text" 

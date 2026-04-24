@@ -134,3 +134,32 @@
 .settingsBtn:hover {
   transform: rotate(30deg);
 }
+
+@media (max-width: 768px) {
+  .header {
+    padding: 15px 0;
+  }
+  
+  .brand {
+    font-size: 1rem;
+  }
+  
+  .usernameBtn span {
+    display: none;
+  }
+  
+  .usernameBtn {
+    padding: 8px;
+    border-radius: 50%;
+  }
+  
+  .right {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 10px 0;
+  }
+}

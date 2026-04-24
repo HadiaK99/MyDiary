@@ -28,10 +28,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [user, loading, router]);
 
-  // Close sidebar on navigation
-  useEffect(() => {
-    setIsSidebarOpen(false);
-  }, [pathname]);
 
   if (loading || !user) return <div className="loading-screen">Loading...</div>;
 
@@ -101,6 +97,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href} 
                 href={item.href}
                 className={`${styles.navItem} ${isActive ? styles.active : ""}`}
+                onClick={() => setIsSidebarOpen(false)}
               >
                 <Icon size={20} />
                 {item.label}

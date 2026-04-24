@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth, User } from "@frontend/context/AuthContext";
+import { useAuth } from "@frontend/context/AuthContext";
+import { User } from "@shared/types";
 import styles from "../parent.module.css";
-import { MessageCircle, Send, Heart, Trash2 } from "lucide-react";
+import { Send, Heart, Trash2 } from "lucide-react";
 
 interface Review {
   id: string;

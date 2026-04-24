@@ -63,6 +63,19 @@
   gap: 12px;
 }
 
+.addInput {
+  text-align: left;
+  background: white !important;
+  color: #1e293b !important;
+  border: 2px solid #e2e8f0 !important;
+  width: 100%;
+}
+
+.addButton {
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
 .goalItem {
   display: flex;
   align-items: center;
@@ -88,4 +101,46 @@
 .goalDone span {
   text-decoration: line-through;
   color: #64748b;
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .progressCircle {
+    margin: 10px auto;
+  }
+
+  .addSection {
+    justify-content: space-between; /* Space between input and button */
+    gap: 8px; /* Consistent gap */
+  }
+
+  .addButton {
+    margin-left: 0;
+    padding: 10px 15px; /* Smaller button */
+    min-width: 50px;
+  }
+  
+  .addInput {
+    padding: 10px 15px; /* Match button padding */
+    font-size: 0.9rem;
+  }
+
+  .goalsCard {
+    padding: 25px 15px;
+    margin: 20px auto;
+  }
+  
+  .goalItem {
+    padding: 15px;
+  }
+  
+  .goalItem span {
+    font-size: 0.95rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
 }

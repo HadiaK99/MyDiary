@@ -11,7 +11,6 @@ import {
   User as UserIcon,
   ChevronRight,
   ChevronLeft,
-  Filter,
   X as CloseIcon
 } from "lucide-react";
 import RecordEditor from "@frontend/components/Admin/RecordEditor";

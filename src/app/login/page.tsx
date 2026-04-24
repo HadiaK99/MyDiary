@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth, UserRole } from "@frontend/context/AuthContext";
+import { useAuth } from "@frontend/context/AuthContext";
 import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
 import { Smile, BookOpen } from "lucide-react";

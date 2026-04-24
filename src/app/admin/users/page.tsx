@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User } from "@frontend/context/AuthContext";
+import { User } from "@shared/types";
 import styles from "../admin.module.css";
 import { Trash2, UserPlus, Search } from "lucide-react";
 import UserEditor from "@frontend/components/Admin/UserEditor";
@@ -10,16 +10,18 @@ export default function ManageUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showUserModal, setShowUserModal] = useState(false);
-
-  const fetchUsers = async () => {
-    const res = await fetch("/api/admin/users");
-    const data = await res.json();
-    if (data.users) setUsers(data.users);
-  };
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
+    let active = true;
+    const fetchUsers = async () => {
+      const res = await fetch("/api/admin/users");
+      const data = await res.json();
+      if (active && data.users) setUsers(data.users);
+    };
     fetchUsers();
-  }, []);
+    return () => { active = false; };
+  }, [refreshTrigger]);
 
   const deleteUser = async (id: string) => {
     if (confirm("Are you sure you want to delete this user?")) {
@@ -28,7 +30,7 @@ export default function ManageUsers() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      fetchUsers(); // Refresh list
+      setRefreshTrigger(v => v + 1); // Refresh list
     }
   };
 
@@ -44,7 +46,7 @@ export default function ManageUsers() {
           onClose={() => setShowUserModal(false)}
           onSave={() => {
             setShowUserModal(false);
-            fetchUsers();
+            setRefreshTrigger(v => v + 1);
           }}
         />
       )}

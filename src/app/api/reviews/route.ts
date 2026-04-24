@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const { childId, text, date } = await request.json();
     const review = await ReviewService.createReview(session.userId, childId, text, date);
     return NextResponse.json({ review });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to create review" }, { status: 500 });
   }
 }
@@ -40,7 +40,7 @@ export async function DELETE(request: Request) {
     }
     await ReviewService.deleteReview(id);
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete review" }, { status: 500 });
   }
 }

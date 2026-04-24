@@ -171,16 +171,40 @@
   background: #f1f5f9;
   color: #475569;
   border: none;
-  padding: 14px;
+  padding: 12px 24px;
   border-radius: 50px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 0.95rem;
 }
 
 .cancelBtn:hover {
   background: #e2e8f0;
   color: #1e293b;
+}
+
+@media (max-width: 600px) {
+  .section {
+    padding: 20px;
+  }
+  
+  .card {
+    padding: 25px 15px;
+  }
+  
+  .saveBtn, .cancelBtn {
+    width: 100%;
+    padding: 14px;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+  }
 }
 
 .confirmDeleteBtn {

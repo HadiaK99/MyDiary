@@ -17,7 +17,7 @@ import {
 interface RecordEditorProps {
   userId: string;
   username: string;
-  entry?: any; // Existing entry if editing
+  entry?: { id: string; date: string; data: string };
   onClose: () => void;
   onSave: () => void;
 }
@@ -80,7 +80,7 @@ export default function RecordEditor({ userId, username, entry, onClose, onSave 
       
       // If range is specified for new record
       if (!entry && endDate && endDate > date) {
-        let current = new Date(date);
+        const current = new Date(date);
         const end = new Date(endDate);
         const limit = 31; // Max 31 days range
         let count = 1;
@@ -113,8 +113,9 @@ export default function RecordEditor({ userId, username, entry, onClose, onSave 
       }
 
       onSave();
-    } catch (error: any) {
-      alert(error.message || "Something went wrong.");
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Something went wrong.";
+      alert(msg);
     } finally {
       setSaving(false);
     }

@@ -122,12 +122,14 @@
 }
 
 .progressGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 15px;
 }
 
 .progressStat {
+  flex: 1 1 calc(33.333% - 10px);
+  min-width: 100px;
   background: #f8fafc;
   padding: 15px;
   border-radius: 15px;

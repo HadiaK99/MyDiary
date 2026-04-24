@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth, User } from "@frontend/context/AuthContext";
+import { useAuth } from "@frontend/context/AuthContext";
+import { User } from "@shared/types";
 import styles from "./parent.module.css";
-import { Heart, Star, Sparkles, ArrowRight } from "lucide-react";
+import { Heart, Sparkles, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ParentDashboard() {

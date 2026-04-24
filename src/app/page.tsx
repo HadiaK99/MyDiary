@@ -4,41 +4,27 @@ import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@frontend/context/AuthContext";
-import { calculateScore, getPerformanceRating } from "@shared/utils/scoring";
+import { getPerformanceRating } from "@shared/utils/scoring";
 import Header from "@frontend/components/Navigation/Header";
-import { 
-  Sun, 
-  Sparkles, 
-  Leaf, 
-  Smile, 
-  BarChart3, 
-  Trophy, 
+import {
+  Sun,
+  Smile,
+  BarChart3,
+  Trophy,
   ArrowRight,
   Target,
   Calendar,
   Heart
 } from "lucide-react";
 
-const DAYS = [
-  { short: "Mon", date: 7 },
-  { short: "Tue", date: 8 },
-  { short: "Wed", date: 9 },
-  { short: "Thu", date: 10, active: true },
-  { short: "Fri", date: 11 },
-  { short: "Sat", date: 12 },
-  { short: "Sun", date: 13 },
-];
-
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  
   const todayStr = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayStr);
   const [todayScore, setTodayScore] = useState(0);
   const [todayRating, setTodayRating] = useState({ rating: "None", color: "#ccc" });
-  const [reviews, setReviews] = useState<{id: string, text: string, date: string}[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<{ id: string, text: string, date: string }[]>([]);
 
   // Generate last 7 days
   const days = Array.from({ length: 7 }).map((_, i) => {
@@ -67,10 +53,9 @@ export default function Home() {
           const catRes = await fetch("/api/admin/activities");
           const catData = await catRes.json();
           const cats = catData.categories || [];
-          setCategories(cats);
-          
+
           let maxSc = 0;
-          cats.forEach((cat: any) => {
+          cats.forEach((cat: { activities: string[], pointsPerItem: number }) => {
             maxSc += (cat.activities.length * cat.pointsPerItem);
           });
 
@@ -105,12 +90,11 @@ export default function Home() {
 
       <section className={styles.greetingHeader}>
         <h1>Hi, <span style={{ color: 'var(--primary)' }}>{user.username}</span> <Smile size={32} style={{ color: 'var(--primary)', verticalAlign: 'middle', display: 'inline' }} /></h1>
-        
         {/* Day Selector */}
         <div className={styles.daySelector}>
           {days.map(day => (
-            <button 
-              key={day.fullDate} 
+            <button
+              key={day.fullDate}
               onClick={() => setSelectedDate(day.fullDate)}
               className={`${styles.dayBtn} ${day.active ? styles.dayBtnActive : ''}`}
               style={{ border: 'none', cursor: 'pointer' }}
@@ -193,7 +177,7 @@ export default function Home() {
       <section className={styles.sectionHeader} style={{ marginTop: '20px' }}>
         <h3>Milestones</h3>
       </section>
-      
+
       <div className={styles.quickGrid} style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
         <button 
           onClick={() => router.push("/yearly/planning")} 

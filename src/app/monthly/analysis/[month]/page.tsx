@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from "react";
 import styles from "./analysis.module.css";
 import Header from "@frontend/components/Navigation/Header";
-import { Sparkles, Trophy, Calendar, Target, Heart } from "lucide-react";
+import { Sparkles, Calendar, Heart } from "lucide-react";
 import { ActivityCategory } from "@shared/constants/activities";
 
 interface CategoryStat {
@@ -53,10 +53,10 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
         // Fetch all entries
         const entriesRes = await fetch("/api/diary");
         const entriesData = await entriesRes.json();
-        const entries = entriesData.entries as DiaryEntry[];
+        const entries = (entriesData.entries || []) as { id: string; date: string; data: string }[];
 
         const monthIndex = new Date(`${month} 1, 2026`).getMonth();
-        const filteredEntries = (entries || []).filter((e) => {
+        const filteredEntries = entries.filter((e) => {
           const entryDate = new Date(e.date);
           return entryDate.getMonth() === monthIndex;
         });
@@ -73,7 +73,7 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
           let totalPossibleItems = 0;
 
           filteredEntries.forEach((entry) => {
-            const entryData = JSON.parse(entry.data) as any;
+            const entryData = JSON.parse(entry.data) as { activities?: Record<string, boolean> };
             const entryActivities = entryData.activities || {};
             
             // Normalize keys to avoid space-related mismatches
@@ -82,9 +82,10 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
               normalizedActivities[k.trim()] = entryActivities[k];
             });
 
-            cat.activities.forEach((act: any) => {
+            cat.activities.forEach((act) => {
               totalPossibleItems++;
-              if (normalizedActivities[act.name.trim()]) {
+              const actName = (typeof act === 'string' ? act : act.name).trim();
+              if (normalizedActivities[actName]) {
                 totalItemsChecked++;
               }
             });

@@ -1,32 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { User } from "@frontend/context/AuthContext";
+import { useState } from "react";
+import { User } from "@shared/types";
 import styles from "./admin.module.css";
 import { Users, BookOpen, Star, TrendingUp } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    users: 0,
-    children: 0,
-    parents: 0,
-    entries: 0
-  });
-
-  useEffect(() => {
+  const [stats] = useState(() => {
+    if (typeof window === 'undefined') return { users: 0, children: 0, parents: 0, entries: 0 };
     const usersRaw = localStorage.getItem("diary-users") || "[]";
     const users: User[] = JSON.parse(usersRaw);
     
     // Count entries across all users (simulated by localStorage keys)
     const entryCount = Object.keys(localStorage).filter(key => key.startsWith("diary-202")).length;
 
-    setStats({
+    return {
       users: users.length,
       children: users.filter(u => u.role === "CHILD").length,
       parents: users.filter(u => u.role === "PARENT").length,
       entries: entryCount
-    });
-  }, []);
+    };
+  });
 
   return (
     <div>

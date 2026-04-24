@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./UserEditor.module.css";
 import { X, UserPlus, Shield, User, Users } from "lucide-react";
-import { User as UserType } from "@frontend/context/AuthContext";
+import { User as UserType } from "@shared/types";
 
 interface UserEditorProps {
   onClose: () => void;
@@ -25,7 +25,7 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
       const res = await fetch("/api/admin/users");
       const data = await res.json();
       if (data.users) {
-        setChildUsers(data.users.filter((u: any) => u.role === "CHILD"));
+        setChildUsers(data.users.filter((u: UserType) => u.role === "CHILD"));
       }
     };
     fetchChildren();
@@ -57,8 +57,9 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
       if (!res.ok) throw new Error(data.error || "Failed to create user");
 
       onSave();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "An error occurred";
+      setError(msg);
     } finally {
       setSaving(false);
     }

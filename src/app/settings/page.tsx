@@ -4,17 +4,17 @@ import { useState } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
 import Header from "@frontend/components/Navigation/Header";
 import styles from "./settings.module.css";
-import { Lock, Trash2, ArrowLeft, Save, AlertCircle, AlertTriangle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Lock, Trash2, Save, AlertCircle, AlertTriangle } from "lucide-react";
 import Modal from "@frontend/components/Common/Modal";
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
+  const [username, setUsername] = useState(user?.username || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   if (!user) return null;
@@ -37,10 +37,13 @@ export default function SettingsPage() {
       const res = await fetch("/api/auth/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ 
+          username, 
+          password: password || undefined 
+        }),
       });
       if (res.ok) {
-        setMessage({ type: "success", text: "Password updated successfully!" });
+        setMessage({ type: "success", text: "Account updated successfully!" });
         setPassword("");
         setConfirmPassword("");
       } else {
@@ -92,31 +95,67 @@ export default function SettingsPage() {
         )}
 
         <section className={styles.section}>
-          <h2><Lock size={22} /> Change Password</h2>
+          <h2><Lock size={22} /> Account Settings</h2>
           <form onSubmit={handleUpdatePassword}>
             <div className={styles.field}>
-              <label>New Password</label>
+              <label>Username</label>
               <input
-                type="password"
+                type="text"
                 className={styles.input}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
-            <div className={styles.field}>
-              <label>Confirm New Password</label>
-              <input
-                type="password"
-                className={styles.input}
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-            <button type="submit" className={styles.saveBtn} disabled={loading}>
-              {loading ? "Updating..." : "Update Password"} <Save size={18} />
-            </button>
+            {!showPasswordForm ? (
+              <button 
+                type="button" 
+                className={styles.saveBtn} 
+                onClick={() => setShowPasswordForm(true)}
+                style={{ marginTop: '20px' }}
+              >
+                <Lock size={18} /> Change Username and Password
+              </button>
+            ) : (
+              <>
+                <div className={styles.field}>
+                  <label>New Password (Optional)</label>
+                  <input
+                    type="password"
+                    className={styles.input}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label>Confirm New Password</label>
+                  <input
+                    type="password"
+                    className={styles.input}
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                  <button type="submit" className={styles.saveBtn} disabled={loading}>
+                    {loading ? "Updating..." : "Update Password"} <Save size={18} />
+                  </button>
+                  <button 
+                    type="button" 
+                    className={styles.cancelBtn} 
+                    onClick={() => {
+                      setShowPasswordForm(false);
+                      setPassword("");
+                      setConfirmPassword("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
           </form>
         </section>
 

@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@frontend/context/AuthContext";
 import { LogOut, Star, User, Settings, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 
 export default function Header() {
   const pathname = usePathname();

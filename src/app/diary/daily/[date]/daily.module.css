@@ -9,7 +9,7 @@
   border: 1px solid #ffe4e6;
   border-radius: 12px;
   padding: 40px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
   position: relative;
   min-height: 1000px;
 }
@@ -53,15 +53,20 @@
 /* Two Column Checklists */
 .checklistsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
   margin-bottom: 40px;
+  align-items: stretch;
 }
 
 .checklistCard {
+  width: 100%;
   border: 1px solid #fecaca;
   border-radius: 10px;
-  padding: 20px;
+  padding: 24px;
+  background: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .checkTitle {
@@ -75,6 +80,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   padding: 8px 0;
   border-bottom: 1px dashed #fecaca;
   margin-bottom: 8px;
@@ -89,6 +95,7 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: #4c0519;
+  flex: 1;
 }
 
 .checkSquare {
@@ -100,14 +107,24 @@
   justify-content: center;
   font-size: 0.7rem;
   color: #9f1239;
+  flex-shrink: 0;
 }
 
 /* Visual Trackers */
 .visualTrackers {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
   margin-bottom: 40px;
+  align-items: stretch;
+}
+
+.visualTrackers>.trackerCard {
+  width: 100%;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  padding: 24px;
 }
 
 .trackerCard h3 {
@@ -185,9 +202,57 @@
 }
 
 @media (max-width: 600px) {
-  .checklistsGrid, .visualTrackers { grid-template-columns: 1fr; }
-  .plannerSheet { padding: 20px; }
-  .plannerHeader h1 { font-size: 2.2rem; }
+  .plannerSheet {
+    padding: 25px 10px;
+  }
+
+  .plannerHeader h1 {
+    font-size: 2.2rem;
+  }
+
+  .checklistsGrid,
+  .visualTrackers {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .checklistCard,
+  .visualTrackers > .trackerCard {
+    padding: 15px;
+    width: 100%;
+  }
+
+  .checkTitle {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+
+  .itemLabel {
+    font-size: 0.75rem;
+  }
+
+  .listItem {
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .checkSquare {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+
+  .checklistsGrid,
+  .visualTrackers {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .checklistCard {
+    width: 100%;
+  }
 }
 
 .summaryOverlay {
@@ -237,6 +302,13 @@
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

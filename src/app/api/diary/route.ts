@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     
     const entry = await DiaryService.upsertEntry(userId, date, data, score, rating);
     return NextResponse.json({ entry });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to save entry" }, { status: 500 });
   }
 }
@@ -51,7 +51,7 @@ export async function DELETE(request: Request) {
     const userId = targetUserId || session.userId;
     await DiaryService.deleteEntry(userId, date);
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete entry" }, { status: 500 });
   }
 }

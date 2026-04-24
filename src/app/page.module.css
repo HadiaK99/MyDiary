@@ -112,10 +112,14 @@
 }
 
 .quickGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 40px;
+}
+
+.quickGrid > * {
+  flex: 1 1 160px;
 }
 
 .quickCard {

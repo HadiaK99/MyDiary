@@ -7,7 +7,7 @@ export const ProfileService = {
     });
   },
 
-  async updateProfile(userId: string, data: any) {
+  async updateProfile(userId: string, data: Record<string, unknown>) {
     return prisma.profile.upsert({
       where: { userId },
       update: {

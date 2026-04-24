@@ -50,10 +50,20 @@
 }
 
 .inputGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   margin-bottom: 30px;
+}
+
+.inputGrid > * {
+  flex: 1 1 calc(50% - 10px);
+}
+
+@media (max-width: 600px) {
+  .inputGrid > * {
+    flex: 1 1 100%;
+  }
 }
 
 .inputGroup {

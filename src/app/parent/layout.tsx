@@ -8,7 +8,6 @@ import {
   Heart, 
   BarChart3, 
   MessageSquare, 
-  Settings,
   LogOut,
   Home
 } from "lucide-react";

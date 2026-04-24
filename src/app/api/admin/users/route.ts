@@ -25,11 +25,12 @@ export async function POST(request: Request) {
     }
     const user = await AdminService.createUser(data);
     return NextResponse.json({ user });
-  } catch (error: any) {
-    if (error.code === 'P2002') { // Prisma unique constraint error
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002') {
       return NextResponse.json({ error: "Username already exists" }, { status: 400 });
     }
-    return NextResponse.json({ error: error.message || "Failed to create user" }, { status: 500 });
+    const msg = error instanceof Error ? error.message : "Failed to create user";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
@@ -46,7 +47,7 @@ export async function DELETE(request: Request) {
     }
     await AdminService.deleteUser(id);
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
   }
 }

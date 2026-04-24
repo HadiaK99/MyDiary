@@ -116,26 +116,26 @@ export default function AdminTasks() {
 
       {/* Page Header */}
       <div className={styles.tableTitle}>
-        <div>
-          <h1>Daily Activity Management</h1>
-          <p style={{ color: "#64748b", marginTop: 4 }}>Define which activities children should track daily.</p>
+        <div style={{ maxWidth: '100%' }}>
+          <h1 style={{ margin: 0, lineHeight: 1.2 }}>Daily Activity Management</h1>
+          <p style={{ color: "#64748b", marginTop: 8, fontSize: '0.9rem' }}>Define which activities children should track daily.</p>
         </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <div className={styles.tableActions}>
           {isEditing ? (
             <>
               <button className={styles.resetBtn} onClick={resetTasks} type="button">
-                <RotateCcw size={16} /> Reset
+                <RotateCcw size={16} /> <span className={styles.btnText}>Reset</span>
               </button>
               <button className={styles.resetBtn} onClick={() => setIsEditing(false)} type="button">
-                <X size={16} /> Cancel
+                <X size={16} /> <span className={styles.btnText}>Cancel</span>
               </button>
               <button className={styles.submitBtn} onClick={saveTasks} type="button" disabled={saving}>
-                <Save size={16} /> {saving ? "Saving…" : "Save Changes"}
+                <Save size={16} /> <span className={styles.btnText}>{saving ? "Saving…" : "Save Changes"}</span>
               </button>
             </>
           ) : (
             <button className={styles.editBtn} onClick={() => setIsEditing(true)} type="button">
-              <Pencil size={16} /> Edit Activities
+              <Pencil size={16} /> <span className={styles.btnText}>Edit Activities</span>
             </button>
           )}
         </div>
@@ -221,7 +221,7 @@ export default function AdminTasks() {
                   onClick={() => addActivity(catIndex)}
                   type="button"
                 >
-                  <Plus size={15} /> Add Activity
+                  <Plus size={15} /> <span className={styles.btnText}>Add Activity</span>
                 </button>
               )}
             </div>

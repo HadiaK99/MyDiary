@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./review.module.css";
 import Header from "@frontend/components/Navigation/Header";
-import { Trophy, Star, MessageSquare, ArrowLeft, Save } from "lucide-react";
-import Link from "next/link";
+import { Trophy, Star, Save } from "lucide-react";
 
 interface YearlyGoal {
   id: number;
@@ -12,34 +11,59 @@ interface YearlyGoal {
   status: string;
 }
 
+const INITIAL_GOALS: YearlyGoal[] = [
+  { id: 1, text: "Focus on my daily prayers and connect with Allah.", status: "Almost there! ✨" },
+  { id: 2, text: "Read at least one new book every month.", status: "Yes, I did! 🌟" },
+  { id: 3, text: "Be more helpful to my siblings and parents.", status: "Working on it! 💪" },
+];
+
 export default function YearlyReview() {
   const [isEditing, setIsEditing] = useState(false);
-  const [goals, setGoals] = useState<YearlyGoal[]>([
-    { id: 1, text: "Focus on my daily prayers and connect with Allah.", status: "Almost there! ✨" },
-    { id: 2, text: "Read at least one new book every month.", status: "Yes, I did! 🌟" },
-    { id: 3, text: "Be more helpful to my siblings and parents.", status: "Working on it! 💪" },
-  ]);
-  const [achievements, setAchievements] = useState("");
-  const [lessons, setLessons] = useState("");
 
-  // Load from planning data if available
-  useEffect(() => {
-    const savedPlan = localStorage.getItem("yearly_plan_2026");
-    if (savedPlan) {
-      const plan = JSON.parse(savedPlan);
-      if (plan.goals) {
-        setGoals(plan.goals.map((g: any, i: number) => ({ id: i + 1, text: g, status: "Working on it! 💪" })));
+  const [goals, setGoals] = useState<YearlyGoal[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedReview = localStorage.getItem("yearly_review_2026");
+      if (savedReview) {
+        const review = JSON.parse(savedReview);
+        if (review.goals) return review.goals;
+      }
+
+      const savedPlan = localStorage.getItem("yearly_plan_2026");
+      if (savedPlan) {
+        const plan = JSON.parse(savedPlan);
+        if (plan.goals) {
+          return plan.goals.map((g: string, i: number) => ({ 
+            id: i + 1, 
+            text: g, 
+            status: "Working on it! 💪" 
+          }));
+        }
       }
     }
-    
-    const savedReview = localStorage.getItem("yearly_review_2026");
-    if (savedReview) {
-      const review = JSON.parse(savedReview);
-      if (review.goals) setGoals(review.goals);
-      if (review.achievements) setAchievements(review.achievements);
-      if (review.lessons) setLessons(review.lessons);
+    return INITIAL_GOALS;
+  });
+
+  const [achievements, setAchievements] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedReview = localStorage.getItem("yearly_review_2026");
+      if (savedReview) {
+        const review = JSON.parse(savedReview);
+        return review.achievements || "";
+      }
     }
-  }, []);
+    return "";
+  });
+
+  const [lessons, setLessons] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedReview = localStorage.getItem("yearly_review_2026");
+      if (savedReview) {
+        const review = JSON.parse(savedReview);
+        return review.lessons || "";
+      }
+    }
+    return "";
+  });
 
   const handleSave = () => {
     localStorage.setItem("yearly_review_2026", JSON.stringify({ goals, achievements, lessons }));
@@ -64,13 +88,15 @@ export default function YearlyReview() {
             <h2>Celebrating My Growth! 🎉</h2>
             <p>You've completed an incredible journey this year. Let's look back at your resolutions.</p>
           </div>
-          <button 
-            className="pill-btn" 
-            onClick={isEditing ? handleSave : () => setIsEditing(true)}
-            style={{ background: isEditing ? '#8b5cf6' : 'white', color: isEditing ? 'white' : '#8b5cf6', border: '2px solid #8b5cf6' }}
-          >
-            {isEditing ? <><Save size={18} /> Save Review</> : "Edit Review"}
-          </button>
+          <div className={styles.buttonWrapper}>
+            <button
+              className="pill-btn"
+              onClick={isEditing ? handleSave : () => setIsEditing(true)}
+              style={{ background: isEditing ? '#8b5cf6' : 'white', color: isEditing ? 'white' : '#8b5cf6', border: '2px solid #8b5cf6' }}
+            >
+              {isEditing ? <><Save size={18} /> Save Review</> : "Edit Review"}
+            </button>
+          </div>
         </div>
 
         <div className={styles.focusReview}>
@@ -121,7 +147,7 @@ export default function YearlyReview() {
               {achievements || "Share your biggest wins here!"}
             </div>
           )}
-          
+
           <h3 style={{ marginTop: '30px' }}><Star size={20} style={{ display: 'inline', marginRight: '8px' }} /> What I learned</h3>
           {isEditing ? (
             <textarea 

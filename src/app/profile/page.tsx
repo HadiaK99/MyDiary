@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
-import { useRouter } from "next/navigation";
 import Header from "@frontend/components/Navigation/Header";
 import styles from "./profile.module.css";
-import { User, Lock, Heart, Star, Camera, Save, ArrowLeft, Sparkles, Edit3, X, Check } from "lucide-react";
+import { Star, Camera, Save, Sparkles, Edit3, X, Check } from "lucide-react";
 import { useForm } from "@frontend/hooks/useForm";
+import Image from "next/image";
 
 const PALETTE_COLORS = [
     "#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16", "#22c55e", "#10b981", "#14b8a6",
@@ -44,13 +44,11 @@ const INITIAL_PROFILE = {
 
 export default function ProfilePage() {
     const { user } = useAuth();
-    const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
-
     const [isEditing, setIsEditing] = useState(false);
-    const [username, setUsername] = useState(user?.username || "");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
+    const [message, setMessage] = useState({ type: "", text: "" });
 
     const { 
         values: profile, 
@@ -58,13 +56,8 @@ export default function ProfilePage() {
         setFieldValue: updateProfileField, 
         clearDraft 
     } = useForm({
-        initialValues: INITIAL_PROFILE,
-        storageKey: "diary_profile_draft"
+        initialValues: INITIAL_PROFILE
     });
-
-    const [loading, setLoading] = useState(false);
-    const [fetching, setFetching] = useState(true);
-    const [message, setMessage] = useState({ type: "", text: "" });
 
     useEffect(() => {
         if (user) {
@@ -73,7 +66,7 @@ export default function ProfilePage() {
                     const res = await fetch("/api/profile");
                     const data = await res.json();
                     if (data.profile) {
-                        setProfile(prev => ({ ...data.profile, ...prev }));
+                        setProfile({ ...INITIAL_PROFILE, ...data.profile });
                     }
                 } catch (error) {
                     console.error("Failed to fetch profile:", error);
@@ -87,39 +80,23 @@ export default function ProfilePage() {
 
     const handleUpdate = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
-        if (password && password !== confirmPassword) {
-            setMessage({ type: "error", text: "Passwords do not match!" });
-            return;
-        }
-
         setLoading(true);
         setMessage({ type: "", text: "" });
 
         try {
-            const authRes = await fetch("/api/auth/profile", {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password: password || undefined }),
-            });
-
             const profileRes = await fetch("/api/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(profile),
             });
-
-            if (authRes.ok && profileRes.ok) {
-                setMessage({ type: "success", text: "Profile updated successfully!" });
+            if (profileRes.ok) {
+                setMessage({ type: "success", text: "Journal updated successfully!" });
                 setIsEditing(false);
-                clearDraft(); // Clear local draft on success
-                if (password || username !== user?.username) {
-                    setMessage({ type: "success", text: "Account updated! Please log in again if you changed your username." });
-                }
+                clearDraft();
             } else {
-                const errorData = await authRes.json();
-                setMessage({ type: "error", text: errorData.error || "Update failed" });
+                setMessage({ type: "error", text: "Failed to update journal" });
             }
-        } catch (error) {
+        } catch {
             setMessage({ type: "error", text: "Something went wrong" });
         } finally {
             setLoading(false);
@@ -172,7 +149,7 @@ export default function ProfilePage() {
                     </div>
                     <div className={styles.photoFrame} onClick={() => isEditing && fileInputRef.current?.click()}>
                         {profile.picture ? (
-                            <img src={profile.picture} alt="Profile" />
+                            <Image src={profile.picture as string} alt="Profile" width={200} height={200} unoptimized style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
                             <>
                                 <Camera size={32} />
@@ -407,9 +384,11 @@ export default function ProfilePage() {
                         </div>
 
                         <div className={styles.footer}>
-                            <button type="submit" className={styles.saveBtn} disabled={loading}>
-                                {loading ? "Saving My Journal..." : "Save My Journal"} <Save size={20} />
-                            </button>
+                            <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+                                <button type="submit" className={styles.saveBtn} disabled={loading}>
+                                    {loading ? "Save My Journal..." : "Save My Journal"} <Save size={20} />
+                                </button>
+                            </div>
                         </div>
                     </form>
                 )}

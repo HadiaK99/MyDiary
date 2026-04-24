@@ -84,13 +84,12 @@ export default function ChildGoals() {
           <input 
             type="text" 
             placeholder="Add a new goal..." 
-            className="pill-btn" 
-            style={{ textAlign: 'left', background: 'white', color: '#1e293b', border: '2px solid #e2e8f0', width: '100%' }}
+            className={`${styles.addInput} pill-btn`} 
             value={newGoal}
             onChange={(e) => setNewGoal(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && addGoal()}
           />
-          <button className="pill-btn" onClick={addGoal} style={{ marginLeft: '10px' }}><Plus size={20} /></button>
+          <button className={`${styles.addButton} pill-btn`} onClick={addGoal}><Plus size={20} /></button>
         </div>
 
         <div className={styles.goalsList}>

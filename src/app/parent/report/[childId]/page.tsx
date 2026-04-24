@@ -1,21 +1,17 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { useAuth, User } from "@frontend/context/AuthContext";
+import { User } from "@shared/types";
 import styles from "../../parent.module.css";
-import { calculateScore, getPerformanceRating } from "@shared/utils/scoring";
-import { ActivityCategory } from "@shared/constants/activities";
 import { ArrowLeft, Calendar, MessageSquare, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ChildReport({ params: paramsPromise }: { params: Promise<{ childId: string }> }) {
   const params = use(paramsPromise);
   const childId = params.childId;
-  const { user } = useAuth();
   const router = useRouter();
   const [child, setChild] = useState<User | null>(null);
   const [entries, setEntries] = useState<{ date: string, score: number, rating: string }[]>([]);
-  const [categories, setCategories] = useState<ActivityCategory[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,10 +19,6 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
       const userData = await userRes.json();
       const found = userData.users?.find((u: User) => u.id === childId);
       if (found) setChild(found);
-
-      const catRes = await fetch("/api/admin/activities");
-      const catData = await catRes.json();
-      if (catData.categories) setCategories(catData.categories);
 
       const diaryRes = await fetch(`/api/diary?userId=${childId}`);
       const diaryData = await diaryRes.json();

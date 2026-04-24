@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const { text } = await request.json();
     const goal = await GoalService.createGoal(session.userId, text);
     return NextResponse.json({ goal });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to create goal" }, { status: 500 });
   }
 }
@@ -31,7 +31,7 @@ export async function PATCH(request: Request) {
     const { id, completed } = await request.json();
     const goal = await GoalService.toggleGoal(id, completed);
     return NextResponse.json({ goal });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to update goal" }, { status: 500 });
   }
 }
@@ -44,7 +44,7 @@ export async function DELETE(request: Request) {
     const { id } = await request.json();
     await GoalService.deleteGoal(id);
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete goal" }, { status: 500 });
   }
 }

@@ -1,26 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./planning.module.css";
 import Header from "@frontend/components/Navigation/Header";
-import { Sparkles, Target, Calendar, ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Sparkles, Target, Save, Plus, Trash2 } from "lucide-react";
 
 export default function YearlyPlanning() {
-  const [isEditing, setIsEditing] = useState(true);
-  const [vision, setVision] = useState("");
-  const [goals, setGoals] = useState<string[]>(["", "", ""]);
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    const savedPlan = localStorage.getItem("yearly_plan_2026");
-    if (savedPlan) {
-      const plan = JSON.parse(savedPlan);
-      if (plan.vision) setVision(plan.vision);
-      if (plan.goals) setGoals(plan.goals);
-      setIsEditing(false);
+  const [vision, setVision] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedPlan = localStorage.getItem("yearly_plan_2026");
+      if (savedPlan) {
+        const plan = JSON.parse(savedPlan);
+        return plan.vision || "";
+      }
     }
-  }, []);
+    return "";
+  });
+
+  const [goals, setGoals] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedPlan = localStorage.getItem("yearly_plan_2026");
+      if (savedPlan) {
+        const plan = JSON.parse(savedPlan);
+        return plan.goals || ["", "", ""];
+      }
+    }
+    return ["", "", ""];
+  });
+
+  const [isEditing, setIsEditing] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem("yearly_plan_2026");
+    }
+    return true;
+  });
+
+  const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
     localStorage.setItem("yearly_plan_2026", JSON.stringify({ vision, goals }));
