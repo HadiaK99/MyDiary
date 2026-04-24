@@ -14,7 +14,7 @@ export const calculateScore = (data: DayData, categories: ActivityCategory[]) =>
   // Calculate activity points
   categories.forEach(category => {
     category.activities.forEach(activity => {
-      const actName = typeof activity === 'string' ? activity : activity.name;
+      const actName = activity;
       if (data.activities[actName]) {
         totalScore += category.pointsPerItem;
       }

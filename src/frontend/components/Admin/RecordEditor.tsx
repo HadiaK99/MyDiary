@@ -17,7 +17,7 @@ import {
 interface RecordEditorProps {
   userId: string;
   username: string;
-  entry?: { id: string; date: string; data: string };
+  entry?: { id: string; date: string; data: string; score: number; rating: string } | null;
   onClose: () => void;
   onSave: () => void;
 }

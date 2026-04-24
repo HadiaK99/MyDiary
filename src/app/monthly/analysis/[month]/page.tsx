@@ -84,7 +84,7 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
 
             cat.activities.forEach((act) => {
               totalPossibleItems++;
-              const actName = (typeof act === 'string' ? act : act.name).trim();
+              const actName = act.trim();
               if (normalizedActivities[actName]) {
                 totalItemsChecked++;
               }

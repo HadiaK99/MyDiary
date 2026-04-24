@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { AuthService } from "@backend/services/AuthService";
 import { encrypt } from "@backend/lib/auth";
 import { cookies } from "next/headers";
+import { UserRole } from "@shared/types";
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
     const user = await AuthService.signup(username, password, role, childId);
 
     const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const session = await encrypt({ userId: user.id, username: user.username, role: user.role, expires });
+    const session = await encrypt({ userId: user.id, username: user.username, role: user.role as UserRole, expires });
     (await cookies()).set("session", session, { 
       expires, 
       httpOnly: true, 

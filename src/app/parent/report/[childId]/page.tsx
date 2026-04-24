@@ -67,7 +67,7 @@ export default function ChildReport({ params: paramsPromise }: { params: Promise
             <tbody>
               {entries.map(entry => (
                 <tr key={entry.date}>
-                  <td style={{ fontWeight: 700 }}><Calendar size={14} inline /> {entry.date}</td>
+                  <td style={{ fontWeight: 700 }}><Calendar size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> {entry.date}</td>
                   <td style={{ color: 'var(--primary)', fontWeight: 800 }}>{entry.score} pts</td>
                   <td>
                     <span className={`${styles.badge} ${entry.rating === 'Excellent' ? styles.badgeChild :

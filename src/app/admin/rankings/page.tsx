@@ -5,6 +5,10 @@ import { User } from "@shared/types";
 import styles from "../admin.module.css";
 import { Trophy, Medal, Star } from "lucide-react";
 
+interface DiaryEntry {
+  score: number;
+}
+
 export default function Rankings() {
   const [leaderboard, setLeaderboard] = useState<{ username: string, totalScore: number }[]>([]);
 

@@ -7,6 +7,10 @@ import styles from "./parent.module.css";
 import { Heart, Sparkles, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+interface DiaryEntry {
+  score: number;
+}
+
 export default function ParentDashboard() {
   const { user } = useAuth();
   const router = useRouter();
@@ -66,7 +70,7 @@ export default function ParentDashboard() {
           <div className={styles.childAvatar}>{child.username.charAt(0)}</div>
           <div className={styles.childInfo}>
             <h3>{child.username}</h3>
-            <p><Sparkles size={16} inline /> Level 4 Moral Hero</p>
+            <p><Sparkles size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> Level 4 Moral Hero</p>
           </div>
           <button
             type="button"

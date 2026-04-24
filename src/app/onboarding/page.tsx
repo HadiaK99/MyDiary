@@ -28,7 +28,7 @@ export default function Onboarding() {
 
         {step === 1 && (
           <div className={styles.stepContent}>
-            <h1>All About Me! <Sparkles size={32} inline style={{ color: 'var(--primary)', verticalAlign: 'middle' }} /></h1>
+            <h1>All About Me! <Sparkles size={32} style={{ color: 'var(--primary)', verticalAlign: 'middle', display: 'inline' }} /></h1>
             <p>Let's personalize your diary. Tell us a bit about yourself.</p>
             
             <div className={styles.inputGrid}>
@@ -78,7 +78,7 @@ export default function Onboarding() {
 
         {step === 2 && (
           <div className={styles.stepContent}>
-            <h1>Yearly Focuses <Trophy size={32} inline style={{ color: '#facc15', verticalAlign: 'middle' }} /></h1>
+            <h1>Yearly Focuses <Trophy size={32} style={{ color: '#facc15', verticalAlign: 'middle', display: 'inline' }} /></h1>
             <p>What are your big dreams and goals for this year? (Resolutions)</p>
             
             <div className={styles.focusList}>
@@ -99,7 +99,7 @@ export default function Onboarding() {
 
         {step === 3 && (
           <div className={styles.stepContent}>
-            <h1>First Month Plan <Calendar size={32} inline style={{ color: 'var(--primary)', verticalAlign: 'middle' }} /></h1>
+            <h1>First Month Plan <Calendar size={32} style={{ color: 'var(--primary)', verticalAlign: 'middle', display: 'inline' }} /></h1>
             <p>Let's plan your schedule for the first month.</p>
             
             <div className={styles.inputGroup}>

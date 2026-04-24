@@ -5,7 +5,7 @@ import { useAuth } from "@frontend/context/AuthContext";
 import Header from "@frontend/components/Navigation/Header";
 import styles from "./profile.module.css";
 import { Star, Camera, Save, Sparkles, Edit3, X, Check } from "lucide-react";
-import { useForm } from "@frontend/hooks/useForm";
+import { useForm } from "react-hook-form";
 import Image from "next/image";
 
 const PALETTE_COLORS = [
@@ -50,14 +50,8 @@ export default function ProfilePage() {
     const [fetching, setFetching] = useState(true);
     const [message, setMessage] = useState({ type: "", text: "" });
 
-    const { 
-        values: profile, 
-        setValues: setProfile, 
-        setFieldValue: updateProfileField, 
-        clearDraft 
-    } = useForm({
-        initialValues: INITIAL_PROFILE
-    });
+    const { register, handleSubmit: handleFormSubmit, setValue, watch, reset } = useForm({ defaultValues: INITIAL_PROFILE });
+    const profile = watch();
 
     useEffect(() => {
         if (user) {
@@ -66,7 +60,7 @@ export default function ProfilePage() {
                     const res = await fetch("/api/profile");
                     const data = await res.json();
                     if (data.profile) {
-                        setProfile({ ...INITIAL_PROFILE, ...data.profile });
+                        reset({ ...INITIAL_PROFILE, ...data.profile });
                     }
                 } catch (error) {
                     console.error("Failed to fetch profile:", error);
@@ -76,10 +70,9 @@ export default function ProfilePage() {
             };
             fetchProfile();
         }
-    }, [user, setProfile]);
+    }, [user, reset]);
 
-    const handleUpdate = async (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
+    const onSubmit = async (data: any) => {
         setLoading(true);
         setMessage({ type: "", text: "" });
 
@@ -87,13 +80,12 @@ export default function ProfilePage() {
             const profileRes = await fetch("/api/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(profile),
+                body: JSON.stringify(data),
             });
             if (profileRes.ok) {
                 setMessage({ type: "success", text: "Journal updated successfully!" });
                 setIsEditing(false);
-                clearDraft();
-            } else {
+                            } else {
                 setMessage({ type: "error", text: "Failed to update journal" });
             }
         } catch {
@@ -110,7 +102,7 @@ export default function ProfilePage() {
             setMessage({ type: "info", text: "Processing photo..." });
             const reader = new FileReader();
             reader.onloadend = () => {
-                updateProfileField("picture", reader.result as string);
+                setValue("picture", reader.result as string);
                 setMessage({ type: "success", text: "Photo uploaded! Don't forget to save your journal." });
             };
             reader.onerror = () => {
@@ -208,7 +200,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 ) : (
-                    <form onSubmit={handleUpdate}>
+                    <form onSubmit={handleFormSubmit(onSubmit)}>
                         {message.text && (
                             <div style={{
                                 padding: '15px',
@@ -233,8 +225,7 @@ export default function ProfilePage() {
                                     <label>My Full Name</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.realName || ""}
-                                        onChange={(e) => updateProfileField("realName", e.target.value)}
+                                        {...register("realName")}
                                         placeholder="Enter your full name"
                                     />
                                 </div>
@@ -242,8 +233,7 @@ export default function ProfilePage() {
                                     <label>Father's Name</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.fathersName || ""}
-                                        onChange={(e) => updateProfileField("fathersName", e.target.value)}
+                                        {...register("fathersName")}
                                         placeholder="Father's name"
                                     />
                                 </div>
@@ -251,8 +241,7 @@ export default function ProfilePage() {
                                     <label>Mother's Name</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.mothersName || ""}
-                                        onChange={(e) => updateProfileField("mothersName", e.target.value)}
+                                        {...register("mothersName")}
                                         placeholder="Mother's name"
                                     />
                                 </div>
@@ -263,7 +252,7 @@ export default function ProfilePage() {
                                             <div 
                                                 key={z.name}
                                                 className={`${styles.zodiacItem} ${profile.zodiacSign === z.name ? styles.zodiacItemActive : ''}`}
-                                                onClick={() => updateProfileField("zodiacSign", z.name)}
+                                                onClick={() => setValue("zodiacSign", z.name)}
                                                 title={z.name}
                                             >
                                                 <span className={styles.zodiacSymbol}>{z.symbol}</span>
@@ -277,16 +266,14 @@ export default function ProfilePage() {
                                     <input
                                         className={styles.input}
                                         type="date"
-                                        value={profile.dob || ""}
-                                        onChange={(e) => updateProfileField("dob", e.target.value)}
+                                        {...register("dob")}
                                     />
                                 </div>
                                 <div className={styles.field}>
                                     <label>My school</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.school || ""}
-                                        onChange={(e) => updateProfileField("school", e.target.value)}
+                                        {...register("school")}
                                         placeholder="School name"
                                     />
                                 </div>
@@ -294,8 +281,7 @@ export default function ProfilePage() {
                                     <label>Blood Group</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.bloodGroup || ""}
-                                        onChange={(e) => updateProfileField("bloodGroup", e.target.value)}
+                                        {...register("bloodGroup")}
                                         placeholder="e.g. A+"
                                     />
                                 </div>
@@ -303,8 +289,7 @@ export default function ProfilePage() {
                                     <label>Home Address</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.address || ""}
-                                        onChange={(e) => updateProfileField("address", e.target.value)}
+                                        {...register("address")}
                                         placeholder="Full address"
                                     />
                                 </div>
@@ -317,8 +302,7 @@ export default function ProfilePage() {
                                     <label>Favorite Colour Name</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.favColor || ""}
-                                        onChange={(e) => updateProfileField("favColor", e.target.value)}
+                                        {...register("favColor")}
                                         placeholder="e.g. Sky Blue"
                                     />
                                     <label style={{ marginTop: '15px' }}>Pick your Hue</label>
@@ -328,7 +312,7 @@ export default function ProfilePage() {
                                                 key={color}
                                                 className={`${styles.colorSwatch} ${profile.favColorCode === color ? styles.colorSwatchActive : ''}`}
                                                 style={{ backgroundColor: color }}
-                                                onClick={() => updateProfileField("favColorCode", color)}
+                                                onClick={() => setValue("favColorCode", color)}
                                             >
                                                 {profile.favColorCode === color && <Check size={14} color="white" style={{ margin: 'auto', display: 'block', marginTop: '6px' }} />}
                                             </div>
@@ -339,8 +323,7 @@ export default function ProfilePage() {
                                     <label>Favorite Food</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.favFood || ""}
-                                        onChange={(e) => updateProfileField("favFood", e.target.value)}
+                                        {...register("favFood")}
                                         placeholder="Yummy food!"
                                     />
                                 </div>
@@ -348,8 +331,7 @@ export default function ProfilePage() {
                                     <label>Favorite Place</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.favPlace || ""}
-                                        onChange={(e) => updateProfileField("favPlace", e.target.value)}
+                                        {...register("favPlace")}
                                         placeholder="Where do you love to go?"
                                     />
                                 </div>
@@ -357,8 +339,7 @@ export default function ProfilePage() {
                                     <label>Favorite Book</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.favBook || ""}
-                                        onChange={(e) => updateProfileField("favBook", e.target.value)}
+                                        {...register("favBook")}
                                         placeholder="Favorite read?"
                                     />
                                 </div>
@@ -366,8 +347,7 @@ export default function ProfilePage() {
                                     <label>My Hobbies</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.hobbies || ""}
-                                        onChange={(e) => updateProfileField("hobbies", e.target.value)}
+                                        {...register("hobbies")}
                                         placeholder="Drawing? Games?"
                                     />
                                 </div>
@@ -375,8 +355,7 @@ export default function ProfilePage() {
                                     <label>My Goals</label>
                                     <input
                                         className={styles.input}
-                                        value={profile.personalGoals || ""}
-                                        onChange={(e) => updateProfileField("personalGoals", e.target.value)}
+                                        {...register("personalGoals")}
                                         placeholder="What do you want to be?"
                                     />
                                 </div>

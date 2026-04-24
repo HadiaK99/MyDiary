@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth, UserRole, User } from "@frontend/context/AuthContext";
+import { useAuth } from "@frontend/context/AuthContext";
+import { UserRole, User } from "@shared/types";
 import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
 import { Sparkles, Star } from "lucide-react";
