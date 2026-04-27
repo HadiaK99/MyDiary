@@ -325,6 +325,21 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
+  // Support viewing for another user (parent viewing child)
+  const [targetUserId, setTargetUserId] = useState<string | null>(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const uid = searchParams.get("userId");
+    if (uid && user && user.id !== uid) {
+      setTargetUserId(uid);
+      setIsReadOnly(true);
+    } else if (user) {
+      setTargetUserId(user.id);
+    }
+  }, [user]);
+
   const [data, setData] = useState<DayData & { water?: number, sleep?: number, mood?: string }>({
     activities: {},
     goodThings: {},
@@ -341,8 +356,9 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
 
   useEffect(() => {
     const fetchCats = async () => {
+      if (!targetUserId) return;
       try {
-        const res = await fetch("/api/admin/activities");
+        const res = await fetch(`/api/activities?userId=${targetUserId}`);
         const data = await res.json();
         if (data.categories?.length > 0) {
           setCategories(data.categories);
@@ -352,12 +368,12 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
       }
     };
     fetchCats();
-  }, []);
+  }, [targetUserId]);
 
   useEffect(() => {
-    if (user) {
+    if (targetUserId) {
       const fetchEntry = async () => {
-        const res = await fetch(`/api/diary?date=${date}`);
+        const res = await fetch(`/api/diary?date=${date}&userId=${targetUserId}`);
         const data = await res.json();
         if (data.entry) {
           setData(JSON.parse(data.entry.data));
@@ -365,14 +381,14 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
       };
       fetchEntry();
     }
-  }, [date, user]);
+  }, [date, targetUserId]);
 
   useEffect(() => {
-    if (user && categories.length > 0) {
+    if (targetUserId && categories.length > 0) {
       const newScore = calculateScore(data, categories);
       setScore(newScore);
     }
-  }, [data, categories, user]);
+  }, [data, categories, targetUserId]);
 
   const handleComplete = async () => {
     if (!user) return;
@@ -408,6 +424,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
   const rightCats = categories.slice(half);
 
   const toggleItem = (category: keyof DayData, item: string) => {
+    if (isReadOnly) return;
     setData(prev => ({
       ...prev,
       [category]: {
@@ -451,10 +468,10 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
                 <ChecklistCard key={catIndex}>
                   <CheckTitle>{cat.name}</CheckTitle>
                   {cat.activities.map((act, actIndex) => (
-                    <ListItem key={actIndex} onClick={() => toggleItem('activities', act)}>
-                      <ItemLabel>{act}</ItemLabel>
+                    <ListItem key={actIndex} onClick={() => toggleItem('activities', act.name)}>
+                      <ItemLabel>{act.name}</ItemLabel>
                       <CheckSquare>
-                        {data.activities[act] && <Check size={14} />}
+                        {data.activities[act.name] && <Check size={14} />}
                       </CheckSquare>
                     </ListItem>
                   ))}
@@ -467,10 +484,10 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
                 <ChecklistCard key={catIndex}>
                   <CheckTitle>{cat.name}</CheckTitle>
                   {cat.activities.map((act, actIndex) => (
-                    <ListItem key={actIndex} onClick={() => toggleItem('activities', act)}>
-                      <ItemLabel>{act}</ItemLabel>
+                    <ListItem key={actIndex} onClick={() => toggleItem('activities', act.name)}>
+                      <ItemLabel>{act.name}</ItemLabel>
                       <CheckSquare>
-                        {data.activities[act] && <Check size={14} />}
+                        {data.activities[act.name] && <Check size={14} />}
                       </CheckSquare>
                     </ListItem>
                   ))}
@@ -487,7 +504,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
                   <IconItem
                     key={i}
                     $active={(data.water || 0) >= i}
-                    onClick={() => setLevel('water', i)}
+                    onClick={() => !isReadOnly && setLevel('water', i)}
                   >
                     <GlassWater size={24} />
                   </IconItem>
@@ -502,7 +519,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
                   <IconItem
                     key={i}
                     $active={(data.sleep || 0) >= i}
-                    onClick={() => setLevel('sleep', i)}
+                    onClick={() => !isReadOnly && setLevel('sleep', i)}
                   >
                     <Moon size={24} fill={(data.sleep || 0) >= i ? "currentColor" : "none"} />
                   </IconItem>
@@ -517,7 +534,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
               <MoodBtn
                 key={m}
                 $active={data.mood === m}
-                onClick={() => setData(prev => ({ ...prev, mood: m }))}
+                onClick={() => !isReadOnly && setData(prev => ({ ...prev, mood: m }))}
               >
                 {m}
               </MoodBtn>
@@ -528,15 +545,29 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
             <p style={{ fontWeight: 700, opacity: 0.6 }}>My Progress Today: <span style={{ color }}>{rating} ({score} pts)</span></p>
           </LongSection>
 
-          <FinishBtnWrapper>
-            <Button
-              onClick={handleComplete}
-              disabled={saving}
-              type="button"
-            >
-              {saving ? "Saving..." : "Complete Entry"} <Sparkles size={18} style={{ marginLeft: '10px' }} />
-            </Button>
-          </FinishBtnWrapper>
+          {!isReadOnly && (
+            <FinishBtnWrapper>
+              <Button
+                onClick={handleComplete}
+                disabled={saving}
+                type="button"
+              >
+                {saving ? "Saving..." : "Complete Entry"} <Sparkles size={18} style={{ marginLeft: '10px' }} />
+              </Button>
+            </FinishBtnWrapper>
+          )}
+          
+          {isReadOnly && (
+            <FinishBtnWrapper>
+              <Button
+                onClick={() => router.back()}
+                type="button"
+                style={{ background: '#64748b' }}
+              >
+                Close View
+              </Button>
+            </FinishBtnWrapper>
+          )}
         </PlannerSheet>
       )}
 

@@ -2,53 +2,55 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
-import { User } from "@shared/types";
+import { useChild } from "@frontend/context/ChildContext";
+import { User, DiaryEntry } from "@shared/types";
 import { Heart, Sparkles, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@frontend/components/Common/Button";
 
-import { DiaryEntry } from "@shared/types";
-
 export default function ParentDashboard() {
   const { user } = useAuth();
+  const { selectedChild } = useChild();
   const router = useRouter();
-  const [child, setChild] = useState<User | null>(null);
   const [childStats, setChildStats] = useState({
     entries: 0,
     avgScore: 0,
     totalPoints: 0
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user?.childId) {
+    if (selectedChild) {
       const fetchData = async () => {
-        const userRes = await fetch("/api/admin/users");
-        const userData = await userRes.json();
-        const foundChild = (userData.users as User[])?.find((u) => u.id === user.childId);
-        if (foundChild) setChild(foundChild);
-
-        // Fetch child diary entries for stats
-        const diaryRes = await fetch(`/api/diary?userId=${user.childId}`);
-        const diaryData = await diaryRes.json();
-        if (diaryData.entries) {
-          const entries = diaryData.entries as DiaryEntry[];
-          const totalPoints = entries.reduce((acc, curr) => acc + curr.score, 0);
-          setChildStats({
-            entries: entries.length,
-            avgScore: entries.length > 0 ? Math.round(totalPoints / entries.length) : 0,
-            totalPoints
-          });
+        setLoading(true);
+        try {
+          // Fetch child diary entries for stats
+          const diaryRes = await fetch(`/api/diary?userId=${selectedChild.id}`);
+          const diaryData = await diaryRes.json();
+          if (diaryData.entries) {
+            const entries = diaryData.entries as DiaryEntry[];
+            const totalPoints = entries.reduce((acc, curr) => acc + curr.score, 0);
+            setChildStats({
+              entries: entries.length,
+              avgScore: entries.length > 0 ? Math.round(totalPoints / entries.length) : 0,
+              totalPoints
+            });
+          }
+        } catch (error) {
+          console.error("Failed to fetch child stats:", error);
+        } finally {
+          setLoading(false);
         }
       };
       fetchData();
     }
-  }, [user]);
+  }, [selectedChild]);
 
-  if (!child) return (
+  if (!selectedChild) return (
     <div className="welcome-card">
       <div className="welcome-text">
         <h1>Welcome, {user?.username}!</h1>
-        <p>You haven't linked a child account yet. Please contact the administrator.</p>
+        <p>You haven't linked any child accounts yet. Please contact the administrator.</p>
       </div>
     </div>
   );
@@ -58,16 +60,16 @@ export default function ParentDashboard() {
       <section className="welcome-card">
         <div className="welcome-text">
           <h1>Welcome, <span style={{ color: 'var(--primary)' }}>{user?.username}</span>!</h1>
-          <p>Here's how {child.username} is doing today.</p>
+          <p>Here's how {selectedChild.username} is doing today.</p>
         </div>
         <Heart size={80} fill="#fce7f3" color="#fce7f3" />
       </section>
 
       <div className="child-preview">
         <div className="child-header">
-          <div className="child-avatar">{child.username.charAt(0)}</div>
+          <div className="child-avatar">{selectedChild.username.charAt(0)}</div>
           <div className="child-info">
-            <h3>{child.username}</h3>
+            <h3>{selectedChild.username}</h3>
             <p><Sparkles size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> Level 4 Moral Hero</p>
           </div>
           <Button

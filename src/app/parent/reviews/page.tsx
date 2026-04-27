@@ -2,49 +2,36 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@frontend/context/AuthContext";
-import { User } from "@shared/types";
+import { useChild } from "@frontend/context/ChildContext";
+import { User, Review } from "@shared/types";
 import { Send, Heart, Trash2 } from "lucide-react";
 import { Button } from "@frontend/components/Common/Button";
 
-interface Review {
-  id: string;
-  childId: string;
-  parentId: string;
-  text: string;
-  date: string;
-  read: boolean;
-}
-
 export default function ParentReviews() {
   const { user } = useAuth();
+  const { selectedChild } = useChild();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState("");
-  const [child, setChild] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (user?.childId) {
-        const userRes = await fetch("/api/admin/users");
-        const userData = await userRes.json();
-        const found = userData.users?.find((u: User) => u.id === user.childId);
-        if (found) setChild(found);
-
-        const reviewRes = await fetch(`/api/reviews?childId=${user.childId}`);
+      if (selectedChild) {
+        const reviewRes = await fetch(`/api/reviews?childId=${selectedChild.id}`);
         const reviewData = await reviewRes.json();
         if (reviewData.reviews) setReviews(reviewData.reviews);
       }
     };
     fetchData();
-  }, [user]);
+  }, [selectedChild]);
 
   const addReview = async () => {
-    if (!newReview.trim() || !user || !child) return;
+    if (!newReview.trim() || !user || !selectedChild) return;
 
     const res = await fetch("/api/reviews", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        childId: child.id,
+        childId: selectedChild.id,
         text: newReview,
         date: new Date().toLocaleDateString()
       }),
@@ -54,7 +41,6 @@ export default function ParentReviews() {
       const data = await res.json();
       setReviews([data.review, ...reviews]);
       setNewReview("");
-      alert("Review sent to your child! ❤️");
     }
   };
 
@@ -70,14 +56,21 @@ export default function ParentReviews() {
     }
   };
 
-  if (!child) return <div>No child linked.</div>;
+  if (!selectedChild) return (
+    <div className="welcome-card">
+      <div className="welcome-text">
+        <h1>Encouraging Reviews</h1>
+        <p>Please select a child to manage reviews.</p>
+      </div>
+    </div>
+  );
 
   return (
     <div>
       <div className="table-title">
         <div>
           <h1>Encouraging Reviews</h1>
-          <p style={{ color: '#64748b' }}>Send a message of love and encouragement to {child.username}.</p>
+          <p style={{ color: '#64748b' }}>Send a message of love and encouragement to {selectedChild.username}.</p>
         </div>
         <Heart size={40} fill="#fb7185" color="#fb7185" />
       </div>
@@ -96,7 +89,7 @@ export default function ParentReviews() {
               borderRadius: '12px',
               fontFamily: 'inherit'
             }}
-            placeholder={`Tell ${child.username} how proud you are today...`}
+            placeholder={`Tell ${selectedChild.username} how proud you are today...`}
             value={newReview}
             onChange={(e) => setNewReview(e.target.value)}
           ></textarea>
@@ -110,7 +103,7 @@ export default function ParentReviews() {
       </div>
 
       <div className="review-section" style={{ marginTop: '40px' }}>
-        <h3>Past Reviews</h3>
+        <h3>Past Reviews for {selectedChild.username}</h3>
         <div style={{ marginTop: '20px' }}>
           {reviews.sort((a, b) => b.id.localeCompare(a.id)).map(review => (
             <div key={review.id} className="review-card">

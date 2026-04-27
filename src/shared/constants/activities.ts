@@ -1,8 +1,15 @@
+export interface Activity {
+  id: string;
+  name: string;
+  effectivePoints?: number;
+}
+
 export interface ActivityCategory {
   id?: string;
   name: string;
-  activities: string[];
+  activities: Activity[];
   pointsPerItem: number;
+  userId?: string | null;
 }
 
 export const POINTS = {

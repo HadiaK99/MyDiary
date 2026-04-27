@@ -14,9 +14,9 @@ export const calculateScore = (data: DayData, categories: ActivityCategory[]) =>
   // Calculate activity points
   categories.forEach(category => {
     category.activities.forEach(activity => {
-      const actName = activity;
+      const actName = activity.name;
       if (data.activities[actName]) {
-        totalScore += category.pointsPerItem;
+        totalScore += activity.effectivePoints ?? category.pointsPerItem;
       }
     });
   });
@@ -33,7 +33,10 @@ export const calculateScore = (data: DayData, categories: ActivityCategory[]) =>
 };
 
 export const calculateMaxScore = (categories: ActivityCategory[]) => {
-  return categories.reduce((total, cat) => total + (cat.activities.length * cat.pointsPerItem), 0);
+  return categories.reduce((total, cat) => {
+    const catTotal = cat.activities.reduce((sum, act) => sum + (act.effectivePoints ?? cat.pointsPerItem), 0);
+    return total + catTotal;
+  }, 0);
 };
 
 export const getPerformanceRating = (score: number, maxScore?: number): { rating: PerformanceRating, color: string, message: string } => {
