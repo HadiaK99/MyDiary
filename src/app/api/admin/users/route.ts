@@ -8,8 +8,13 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const users = await AdminService.getAllUsers();
-  return NextResponse.json({ users });
+  try {
+    const users = await AdminService.getAllUsers();
+    return NextResponse.json({ users });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : "Failed to fetch users";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -30,6 +35,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Username already exists" }, { status: 400 });
     }
     const msg = error instanceof Error ? error.message : "Failed to create user";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id, ...data } = await request.json();
+    if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    
+    const user = await AdminService.updateUser(id, data);
+    return NextResponse.json({ user });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : "Failed to update user";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
