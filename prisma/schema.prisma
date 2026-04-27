@@ -12,7 +12,12 @@ model User {
   username  String   @unique
   password  String   // Hashed
   role      String   // "CHILD" | "PARENT" | "ADMIN"
-  childId   String?  // For parents to link to a child
+  
+  // Self-relation for parent-child linking
+  parentId  String?
+  parent    User?    @relation("ParentChildren", fields: [parentId], references: [id])
+  children  User[]   @relation("ParentChildren")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -90,6 +95,8 @@ model ActivityCategory {
   id            String   @id @default(cuid())
   name          String
   pointsPerItem Int
+  scoringMode   String   @default("GROUP") // "GROUP" | "INDIVIDUAL"
+  userId        String?  // null for global, userId for custom
   activities    Activity[]
 }
 
@@ -97,5 +104,27 @@ model Activity {
   id         String   @id @default(cuid())
   name       String
   categoryId String
+  userId     String?  // null for global, userId for custom
   category   ActivityCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model UserActivityConfig {
+  id         String   @id @default(cuid())
+  userId     String
+  activityId String
+  enabled    Boolean  @default(true)
+  points     Int?     // Override points if needed
+  
+  @@unique([userId, activityId])
+}
+
+model UserCategoryConfig {
+  id            String   @id @default(cuid())
+  userId        String
+  categoryId    String
+  enabled       Boolean  @default(true)
+  pointsPerItem Int?     // Override pointsPerItem
+  scoringMode   String?  // "GROUP" | "INDIVIDUAL"
+  
+  @@unique([userId, categoryId])
 }

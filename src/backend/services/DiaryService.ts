@@ -2,6 +2,7 @@ import prisma from "@backend/lib/prisma";
 
 export const DiaryService = {
   async getEntry(userId: string, date: string) {
+    if (!userId || !date) return null;
     return prisma.diaryEntry.findUnique({
       where: { userId_date: { userId, date } },
     });
