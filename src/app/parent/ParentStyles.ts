@@ -167,30 +167,39 @@ export const ParentContainer = styled.div`
       padding: 30px;
     }
     @media (max-width: 768px) {
-      padding: 20px;
+      padding: 30px 15px;
     }
 
     .welcome-card {
       background: white;
       border-radius: 30px;
-      padding: 40px;
+      padding: 60px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(190, 18, 60, 0.03);
-      margin-bottom: 40px;
+      margin-bottom: 30px;
+      @media (max-width: 600px) {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 25px;
+        gap: 30px;
+        
+        svg {
+          margin: 0 auto;
+        }
+      }
 
       .welcome-text {
         h1 {
           margin: 0;
           font-size: 2.2rem;
           color: #be123c;
+          @media (max-width: 600px) { font-size: 1.8rem; }
         }
         p {
           margin: 10px 0 0;
           color: #9f1239;
           font-size: 1.1rem;
           font-weight: 600;
+          @media (max-width: 600px) { font-size: 1rem; }
         }
       }
     }
@@ -198,16 +207,21 @@ export const ParentContainer = styled.div`
     .child-preview {
       background: white;
       border-radius: 25px;
-      padding: 30px;
-      box-shadow: 0 4px 20px rgba(190, 18, 60, 0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      @media (max-width: 600px) {
+        padding: 30px 20px;
+      }
+      
+      padding: 40px;
 
       .child-header {
         display: flex;
         align-items: center;
         gap: 20px;
+        @media (max-width: 600px) {
+          flex-direction: column;
+          text-align: center;
+          gap: 15px;
+        }
       }
 
       .child-avatar {
@@ -236,6 +250,16 @@ export const ParentContainer = styled.div`
         }
       }
 
+      .report-btn-wrapper {
+        margin-left: auto;
+        @media (max-width: 600px) {
+          margin-left: 0;
+          width: 100%;
+          margin-top: 10px;
+          margin-bottom: 20px;
+        }
+      }
+
       .progress-grid {
         display: flex;
         flex-wrap: wrap;
@@ -249,6 +273,10 @@ export const ParentContainer = styled.div`
           border-radius: 15px;
           text-align: center;
           border: 1px solid #fff1f2;
+
+          @media (max-width: 480px) {
+            flex: 1 1 100%;
+          }
 
           h5 {
             margin: 0;

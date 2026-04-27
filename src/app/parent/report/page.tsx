@@ -58,6 +58,13 @@ const StatCard = styled.div`
     color: #10b981;
     font-weight: 700;
   }
+
+  @media (max-width: 480px) {
+    padding: 15px;
+    gap: 5px;
+    h5 { font-size: 0.7rem; }
+    .value { font-size: 1.5rem; }
+  }
 `;
 
 const EntryCard = styled.div`
@@ -106,6 +113,29 @@ const EntryCard = styled.div`
     display: flex;
     align-items: center;
     gap: 5px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 15px;
+    gap: 15px;
+    
+    .date-box {
+      min-width: 50px;
+      padding: 8px;
+      .day { font-size: 1rem; }
+    }
+
+    .content {
+      h4 { font-size: 0.95rem; }
+      p { font-size: 0.8rem; }
+    }
+
+    .score-badge {
+      padding: 5px 10px;
+      font-size: 0.75rem;
+    }
+    
+    svg { width: 16px; height: 16px; }
   }
 `;
 
@@ -163,32 +193,6 @@ export default function ChildReport() {
   useEffect(() => {
     fetchEntries();
   }, [selectedChild]);
-
-  const handleSendReview = async () => {
-    if (!reviewText.trim() || !selectedChild) return;
-    setSending(true);
-    try {
-      const res = await fetch("/api/reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          childId: selectedChild.id,
-          text: reviewText,
-          date: new Date().toLocaleDateString('en-CA') // YYYY-MM-DD
-        }),
-      });
-
-      if (res.ok) {
-        setShowReviewModal(false);
-        setReviewText("");
-        alert("Encouragement review sent! ✨");
-      }
-    } catch (error) {
-      console.error("Failed to send review:", error);
-    } finally {
-      setSending(false);
-    }
-  };
 
   if (!selectedChild) return (
     <div className="welcome-card">

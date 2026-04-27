@@ -72,12 +72,14 @@ export default function ParentDashboard() {
             <h3>{selectedChild.username}</h3>
             <p><Sparkles size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> Level 4 Moral Hero</p>
           </div>
-          <Button
-            onClick={() => router.push(`/parent/report`)}
-            style={{ marginLeft: 'auto' }}
-          >
-            Full Report <ArrowRight size={18} style={{ marginLeft: '8px' }} />
-          </Button>
+          <div className="report-btn-wrapper">
+            <Button
+              onClick={() => router.push(`/parent/report`)}
+              fullWidth
+            >
+              Full Report <ArrowRight size={18} style={{ marginLeft: '8px' }} />
+            </Button>
+          </div>
         </div>
 
         <div className="progress-grid">

@@ -30,6 +30,11 @@ const ActivityCard = styled.div<{ $isEditing?: boolean }>`
   box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
   border: 2px solid ${props => props.$isEditing ? "var(--primary-light)" : "transparent"};
   transition: all 0.3s ease;
+
+  @media (max-width: 600px) {
+    padding: 20px;
+    border-radius: 16px;
+  }
 `;
 
 const CategoryHeader = styled.div`
@@ -39,6 +44,12 @@ const CategoryHeader = styled.div`
   margin-bottom: 25px;
   padding-bottom: 20px;
   border-bottom: 2px solid #f8fafc;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
 
   .title-area {
     display: flex;
@@ -51,6 +62,10 @@ const CategoryHeader = styled.div`
     display: flex;
     align-items: center;
     gap: 15px;
+    @media (max-width: 480px) {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
   }
 `;
 
@@ -70,12 +85,32 @@ const ActivityItem = styled.div<{ $disabled?: boolean, $isEditing?: boolean }>`
     background: #fffafa;
   }
 
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+  }
+
   .name-part {
     display: flex;
     align-items: center;
     gap: 10px;
     color: ${props => props.$disabled ? "#94a3b8" : "#1e293b"};
     font-weight: 600;
+    @media (max-width: 600px) {
+      width: 100%;
+    }
+  }
+
+  .item-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    @media (max-width: 600px) {
+      width: 100%;
+      justify-content: space-between;
+    }
   }
 `;
 
@@ -455,7 +490,7 @@ export default function ActivitiesManagement() {
                 {!act.enabled && <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic' }}>(Hidden)</span>}
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div className="item-controls">
                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Input 
                     type="number" 

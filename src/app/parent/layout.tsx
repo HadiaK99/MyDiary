@@ -55,7 +55,6 @@ function ParentLayoutInner({ children }: { children: React.ReactNode }) {
       {/* Mobile Top Header */}
       <header className="mobile-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div className="parent-avatar" style={{ width: '35px', height: '35px', fontSize: '1rem', borderRadius: '10px' }}>P</div>
           <span style={{ fontWeight: 800, color: '#be123c' }}>Parent Hub</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
