@@ -2,6 +2,7 @@ import prisma from "@backend/lib/prisma";
 
 export const ProfileService = {
   async getProfile(userId: string) {
+    if (!userId) return null;
     return prisma.profile.findUnique({
       where: { userId },
     });

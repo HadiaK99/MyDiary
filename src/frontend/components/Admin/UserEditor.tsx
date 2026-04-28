@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { X, UserPlus, Shield, User, Users } from "lucide-react";
+import { X, UserPlus, Shield, User, Users, Save, Check } from "lucide-react";
 import { User as UserType } from "@shared/types";
 import { Button } from "../Common/Button";
 
 interface UserEditorProps {
   onClose: () => void;
   onSave: () => void;
+  initialUser?: UserType & { children?: { id: string, username: string }[] };
 }
 
 const EditorOverlay = styled.div`
@@ -155,6 +156,37 @@ const EditorContent = styled.div`
     }
   }
 
+  .children-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .child-option {
+    padding: 10px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    &.active {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #166534;
+    }
+  }
+
   .footer {
     padding: 24px 30px;
     border-top: 1px solid #f1f5f9;
@@ -170,11 +202,14 @@ const EditorContent = styled.div`
   }
 `;
 
-export default function UserEditor({ onClose, onSave }: UserEditorProps) {
-  const [username, setUsername] = useState("");
+export default function UserEditor({ onClose, onSave, initialUser }: UserEditorProps) {
+  const isEdit = !!initialUser;
+  const [username, setUsername] = useState(initialUser?.username || "");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"CHILD" | "PARENT" | "ADMIN">("CHILD");
-  const [childId, setChildId] = useState("");
+  const [role, setRole] = useState<"CHILD" | "PARENT" | "ADMIN">(initialUser?.role as any || "CHILD");
+  const [selectedChildren, setSelectedChildren] = useState<string[]>(
+    initialUser?.children?.map(c => c.id) || []
+  );
   const [childUsers, setChildUsers] = useState<UserType[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -182,18 +217,32 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
   useEffect(() => {
     // Fetch child users for parent linking
     const fetchChildren = async () => {
-      const res = await fetch("/api/admin/users");
-      const data = await res.json();
-      if (data.users) {
-        setChildUsers(data.users.filter((u: UserType) => u.role === "CHILD"));
+      try {
+        const res = await fetch("/api/admin/users");
+        if (!res.ok) {
+          console.error("Failed to fetch users:", await res.text());
+          return;
+        }
+        const data = await res.json();
+        if (data.users) {
+          setChildUsers(data.users.filter((u: UserType) => u.role === "CHILD"));
+        }
+      } catch (error) {
+        console.error("Error fetching children:", error);
       }
     };
     fetchChildren();
   }, []);
 
+  const toggleChild = (id: string) => {
+    setSelectedChildren(prev => 
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password || !role) {
+    if (!username || (!isEdit && !password) || !role) {
       setError("Please fill in all required fields.");
       return;
     }
@@ -202,19 +251,22 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
     setError("");
 
     try {
+      const payload: any = {
+        username,
+        role,
+        childrenIds: role === "PARENT" ? selectedChildren : [],
+      };
+      if (password) payload.password = password;
+      if (isEdit) payload.id = initialUser.id;
+
       const res = await fetch("/api/admin/users", {
-        method: "POST",
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          password,
-          role,
-          childId: role === "PARENT" ? childId : undefined,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create user");
+      if (!res.ok) throw new Error(data.error || `Failed to ${isEdit ? 'update' : 'create'} user`);
 
       onSave();
     } catch (err: unknown) {
@@ -229,7 +281,7 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
     <EditorOverlay onClick={onClose}>
       <EditorContent onClick={(e) => e.stopPropagation()}>
         <div className="header">
-          <h2>Add New User</h2>
+          <h2>{isEdit ? "Edit User" : "Add New User"}</h2>
           <button className="close-btn" onClick={onClose}>
             <X size={20} />
           </button>
@@ -254,13 +306,13 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
             </div>
 
             <div className="form-group">
-              <label>Initial Password</label>
+              <label>{isEdit ? "Change Password (optional)" : "Initial Password"}</label>
               <input
                 type="password"
-                placeholder="Set temporary password"
+                placeholder={isEdit ? "Leave blank to keep current" : "Set temporary password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
+                required={!isEdit}
               />
             </div>
 
@@ -293,19 +345,22 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
 
             {role === "PARENT" && (
               <div className="form-group">
-                <label>Link to Child Account</label>
-                <select 
-                  value={childId}
-                  onChange={(e) => setChildId(e.target.value)}
-                  required
-                >
-                  <option value="">Select a child...</option>
+                <label>Link to Children (Multi-select)</label>
+                <div className="children-grid">
                   {childUsers.map(child => (
-                    <option key={child.id} value={child.id}>
+                    <div 
+                      key={child.id}
+                      className={`child-option ${selectedChildren.includes(child.id) ? 'active' : ''}`}
+                      onClick={() => toggleChild(child.id)}
+                    >
+                      {selectedChildren.includes(child.id) ? <Check size={14} /> : <User size={14} />}
                       {child.username}
-                    </option>
+                    </div>
                   ))}
-                </select>
+                  {childUsers.length === 0 && (
+                    <p style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic' }}>No children found.</p>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -315,7 +370,8 @@ export default function UserEditor({ onClose, onSave }: UserEditorProps) {
               Cancel
             </Button>
             <Button type="submit" disabled={saving} fullWidth style={{ flex: 2 }}>
-              <UserPlus size={18} style={{ marginRight: '8px' }} /> {saving ? "Creating..." : "Create User"}
+              {isEdit ? <Save size={18} style={{ marginRight: '8px' }} /> : <UserPlus size={18} style={{ marginRight: '8px' }} />}
+              {saving ? (isEdit ? "Saving..." : "Creating...") : (isEdit ? "Save Changes" : "Create User")}
             </Button>
           </div>
         </form>

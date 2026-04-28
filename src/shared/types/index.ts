@@ -4,7 +4,8 @@ export interface User {
   id: string;
   username: string;
   role: UserRole;
-  childId?: string | null;
+  parentId?: string | null;
+  children?: { id: string, username: string }[];
 }
 
 export interface SessionPayload {
@@ -12,6 +13,7 @@ export interface SessionPayload {
   username: string;
   role: UserRole;
   expires: Date;
+  children?: { id: string, username: string }[];
 }
 
 export interface DiaryEntry {
@@ -51,6 +53,7 @@ export interface Activity {
   id: string;
   name: string;
   categoryId: string;
+  effectivePoints?: number;
 }
 
 export interface ActivityCategory {
@@ -58,4 +61,5 @@ export interface ActivityCategory {
   name: string;
   pointsPerItem: number;
   activities: Activity[];
+  userId?: string | null;
 }

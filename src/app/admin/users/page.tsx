@@ -2,14 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { User } from "@shared/types";
-import { Trash2, UserPlus, Search } from "lucide-react";
+import { Trash2, UserPlus, Search, Edit2 } from "lucide-react";
 import UserEditor from "@frontend/components/Admin/UserEditor";
 import { Button } from "@frontend/components/Common/Button";
 
+type AdminUser = User & { children?: { id: string, username: string }[] };
+
 export default function ManageUsers() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showUserModal, setShowUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<AdminUser | undefined>(undefined);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
@@ -34,6 +37,16 @@ export default function ManageUsers() {
     }
   };
 
+  const handleEdit = (user: AdminUser) => {
+    setEditingUser(user);
+    setShowUserModal(true);
+  };
+
+  const handleAdd = () => {
+    setEditingUser(undefined);
+    setShowUserModal(true);
+  };
+
   const filteredUsers = users.filter(u => 
     u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.role.toLowerCase().includes(searchTerm.toLowerCase())
@@ -43,6 +56,7 @@ export default function ManageUsers() {
     <div>
       {showUserModal && (
         <UserEditor 
+          initialUser={editingUser}
           onClose={() => setShowUserModal(false)}
           onSave={() => {
             setShowUserModal(false);
@@ -76,7 +90,7 @@ export default function ManageUsers() {
             />
           </div>
           <Button 
-            onClick={() => setShowUserModal(true)}
+            onClick={handleAdd}
             style={{ padding: '0 20px', height: '40px' }}
             className="hide-text-on-mobile"
           >
@@ -92,7 +106,7 @@ export default function ManageUsers() {
               <tr>
                 <th>Username</th>
                 <th>Role</th>
-                <th>Linked Child</th>
+                <th>Linked Children</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -110,13 +124,20 @@ export default function ManageUsers() {
                   </td>
                   <td>
                     {user.role === 'PARENT' ? (
-                      users.find(u => u.id === user.childId)?.username || 'Not Linked'
+                      user.children && user.children.length > 0 
+                        ? user.children.map(c => c.username).join(", ")
+                        : 'Not Linked'
                     ) : '-'}
                   </td>
                   <td>
-                    <Button variant="ghost" onClick={() => deleteUser(user.id)} style={{ padding: '8px' }}>
-                      <Trash2 size={16} color="#ef4444" />
-                    </Button>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <Button variant="ghost" onClick={() => handleEdit(user)} style={{ padding: '8px' }}>
+                        <Edit2 size={16} color="#6366f1" />
+                      </Button>
+                      <Button variant="ghost" onClick={() => deleteUser(user.id)} style={{ padding: '8px' }}>
+                        <Trash2 size={16} color="#ef4444" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
