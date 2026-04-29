@@ -12,7 +12,7 @@ export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("CHILD");
-  const [childId, setChildId] = useState("");
+  const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [availableChildren, setAvailableChildren] = useState<User[]>([]);
   const { signup } = useAuth();
   const router = useRouter();
@@ -28,10 +28,16 @@ export default function SignupPage() {
     fetchChildren();
   }, []);
 
+  const toggleChild = (id: string) => {
+    setSelectedChildIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim() && password.trim()) {
-      signup(username, role, password, role === "PARENT" ? childId : undefined);
+      signup(username, role, password, role === "PARENT" ? selectedChildIds : undefined);
     }
   };
 
@@ -91,24 +97,68 @@ export default function SignupPage() {
 
           {role === "PARENT" && (
             <div className="input-group">
-              <label htmlFor="child">Link his/her Child</label>
-              <select
-                id="child"
-                className="input-field"
-                value={childId}
-                onChange={(e) => setChildId(e.target.value)}
-                required
-              >
-                <option value="">Select your child</option>
-                {availableChildren.map(child => (
-                  <option key={child.id} value={child.id}>{child.username}</option>
-                ))}
-              </select>
-              {availableChildren.length === 0 && (
-                <p style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '5px' }}>
-                  No children accounts found. Create one first!
-                </p>
-              )}
+              <label>Select your children</label>
+              <div style={{ 
+                maxHeight: '160px', 
+                overflowY: 'auto', 
+                border: '1.5px solid #e2e8f0', 
+                borderRadius: '12px',
+                padding: '12px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                gap: '8px'
+              }}>
+                {availableChildren.length > 0 ? (
+                  availableChildren.map(child => (
+                    <div 
+                      key={child.id} 
+                      onClick={() => toggleChild(child.id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '6px 10px',
+                        cursor: 'pointer',
+                        borderRadius: '8px',
+                        background: selectedChildIds.includes(child.id) ? '#f5f3ff' : '#f8fafc',
+                        border: '1px solid',
+                        borderColor: selectedChildIds.includes(child.id) ? '#ddd6fe' : '#f1f5f9',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <div style={{
+                        width: '18px',
+                        height: '18px',
+                        border: '2px solid',
+                        borderColor: selectedChildIds.includes(child.id) ? 'var(--primary)' : '#cbd5e1',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: selectedChildIds.includes(child.id) ? 'var(--primary)' : 'white',
+                        color: 'white'
+                      }}>
+                        {selectedChildIds.includes(child.id) && <Star size={12} fill="white" />}
+                      </div>
+                      <span style={{ 
+                        fontSize: '0.9rem', 
+                        fontWeight: 600,
+                        color: selectedChildIds.includes(child.id) ? 'var(--primary)' : '#475569'
+                      }}>{child.username}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ 
+                    fontSize: '0.8rem', 
+                    color: '#ef4444', 
+                    textAlign: 'center', 
+                    padding: '10px',
+                    gridColumn: '1 / -1'
+                  }}>
+                    No children accounts found. Create one first!
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

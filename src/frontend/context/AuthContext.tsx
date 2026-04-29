@@ -8,7 +8,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (username: string, password?: string) => void;
-  signup: (username: string, role: UserRole, password?: string, childId?: string) => void;
+  signup: (username: string, role: UserRole, password?: string, childIds?: string[]) => void;
   logout: () => void;
 }
 
@@ -57,13 +57,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     finally { setLoading(false); }
   };
 
-  const signup = async (username: string, role: UserRole, password?: string, childId?: string) => {
+  const signup = async (username: string, role: UserRole, password?: string, childIds?: string[]) => {
     setLoading(true);
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, role, childId }),
+        body: JSON.stringify({ username, password, role, childIds }),
       });
       const data = await res.json();
       if (data.user) { setUser(data.user); redirectAfterAuth(data.user.role); }

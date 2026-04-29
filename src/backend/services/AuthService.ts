@@ -4,17 +4,27 @@ import bcrypt from "bcryptjs";
 import type { UserRole } from "@shared/types";
 
 export const AuthService = {
-  async signup(username: string, password: string, role: UserRole) {
+  async signup(username: string, password: string, role: UserRole, childIds?: string[]) {
     if (!username) throw new Error("Username is required");
     const existing = await prisma.user.findUnique({ where: { username } });
     if (existing) throw new Error("User already exists");
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: { username, password: hashed, role },
-    });
+    
+    return await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: { username, password: hashed, role },
+      });
 
-    return { id: user.id, username: user.username, role: user.role };
+      if (role === "PARENT" && childIds && childIds.length > 0) {
+        await tx.user.updateMany({
+          where: { id: { in: childIds } },
+          data: { parentId: user.id },
+        });
+      }
+
+      return { id: user.id, username: user.username, role: user.role };
+    });
   },
 
   async login(username: string, password: string) {
