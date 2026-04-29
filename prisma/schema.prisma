@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model User {
@@ -62,7 +62,7 @@ model DiaryEntry {
   date      String   // "YYYY-MM-DD"
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  data      String   // JSON string of activity completions
+  data      Json     // Activity completions
   score     Int
   rating    String
   createdAt DateTime @default(now())

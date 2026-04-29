@@ -15,11 +15,11 @@ export const DiaryService = {
     });
   },
 
-  async upsertEntry(userId: string, date: string, data: object, score: number, rating: string) {
+  async upsertEntry(userId: string, date: string, data: any, score: number, rating: string) {
     return prisma.diaryEntry.upsert({
       where: { userId_date: { userId, date } },
-      update: { data: JSON.stringify(data), score, rating },
-      create: { userId, date, data: JSON.stringify(data), score, rating },
+      update: { data, score, rating },
+      create: { userId, date, data, score, rating },
     });
   },
 

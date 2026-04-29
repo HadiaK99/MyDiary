@@ -74,8 +74,8 @@ export default function MonthlyAnalysis({ params: paramsPromise }: { params: Pro
           let totalItemsChecked = 0;
           let totalPossibleItems = 0;
 
-          filteredEntries.forEach((entry) => {
-            const entryData = JSON.parse(entry.data) as { activities?: Record<string, boolean> };
+          filteredEntries.forEach((entry: any) => {
+            const entryData = entry.data as { activities?: Record<string, boolean> };
             const entryActivities = entryData.activities || {};
             
             // Normalize keys to avoid space-related mismatches

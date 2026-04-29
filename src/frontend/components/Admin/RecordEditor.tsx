@@ -247,7 +247,7 @@ export default function RecordEditor({ userId, username, entry, onClose, onSave 
     fetchCats();
 
     if (entry) {
-      setData(JSON.parse(entry.data));
+      setData(entry.data as any);
     }
   }, [entry]);
 

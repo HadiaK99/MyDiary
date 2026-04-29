@@ -376,7 +376,7 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
         const res = await fetch(`/api/diary?date=${date}&userId=${targetUserId}`);
         const data = await res.json();
         if (data.entry) {
-          setData(JSON.parse(data.entry.data));
+          setData(data.entry.data);
         }
       };
       fetchEntry();
