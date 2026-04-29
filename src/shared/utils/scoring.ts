@@ -13,15 +13,30 @@ export const calculateScore = (data: DayData, categories: ActivityCategory[]) =>
 
   // Calculate activity points
   categories.forEach(category => {
+    let catScore = 0;
+    let allCompleted = true;
+
     category.activities.forEach(activity => {
-      const actName = activity.name;
+      const actName = typeof activity === 'string' ? activity : activity.name;
+      const actPoints = (typeof activity !== 'string' && activity.points !== null && activity.points !== undefined) 
+        ? activity.points 
+        : category.pointsPerItem;
+
       if (data.activities[actName]) {
-        totalScore += activity.effectivePoints ?? category.pointsPerItem;
+        catScore += actPoints;
+      } else {
+        allCompleted = false;
       }
     });
+
+    if (category.scoringMode === "GROUP") {
+      if (allCompleted) totalScore += category.pointsPerItem;
+    } else {
+      totalScore += catScore;
+    }
   });
 
-  // Good/Bad things are fixed points (optional additions/subtractions)
+  // Good/Bad things are fixed points
   Object.keys(data.goodThings || {}).forEach(thing => {
     if (data.goodThings[thing]) totalScore += POINTS.GOOD_THING;
   });
@@ -34,7 +49,15 @@ export const calculateScore = (data: DayData, categories: ActivityCategory[]) =>
 
 export const calculateMaxScore = (categories: ActivityCategory[]) => {
   return categories.reduce((total, cat) => {
-    const catTotal = cat.activities.reduce((sum, act) => sum + (act.effectivePoints ?? cat.pointsPerItem), 0);
+    if (cat.scoringMode === "GROUP") {
+      return total + cat.pointsPerItem;
+    }
+    const catTotal = cat.activities.reduce((sum, act) => {
+      const actPoints = (typeof act !== 'string' && act.points !== null && act.points !== undefined) 
+        ? act.points 
+        : cat.pointsPerItem;
+      return sum + actPoints;
+    }, 0);
     return total + catTotal;
   }, 0);
 };

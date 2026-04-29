@@ -93,21 +93,26 @@ export const AdminService = {
     });
   },
 
-  async updateActivities(categories: { name: string; pointsPerItem: number; activities: { name: string }[] }[]) {
-    await prisma.activity.deleteMany({ where: { userId: null } });
-    await prisma.activityCategory.deleteMany({ where: { userId: null } });
-    for (const cat of categories) {
-      await prisma.activityCategory.create({
-        data: {
-          name: cat.name,
-          pointsPerItem: cat.pointsPerItem,
-          activities: {
-            create: cat.activities.map((act) => ({
-              name: act.name,
-            })),
+  async updateActivities(categories: { name: string; pointsPerItem: number; scoringMode: string; activities: { name: string; points?: number | null }[] }[]) {
+    return await prisma.$transaction(async (tx) => {
+      await tx.activity.deleteMany({ where: { userId: null } });
+      await tx.activityCategory.deleteMany({ where: { userId: null } });
+      
+      for (const cat of categories) {
+        await tx.activityCategory.create({
+          data: {
+            name: cat.name,
+            pointsPerItem: cat.pointsPerItem,
+            scoringMode: cat.scoringMode,
+            activities: {
+              create: cat.activities.map((act) => ({
+                name: act.name,
+                points: act.points,
+              })),
+            },
           },
-        },
-      });
-    }
+        });
+      }
+    });
   },
 };

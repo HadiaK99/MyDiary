@@ -103,6 +103,7 @@ model ActivityCategory {
 model Activity {
   id         String   @id @default(cuid())
   name       String
+  points     Int?     // Individual points override
   categoryId String
   userId     String?  // null for global, userId for custom
   category   ActivityCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)

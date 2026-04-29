@@ -1,14 +1,16 @@
 export interface Activity {
-  id: string;
+  id?: string;
   name: string;
+  points?: number | null;
   effectivePoints?: number;
 }
 
 export interface ActivityCategory {
   id?: string;
   name: string;
-  activities: Activity[];
+  activities: (Activity | string)[];
   pointsPerItem: number;
+  scoringMode: "GROUP" | "INDIVIDUAL";
   userId?: string | null;
 }
 

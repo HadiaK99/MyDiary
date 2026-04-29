@@ -10,7 +10,12 @@ export async function GET() {
       id: cat.id,
       name: cat.name,
       pointsPerItem: cat.pointsPerItem,
-      activities: cat.activities.map((a) => a.name),
+      scoringMode: cat.scoringMode,
+      activities: cat.activities.map((a) => ({
+        id: a.id,
+        name: a.name,
+        points: a.points,
+      })),
     }));
     return NextResponse.json({ categories });
   } catch (error) {
@@ -28,15 +33,20 @@ export async function POST(request: Request) {
   try {
     const { categories } = await request.json();
     // Transform string[] activities back into { name: string }[] for the service
-    const transformed = categories.map((cat: { name: string; pointsPerItem: number; activities: string[] }) => ({
+    const transformed = categories.map((cat: any) => ({
       name: cat.name,
       pointsPerItem: cat.pointsPerItem,
-      activities: cat.activities.map((actName: string) => ({ name: actName })),
+      scoringMode: cat.scoringMode || "GROUP",
+      activities: cat.activities.map((act: any) => ({ 
+        name: typeof act === 'string' ? act : act.name,
+        points: typeof act === 'string' ? null : (act.points || null)
+      })),
     }));
     await AdminService.updateActivities(transformed);
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Admin activities error:", error);
-    return NextResponse.json({ error: "Failed to update activities" }, { status: 500 });
+    console.error("Admin activities error details:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: "Failed to update activities", details: message }, { status: 500 });
   }
 }
