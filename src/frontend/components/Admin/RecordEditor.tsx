@@ -380,18 +380,21 @@ export default function RecordEditor({ userId, username, entry, onClose, onSave 
               
               <div className="activity-grid">
                 {categories.map(cat => (
-                  cat.activities.map(act => (
-                    <div 
-                      key={act}
-                      className={`activity-item ${data.activities[act] ? 'active' : ''}`}
-                      onClick={() => toggleItem('activities', act)}
-                    >
-                      <span>{act}</span>
-                      <div className="check-square">
-                        {data.activities[act] && <Check size={14} />}
+                  cat.activities.map((actObj) => {
+                    const act = typeof actObj === 'string' ? actObj : actObj.name;
+                    return (
+                      <div 
+                        key={act}
+                        className={`activity-item ${data.activities[act] ? 'active' : ''}`}
+                        onClick={() => toggleItem('activities', act)}
+                      >
+                        <span>{act}</span>
+                        <div className="check-square">
+                          {data.activities[act] && <Check size={14} />}
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ))}
               </div>
             </div>

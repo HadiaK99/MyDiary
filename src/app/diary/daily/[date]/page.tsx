@@ -468,10 +468,10 @@ export default function DailyDiary({ params: paramsPromise }: { params: Promise<
                 <ChecklistCard key={catIndex}>
                   <CheckTitle>{cat.name}</CheckTitle>
                   {cat.activities.map((act, actIndex) => (
-                    <ListItem key={actIndex} onClick={() => toggleItem('activities', act.name)}>
-                      <ItemLabel>{act.name}</ItemLabel>
+                    <ListItem key={actIndex} onClick={() => toggleItem('activities', (typeof act === 'string' ? act : act.name))}>
+                      <ItemLabel>{typeof act === 'string' ? act : act.name}</ItemLabel>
                       <CheckSquare>
-                        {data.activities[act.name] && <Check size={14} />}
+                        {data.activities[typeof act === 'string' ? act : act.name] && <Check size={14} />}
                       </CheckSquare>
                     </ListItem>
                   ))}
