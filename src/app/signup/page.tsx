@@ -10,12 +10,34 @@ import { Sparkles, Star } from "lucide-react";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("CHILD");
   const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [availableChildren, setAvailableChildren] = useState<User[]>([]);
-  const { signup } = useAuth();
+  const [isSSOFlow, setIsSSOFlow] = useState(false);
+  const { user, signup } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.refresh();
+      router.push("/");
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+    // Check for SSO params
+    const params = new URLSearchParams(window.location.search);
+    const ssoEmail = params.get("email");
+    const ssoName = params.get("name");
+    
+    if (ssoEmail) {
+      setEmail(ssoEmail);
+      setIsSSOFlow(true);
+      if (ssoName) setUsername(ssoName.replace(/\s+/g, '').toLowerCase());
+    }
+  }, []);
 
   useEffect(() => {
     const fetchChildren = async () => {
@@ -36,8 +58,8 @@ export default function SignupPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim() && password.trim()) {
-      signup(username, role, password, role === "PARENT" ? selectedChildIds : undefined);
+    if (username.trim() && (isSSOFlow || password.trim())) {
+      signup(username, role, password || undefined, role === "PARENT" ? selectedChildIds : undefined, email);
     }
   };
 
@@ -83,17 +105,34 @@ export default function SignupPage() {
           </div>
 
           <div className="input-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="email">Email Address</label>
             <input
-              id="password"
-              type="password"
+              id="email"
+              type="email"
               className="input-field"
-              placeholder="Choose a strong password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
+              readOnly={isSSOFlow}
+              style={isSSOFlow ? { background: '#f8fafc', color: '#64748b' } : {}}
             />
           </div>
+
+          {!isSSOFlow && (
+            <div className="input-group">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="input-field"
+                placeholder="Choose a strong password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
           {role === "PARENT" && (
             <div className="input-group">

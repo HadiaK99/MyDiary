@@ -1,28 +1,15 @@
 import { NextResponse } from "next/server";
 import { AuthService } from "@backend/services/AuthService";
-import { encrypt } from "@backend/lib/auth";
-import { cookies } from "next/headers";
-import { UserRole } from "@shared/types";
 
 export async function POST(request: Request) {
   try {
-    const { username, password, role, childIds } = await request.json();
+    const { username, password, role, childIds, email } = await request.json();
 
-    if (!username || !password || !role) {
+    if (!username || !role) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    const user = await AuthService.signup(username, password, role, childIds);
-
-    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const session = await encrypt({ userId: user.id, username: user.username, role: user.role as UserRole, expires });
-    (await cookies()).set("session", session, { 
-      expires, 
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
+    const user = await AuthService.signup(username, password, role, childIds, email);
 
     return NextResponse.json({ user });
   } catch (error: unknown) {

@@ -5,11 +5,11 @@ import bcrypt from "bcryptjs";
 export const AdminService = {
   async getAllUsers() {
     const users = await prisma.user.findMany({
-      select: { 
-        id: true, 
-        username: true, 
-        role: true, 
-        parentId: true, 
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        parentId: true,
         createdAt: true
       },
     });
@@ -31,18 +31,30 @@ export const AdminService = {
     return prisma.user.delete({ where: { id } });
   },
 
-  async createUser(data: { username: string; password: string; role: string; childrenIds?: string[] }) {
-    const { username, password, role, childrenIds } = data;
-    const hashed = await bcrypt.hash(password, 10);
-    
-    const user = await prisma.user.create({
-      data: {
-        username,
-        password: hashed,
-        role,
-      },
-      select: { id: true, username: true, role: true }
-    });
+  async createUser(data: { username: string; password?: string; role: string; childrenIds?: string[]; email: string }) {
+    const { username, password, role, childrenIds, email } = data;
+    const hashed = password ? await bcrypt.hash(password, 10) : null;
+    let user;
+
+    const existingEmailUser = email
+      ? await prisma.user.findUnique({
+        where: { email }
+      })
+      : null;
+
+    if (existingEmailUser) {
+
+      user = await prisma.user.update({
+        where: { email },
+        data: { username, role, onboarded: true },
+        select: { id: true, username: true, role: true }
+      });
+    } else {
+      user = await prisma.user.create({
+        data: { username, password: hashed, role, email, onboarded: true },
+        select: { id: true, username: true, role: true }
+      });
+    }
 
     if (role === "PARENT" && childrenIds && childrenIds.length > 0) {
       await prisma.user.updateMany({
@@ -57,11 +69,11 @@ export const AdminService = {
   async updateUser(id: string, data: { username?: string; password?: string; role?: string; childrenIds?: string[] }) {
     const { username, password, role, childrenIds } = data;
     const updateData: any = { username, role };
-    
+
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
     }
-    
+
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
@@ -97,7 +109,7 @@ export const AdminService = {
     return await prisma.$transaction(async (tx) => {
       await tx.activity.deleteMany({ where: { userId: null } });
       await tx.activityCategory.deleteMany({ where: { userId: null } });
-      
+
       for (const cat of categories) {
         await tx.activityCategory.create({
           data: {
