@@ -56,8 +56,35 @@ export default function SignupPage() {
     );
   };
 
+  const [error, setError] = useState<string | null>(null);
+
+  const validatePassword = (pass: string) => {
+    const minLength = pass.length >= 8;
+    const hasUpper = /[A-Z]/.test(pass);
+    const hasLower = /[a-z]/.test(pass);
+    const hasNumber = /\d/.test(pass);
+    const hasSpecial = /[@$!%*?&]/.test(pass);
+
+    return { minLength, hasUpper, hasLower, hasNumber, hasSpecial };
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    if (username.trim().length < 3) {
+      setError("Username must be at least 3 characters");
+      return;
+    }
+
+    if (!isSSOFlow) {
+      const v = validatePassword(password);
+      if (!v.minLength || !v.hasUpper || !v.hasLower || !v.hasNumber || !v.hasSpecial) {
+        setError("Please meet all password requirements");
+        return;
+      }
+    }
+
     if (username.trim() && (isSSOFlow || password.trim())) {
       signup(username, role, password || undefined, role === "PARENT" ? selectedChildIds : undefined, email);
     }
@@ -131,6 +158,18 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <div style={{ marginTop: '8px', fontSize: '0.75rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
+                {Object.entries(validatePassword(password)).map(([key, valid]) => (
+                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '4px', color: valid ? '#10b981' : '#94a3b8' }}>
+                    <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: valid ? '#10b981' : '#cbd5e1' }} />
+                    {key === 'minLength' && '8+ characters'}
+                    {key === 'hasUpper' && 'Uppercase'}
+                    {key === 'hasLower' && 'Lowercase'}
+                    {key === 'hasNumber' && 'Number'}
+                    {key === 'hasSpecial' && 'Special (@$!%*?&)'}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -198,6 +237,22 @@ export default function SignupPage() {
                   </p>
                 )}
               </div>
+            </div>
+          )}
+
+          {error && (
+            <div style={{ 
+              color: '#ef4444', 
+              fontSize: '0.85rem', 
+              fontWeight: 500, 
+              textAlign: 'center',
+              marginBottom: '16px',
+              padding: '8px',
+              background: '#fef2f2',
+              borderRadius: '8px',
+              border: '1px solid #fee2e2'
+            }}>
+              {error}
             </div>
           )}
 
