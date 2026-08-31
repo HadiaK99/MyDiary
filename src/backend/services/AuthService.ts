@@ -12,8 +12,15 @@ export const AuthService = {
     email?: string
   ) {
 
-    if (!username) {
-      throw new Error("Username is required");
+    if (!username || username.length < 3) {
+      throw new Error("Username must be at least 3 characters long");
+    }
+
+    if (password) {
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        throw new Error("Password must be at least 8 characters and contain uppercase, lowercase, numbers, and special characters");
+      }
     }
 
     const existingUsername = await prisma.user.findFirst({
@@ -36,10 +43,12 @@ export const AuthService = {
     return prisma.$transaction(async (tx) => {
 
       let user;
-      // OAuth onboarding flow
-      if (email) {
+      const existingUser = email ? await tx.user.findUnique({ where: { email } }) : null;
+
+      if (existingUser) {
+        // OAuth onboarding flow - user already exists in DB
         user = await tx.user.update({
-          where: { email },
+          where: { id: existingUser.id },
           data: {
             username,
             password: hashed,
@@ -48,12 +57,13 @@ export const AuthService = {
           },
         });
       } else {
-        // credentials signup
+        // New user (SSO or Credentials)
         user = await tx.user.create({
           data: {
             username,
             password: hashed,
             role,
+            email,
             onboarded: true,
           },
         });
@@ -105,6 +115,7 @@ export const AuthService = {
     return {
       id: user.id,
       username: user.username,
+      email: user.email,
       role: user.role,
       children: children
     };
@@ -117,6 +128,7 @@ export const AuthService = {
       select: {
         id: true,
         username: true,
+        email: true,
         role: true
       },
     });
@@ -132,9 +144,10 @@ export const AuthService = {
     return user;
   },
 
-  async updateUser(id: string, data: { username?: string; password?: string }) {
-    const updateData: { username?: string; password?: string } = {};
+  async updateUser(id: string, data: { username?: string; password?: string; email?: string }) {
+    const updateData: { username?: string; password?: string; email?: string } = {};
     if (data.username) updateData.username = data.username;
+    if (data.email) updateData.email = data.email;
     if (data.password) {
       updateData.password = await bcrypt.hash(data.password, 10);
     }
@@ -142,7 +155,7 @@ export const AuthService = {
     return prisma.user.update({
       where: { id },
       data: updateData,
-      select: { id: true, username: true, role: true },
+      select: { id: true, username: true, role: true, email: true },
     });
   },
 

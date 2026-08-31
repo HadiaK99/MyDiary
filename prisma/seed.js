@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
+import bcrypt from 'bcryptjs';
 import 'dotenv/config';
 
 const connectionString = process.env.DATABASE_URL;
@@ -57,6 +58,22 @@ async function main() {
       }
     });
   }
+
+  console.log('Creating default admin user...');
+  const adminPassword = await bcrypt.hash('admin', 10);
+  await prisma.user.upsert({
+    where: { email: 'admin@email.com' },
+    update: {},  // Don't overwrite if already exists
+    create: {
+      username: 'admin',
+      email: 'admin@email.com',
+      password: adminPassword,
+      role: 'ADMIN',
+      onboarded: true,
+    },
+  });
+  console.log('Default admin created: username=admin, password=admin, email=admin@email.com');
+
   console.log('Seeding finished.');
 }
 

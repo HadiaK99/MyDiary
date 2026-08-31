@@ -205,6 +205,7 @@ const EditorContent = styled.div`
 export default function UserEditor({ onClose, onSave, initialUser }: UserEditorProps) {
   const isEdit = !!initialUser;
   const [username, setUsername] = useState(initialUser?.username || "");
+  const [email, setEmail] = useState(initialUser?.email || "");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"CHILD" | "PARENT" | "ADMIN">(initialUser?.role as any || "CHILD");
   const [selectedChildren, setSelectedChildren] = useState<string[]>(
@@ -213,6 +214,15 @@ export default function UserEditor({ onClose, onSave, initialUser }: UserEditorP
   const [childUsers, setChildUsers] = useState<UserType[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initialUser) {
+      setUsername(initialUser.username || "");
+      setEmail(initialUser.email || "");
+      setRole((initialUser.role as any) || "CHILD");
+      setSelectedChildren(initialUser.children?.map(c => c.id) || []);
+    }
+  }, [initialUser]);
 
   useEffect(() => {
     // Fetch child users for parent linking
@@ -253,6 +263,7 @@ export default function UserEditor({ onClose, onSave, initialUser }: UserEditorP
     try {
       const payload: any = {
         username,
+        email: email.trim() || undefined,
         role,
         childrenIds: role === "PARENT" ? selectedChildren : [],
       };
@@ -302,6 +313,16 @@ export default function UserEditor({ onClose, onSave, initialUser }: UserEditorP
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Email Address</label>
+              <input
+                type="email"
+                placeholder="user@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 

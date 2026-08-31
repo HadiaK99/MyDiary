@@ -33,6 +33,7 @@ function AuthProviderInternal({ children }: { children: React.ReactNode }) {
       setUser({
         id: session.user.id,
         username: session.user.username || session.user.name || "",
+        email: session.user.email || "",
         role: session.user.role!,
         children: session.user.children,
       });

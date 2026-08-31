@@ -3,6 +3,7 @@ export type UserRole = "CHILD" | "PARENT" | "ADMIN";
 export interface User {
   id: string;
   username: string;
+  email: string;
   role: UserRole;
   parentId?: string | null;
   children?: { id: string, username: string }[];

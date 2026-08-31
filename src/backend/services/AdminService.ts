@@ -8,6 +8,7 @@ export const AdminService = {
       select: {
         id: true,
         username: true,
+        email: true,
         role: true,
         parentId: true,
         createdAt: true
@@ -31,7 +32,7 @@ export const AdminService = {
     return prisma.user.delete({ where: { id } });
   },
 
-  async createUser(data: { username: string; password?: string; role: string; childrenIds?: string[]; email: string }) {
+  async createUser(data: { username: string; password?: string; role: string; childrenIds?: string[]; email?: string }) {
     const { username, password, role, childrenIds, email } = data;
     const hashed = password ? await bcrypt.hash(password, 10) : null;
     let user;
@@ -47,12 +48,12 @@ export const AdminService = {
       user = await prisma.user.update({
         where: { email },
         data: { username, role, onboarded: true },
-        select: { id: true, username: true, role: true }
+        select: { id: true, username: true, email: true, role: true }
       });
     } else {
       user = await prisma.user.create({
-        data: { username, password: hashed, role, email, onboarded: true },
-        select: { id: true, username: true, role: true }
+        data: { username, password: hashed, role, email: email || null, onboarded: true },
+        select: { id: true, username: true, email: true, role: true }
       });
     }
 
@@ -66,9 +67,13 @@ export const AdminService = {
     return user;
   },
 
-  async updateUser(id: string, data: { username?: string; password?: string; role?: string; childrenIds?: string[] }) {
-    const { username, password, role, childrenIds } = data;
+  async updateUser(id: string, data: { username?: string; password?: string; role?: string; childrenIds?: string[]; email?: string }) {
+    const { username, password, role, childrenIds, email } = data;
     const updateData: any = { username, role };
+
+    if (email !== undefined) {
+      updateData.email = email.trim() ? email.trim() : null;
+    }
 
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
@@ -77,7 +82,7 @@ export const AdminService = {
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
-      select: { id: true, username: true, role: true }
+      select: { id: true, username: true, email: true, role: true }
     });
 
     if (role === "PARENT" && childrenIds !== undefined) {

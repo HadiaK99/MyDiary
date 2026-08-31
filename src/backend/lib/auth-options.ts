@@ -50,22 +50,53 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      try {
+        console.log("NextAuth: signIn callback for", user.email);
+        if (account?.provider === "google") {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email as string }
+          });
+
+          if (!existingUser) {
+            const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+            // Ensure we use an absolute URL and double-check it's not undefined
+            const email = user.email as string;
+            const name = user.name || "";
+            const redirectUrl = `${baseUrl}/signup?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`;
+
+            console.log("NextAuth: New user detected, redirecting to:", redirectUrl);
+            return redirectUrl;
+          }
+          console.log("NextAuth: Existing user found, allowing sign-in");
+        }
+        return true;
+      } catch (error) {
+        console.error("NextAuth: Error in signIn callback:", error);
+        return "/login?error=CallbackError";
+      }
+    },
     async jwt({ token, user }) {
 
       const email = user?.email || token.email;
+      const userId = user?.id || token.sub;
+
+      let dbUser = null;
 
       if (email) {
+        dbUser = await prisma.user.findUnique({ where: { email } });
+      }
 
-        const dbUser = await prisma.user.findUnique({
-          where: { email }
-        });
+      if (!dbUser && userId) {
+        dbUser = await prisma.user.findUnique({ where: { id: userId } });
+      }
 
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.role = dbUser.role as any;
-          token.username = dbUser.username || undefined;
-          token.onboarded = dbUser.onboarded;
-        }
+      if (dbUser) {
+        token.id = dbUser.id;
+        token.role = dbUser.role as any;
+        token.username = dbUser.username || undefined;
+        token.email = dbUser.email || undefined;
+        token.onboarded = dbUser.onboarded;
       }
 
       return token;
@@ -77,6 +108,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id!;
         session.user.role = token.role;
         session.user.username = token.username;
+        session.user.email = token.email || session.user.email;
         session.user.onboarded = token.onboarded;
 
         if (token.role === "PARENT") {

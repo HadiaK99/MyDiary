@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useAuth } from "@frontend/context/AuthContext";
 import Header from "@frontend/components/Navigation/Header";
@@ -156,12 +156,20 @@ const ModalContent = styled.div`
 export default function SettingsPage() {
   const { user } = useAuth();
   const [username, setUsername] = useState(user?.username || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
 
   if (!user) return null;
 
@@ -171,7 +179,7 @@ export default function SettingsPage() {
       setMessage({ type: "error", text: "Passwords do not match!" });
       return;
     }
-    
+
     setLoading(true);
     setMessage({ type: "", text: "" });
 
@@ -179,9 +187,10 @@ export default function SettingsPage() {
       const res = await fetch("/api/auth/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          username, 
-          password: password || undefined 
+        body: JSON.stringify({
+          username,
+          email: email.trim() || undefined,
+          password: password || undefined
         }),
       });
       if (res.ok) {
@@ -224,7 +233,7 @@ export default function SettingsPage() {
   return (
     <Container>
       <Header />
-      
+
       <Card variant="default" padding="40px" className="animate-fade-in">
         <HeaderSection>
           <h1>Settings</h1>
@@ -239,10 +248,10 @@ export default function SettingsPage() {
 
         <Section>
           <h2><Lock size={22} /> Account Settings</h2>
-          
+
           {!showPasswordForm ? (
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               onClick={() => setShowPasswordForm(true)}
               fullWidth
             >
@@ -258,6 +267,15 @@ export default function SettingsPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
+                />
+              </Field>
+              <Field>
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Field>
               <Field>
@@ -282,14 +300,15 @@ export default function SettingsPage() {
                 <Button type="submit" disabled={loading} style={{ flex: 1 }}>
                   {loading ? "Updating..." : "Update Account"} <Save size={18} style={{ marginLeft: '8px' }} />
                 </Button>
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant="secondary"
                   onClick={() => {
                     setShowPasswordForm(false);
                     setPassword("");
                     setConfirmPassword("");
                     setUsername(user.username);
+                    setEmail(user.email);
                   }}
                   style={{ flex: 1 }}
                 >
@@ -314,8 +333,8 @@ export default function SettingsPage() {
         </DeleteZone>
       </Card>
 
-      <Modal 
-        isOpen={showDeleteModal} 
+      <Modal
+        isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         title="Confirm Deletion"
       >
@@ -325,18 +344,18 @@ export default function SettingsPage() {
           </div>
           <p>Are you sure you want to delete your account? This will <strong>permanently erase</strong> ALL your data, entries, and progress. </p>
           <p className="note">This action cannot be undone.</p>
-          
+
           <div className="actions">
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               onClick={() => setShowDeleteModal(false)}
               disabled={loading}
               fullWidth
             >
               Cancel, I'll stay
             </Button>
-            <Button 
-              variant="danger" 
+            <Button
+              variant="danger"
               onClick={confirmDelete}
               disabled={loading}
               fullWidth

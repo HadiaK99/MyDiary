@@ -9,8 +9,8 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const { username, password } = await request.json();
-    const updatedUser = await AuthService.updateUser(session.userId, { username, password });
+    const { username, password, email } = await request.json();
+    const updatedUser = await AuthService.updateUser(session.userId, { username, password, email });
     return NextResponse.json({ user: updatedUser });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to update profile";

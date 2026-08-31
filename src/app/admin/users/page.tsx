@@ -105,6 +105,7 @@ export default function ManageUsers() {
             <thead>
               <tr>
                 <th>Username</th>
+                <th>Email</th>
                 <th>Role</th>
                 <th>Linked Children</th>
                 <th>Actions</th>
@@ -114,6 +115,7 @@ export default function ManageUsers() {
               {filteredUsers.map(user => (
                 <tr key={user.id}>
                   <td style={{ fontWeight: 700 }}>{user.username}</td>
+                  <td style={{ color: '#64748b' }}>{user.email || '-'}</td>
                   <td>
                     <span className={`badge ${
                       user.role === 'ADMIN' ? 'badge-admin' : 

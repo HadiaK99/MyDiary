@@ -105,7 +105,7 @@ export default function SignupPage() {
           <div className="input-group">
             <label>I am a...</label>
             <div className="role-select">
-              {(["CHILD", "PARENT", "ADMIN"] as UserRole[]).map((r) => (
+              {(["CHILD", "PARENT"] as UserRole[]).map((r) => (
                 <button
                   key={r}
                   type="button"
